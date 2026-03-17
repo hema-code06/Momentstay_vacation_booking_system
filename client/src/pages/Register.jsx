@@ -66,7 +66,7 @@ const Register = () => {
           register_form.append(key, formData[key]);
         }
 
-        const response = await fetch("https://momentstay.onrender.com/auth/register", {
+        const response = await fetch("https://momentstay-vacation-booking-system.onrender.com/auth/register", {
           method: "POST",
           body: register_form,
         });

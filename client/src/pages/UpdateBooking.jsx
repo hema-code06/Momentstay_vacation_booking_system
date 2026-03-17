@@ -61,7 +61,7 @@ const UpdateBooking = () => {
     const fetchBookingAndListing = async () => {
       try {
         const bookingResponse = await fetch(
-          `https://momentstay.onrender.com/bookings/${bookingId}`
+          `https://momentstay-vacation-booking-system.onrender.com/bookings/${bookingId}`
         );
         if (!bookingResponse.ok) {
           throw new Error(
@@ -81,7 +81,7 @@ const UpdateBooking = () => {
         const listingId = bookingData.listingId?._id;
         if (listingId) {
           const listingResponse = await fetch(
-            `https://momentstay.onrender.com/properties/${listingId}`
+            `https://momentstay-vacation-booking-system.onrender.com/properties/${listingId}`
           );
           if (!listingResponse.ok) {
             throw new Error(
@@ -129,7 +129,7 @@ const UpdateBooking = () => {
 
     try {
       const response = await fetch(
-        `https://momentstay.onrender.com/bookings/update/${bookingId}`,
+        `https://momentstay-vacation-booking-system.onrender.com/bookings/update/${bookingId}`,
         {
           method: "PUT",
           headers: {
@@ -187,7 +187,7 @@ const UpdateBooking = () => {
               {listing.listingPhotoPaths?.map((photo, index) => (
                 <img
                   key={index}
-                  src={`https://momentstay.onrender.com/${photo.replace(
+                  src={`https://momentstay-vacation-booking-system.onrender.com/${photo.replace(
                     "public",
                     ""
                   )}`}
@@ -207,7 +207,7 @@ const UpdateBooking = () => {
 
             <div className="profile">
               <img
-                src={`https://momentstay.onrender.com/${listing.creator.profileImagePath.replace(
+                src={`https://momentstay-vacation-booking-system.onrender.com/${listing.creator.profileImagePath.replace(
                   "public",
                   ""
                 )}`}

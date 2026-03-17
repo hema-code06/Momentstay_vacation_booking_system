@@ -49,7 +49,7 @@ const ListingCard = ({
   const patchWishList = async () => {
     if (user?._id !== creator._id) {
       const response = await fetch(
-        `https://momentstay.onrender.com/users/${user?._id}/${listingId}`,
+        `https://momentstay-vacation-booking-system.onrender.com/users/${user?._id}/${listingId}`,
         {
           method: "PATCH",
           headers: {
@@ -79,7 +79,7 @@ const ListingCard = ({
           {listingPhotoPaths?.map((photo, index) => (
             <div key={index} className="slide">
               <img
-                src={`https://momentstay.onrender.com/${photo?.replace(
+                src={`https://momentstay-vacation-booking-system.onrender.com/${photo?.replace(
                   "public",
                   ""
                 )}`}

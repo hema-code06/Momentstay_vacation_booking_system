@@ -17,7 +17,7 @@ const Category = () => {
   const getFeedListings = async () => {
     try {
       const response = await fetch(
-        `https://momentstay.onrender.com/properties?category=${category}`,
+        `https://momentstay-vacation-booking-system.onrender.com/properties?category=${category}`,
         {
           method: "GET",
         }

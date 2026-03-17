@@ -19,7 +19,7 @@ const PropertyList = () => {
   const getPropertyList = async () => {
     try {
       const response = await fetch(
-        `https://momentstay.onrender.com/users/${userId}/properties`,
+        `https://momentstay-vacation-booking-system.onrender.com/users/${userId}/properties`,
         {
           method: "GET",
         }

@@ -19,7 +19,7 @@ const Login = () => {
     setPasswordError("");
 
     try {
-      const response = await fetch("https://momentstay.onrender.com/auth/login", {
+      const response = await fetch("https://momentstay-vacation-booking-system.onrender.com/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

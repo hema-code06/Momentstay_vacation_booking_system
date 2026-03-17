@@ -25,7 +25,7 @@ const ListingReview = () => {
   const getListingReview = async () => {
     try {
       const response = await fetch(
-        `https://momentstay.onrender.com/properties/${listingId}`,
+        `https://momentstay-vacation-booking-system.onrender.com/properties/${listingId}`,
         {
           method: "GET",
         }
@@ -71,7 +71,7 @@ const ListingReview = () => {
 
     try {
       const response = await fetch(
-        `https://momentstay.onrender.com/feedback/create`,
+        `https://momentstay-vacation-booking-system.onrender.com/feedback/create`,
         {
           method: "POST",
           headers: {
@@ -118,7 +118,7 @@ const ListingReview = () => {
         <div className="photos">
           {listing.listingPhotoPaths?.map((item) => (
             <img
-              src={`https://momentstay.onrender.com/${item.replace(
+              src={`https://momentstay-vacation-booking-system.onrender.com/${item.replace(
                 "public",
                 ""
               )}`}
@@ -140,7 +140,7 @@ const ListingReview = () => {
         {listing?.creator && listing.creator.profileImagePath && (
           <div className="profile">
             <img
-              src={`https://momentstay.onrender.com/${listing.creator.profileImagePath.replace(
+              src={`https://momentstay-vacation-booking-system.onrender.com/${listing.creator.profileImagePath.replace(
                 "public",
                 ""
               )}`}
