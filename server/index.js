@@ -33,6 +33,12 @@ app.use((req, res, next) => {
 });
 
 app.use("/auth", authRoutes);
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: "success",
+    message: "Server is running 🚀",
+  });
+});
 app.use("/properties", listingRoutes);
 app.use("/bookings", bookingRoutes);
 app.use("/users", userRoutes);
