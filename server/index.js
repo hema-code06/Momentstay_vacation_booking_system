@@ -1,34 +1,42 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 const cors = require("cors");
-const compression = require("compression"); // for gzip compression
+const compression = require("compression");
+
 const app = express();
 
-// Import Routes
 const authRoutes = require("./routes/auth.js");
 const listingRoutes = require("./routes/listing.js");
 const bookingRoutes = require("./routes/booking.js");
 const userRoutes = require("./routes/user.js");
 
-// Middleware
 app.use(cors());
 app.use(express.json());
-app.use(compression()); // Enable compression for better performance
+app.use(compression());
 app.use(
   express.static("public", {
-    maxAge: "1d", // Cache static files for 1 day
-    etag: false, // Disable ETag for static files
-  })
+    maxAge: "1d",
+    etag: false,
+  }),
 );
 
-// Routes
+app.use((req, res, next) => {
+  const start = Date.now();
+
+  res.on("finish", () => {
+    const time = Date.now() - start;
+    console.log(`${req.method} ${req.originalUrl} - ${time}ms`);
+  });
+
+  next();
+});
+
 app.use("/auth", authRoutes);
 app.use("/properties", listingRoutes);
 app.use("/bookings", bookingRoutes);
 app.use("/users", userRoutes);
 
-// Feedback Route
 app.post("/feedback/create", async (req, res) => {
   try {
     console.log(`Feedback received from ${req.ip} at ${req.url}:`, req.body);
@@ -39,20 +47,29 @@ app.post("/feedback/create", async (req, res) => {
   }
 });
 
+if (process.env.NODE_ENV === "development") {
+  mongoose.set("debug", true);
+}
+
+mongoose.set("strictQuery", true);
+
 // MongoDB Connection
 const PORT = process.env.PORT || 3001;
 mongoose
   .connect(process.env.MONGO_URL, {
     dbName: "MomentStay",
-    maxPoolSize: 10, // Correct option for connection pooling
+    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 5000,
   })
   .then(() => {
-    console.log("Connected to MongoDB");
-    app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
+    console.log("✅Connected to MongoDB");
+    app.listen(PORT, () => console.log(`🚀Server running on port: ${PORT}`));
   })
   .catch((err) => {
-    console.error(`Error connecting to MongoDB: ${err}`);
+    console.error(`❌Error connecting to MongoDB: ${err}`);
   });
 
-// Optionally, you can enable more detailed logging for MongoDB queries
-mongoose.set("debug", true); // Logs all MongoDB queries in the console
+app.use((err, req, res, next) => {
+  console.error("Global Error:", err);
+  res.status(500).json({ message: "Something went wrong" });
+});
