@@ -88,7 +88,7 @@ const ReservationList = () => {
       );
 
       if (response.ok) {
-        await getReservationList(); // Fetch updated reservation list after deletion
+        await getReservationList(); 
         alert("Booking canceled successfully!");
       }
     } catch (err) {

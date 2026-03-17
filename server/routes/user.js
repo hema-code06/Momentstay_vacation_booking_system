@@ -3,12 +3,11 @@ const Booking = require("../models/Booking");
 const User = require("../models/User");
 const Listing = require("../models/Listing");
 
-/* GET TRIP LIST */
 router.get("/:userId/trips", async (req, res) => {
   try {
     const { userId } = req.params;
     const trips = await Booking.find({ customerId: userId }).populate(
-      "customerId hostId listingId"
+      "customerId hostId listingId",
     );
     res.status(202).json(trips);
   } catch (err) {
@@ -19,7 +18,6 @@ router.get("/:userId/trips", async (req, res) => {
   }
 });
 
-/* ADD LISTING TO WISHLIST */
 router.patch("/:userId/:listingId", async (req, res) => {
   try {
     const { userId, listingId } = req.params;
@@ -27,29 +25,25 @@ router.patch("/:userId/:listingId", async (req, res) => {
     const listing = await Listing.findById(listingId).populate("creator");
 
     const favoriteListing = user.wishList.find(
-      (item) => item._id.toString() === listingId
+      (item) => item._id.toString() === listingId,
     );
 
     if (favoriteListing) {
       user.wishList = user.wishList.filter(
-        (item) => item._id.toString() !== listingId
+        (item) => item._id.toString() !== listingId,
       );
       await user.save();
-      res
-        .status(200)
-        .json({
-          message: "Property is removed from wish list",
-          wishList: user.wishList,
-        });
+      res.status(200).json({
+        message: "Property is removed from wish list",
+        wishList: user.wishList,
+      });
     } else {
       user.wishList.push(listing);
       await user.save();
-      res
-        .status(200)
-        .json({
-          message: "Property is added to wish list",
-          wishList: user.wishList,
-        });
+      res.status(200).json({
+        message: "Property is added to wish list",
+        wishList: user.wishList,
+      });
     }
   } catch (err) {
     console.log(err);
@@ -57,12 +51,11 @@ router.patch("/:userId/:listingId", async (req, res) => {
   }
 });
 
-/* GET PROPERTY LIST */
 router.get("/:userId/properties", async (req, res) => {
   try {
     const { userId } = req.params;
     const properties = await Listing.find({ creator: userId }).populate(
-      "creator"
+      "creator",
     );
     res.status(202).json(properties);
   } catch (err) {
@@ -73,7 +66,6 @@ router.get("/:userId/properties", async (req, res) => {
   }
 });
 
-/* GET RESERVATION LIST */
 router.get("/:userId/reservations", async (req, res) => {
   try {
     const { userId } = req.params;

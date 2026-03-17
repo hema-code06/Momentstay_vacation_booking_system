@@ -52,7 +52,6 @@ const ListingDetails = () => {
     getListingDetails();
   }, []);
 
-  // Check if the current listing is in the wishlist
   const isInWishlist = wishList.some((item) => item._id === listingId);
 
   const handleAddToWishlist = () => {
@@ -78,16 +77,13 @@ const ListingDetails = () => {
     const startDate = new Date(dateRange[0].startDate);
     const endDate = new Date(dateRange[0].endDate);
 
-    // Check if dates are selected
     if (!startDate || !endDate) {
       alert("Please Select Dates For Reservation");
       return;
     }
 
-    // Calculate the number of days selected
     const dayCount = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24));
 
-    // Validate the minimum stay requirement
     if (dayCount < 2) {
       alert("Please select a start and end date for reservation");
       return;

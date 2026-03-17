@@ -88,7 +88,7 @@ const Navbar = () => {
             {dropdownMenu && (
               <div
                 className="navbar_right_accountmenu"
-                ref={dropdownRef} // Attach ref to dropdown menu
+                ref={dropdownRef} 
               >
                 {!user ? (
                   <>

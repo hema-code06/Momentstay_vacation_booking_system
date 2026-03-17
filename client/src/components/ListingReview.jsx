@@ -42,7 +42,6 @@ const ListingReview = () => {
     getListingReview();
   }, []);
 
-  // Check if the current listing is in the wishlist
   const isInWishlist = wishList.some((item) => item._id === listingId);
 
   const handleAddToWishlist = () => {

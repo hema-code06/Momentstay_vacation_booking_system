@@ -84,7 +84,6 @@ router.post("/create", upload.array("listingPhotos"), async (req, res) => {
   }
 });
 
-// GET LISTINGS BY CATEGORY
 router.get("/", async (req, res) => {
   const qCategory = req.query.category;
 
@@ -102,7 +101,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET LISTINGS BY SEARCH
 router.get("/search/:search", async (req, res) => {
   const { search } = req.params;
 
@@ -126,7 +124,6 @@ router.get("/search/:search", async (req, res) => {
   }
 });
 
-// GET LISTING BY ID
 router.get("/:listingId", async (req, res) => {
   const { listingId } = req.params;
   try {
@@ -143,7 +140,6 @@ router.get("/:listingId", async (req, res) => {
   }
 });
 
-// UPDATE LISTING
 router.put("/:listingId", upload.array("listingPhotos"), async (req, res) => {
   const { listingId } = req.params;
   try {
@@ -164,7 +160,6 @@ router.put("/:listingId", upload.array("listingPhotos"), async (req, res) => {
   }
 });
 
-// DELETE LISTING BY ID
 router.delete("/:listingId", async (req, res) => {
   const { listingId } = req.params;
   try {
@@ -173,11 +168,10 @@ router.delete("/:listingId", async (req, res) => {
       return res.status(404).json({ message: "Properties not found!!" });
     }
 
-    // Remove all photos associated with the listing
     listing.listingPhotoPaths.forEach((photo) => {
       const filePath = path.join(
         process.env.UPLOADS_DIR || "public/uploads/",
-        path.basename(photo)
+        path.basename(photo),
       );
       fs.unlink(filePath, (err) => {
         if (err) {
@@ -186,7 +180,6 @@ router.delete("/:listingId", async (req, res) => {
       });
     });
 
-    // Delete the listing from the database
     await Listing.findByIdAndDelete(listingId);
 
     res.status(200).json({ message: "Listing deleted successfully" });
