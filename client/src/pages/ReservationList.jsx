@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,7 +13,9 @@ const ReservationList = () => {
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const userId = useSelector((state) => state.user._id);
-  const reservationList = useSelector((state) => state.user.reservationList);
+  const reservationList = useSelector(
+    (state) => state.user.reservationList || [],
+  );
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -45,9 +47,11 @@ const ReservationList = () => {
     console.log("Current reservationList:", reservationList);
   }, [reservationList]);
 
-  const filteredReservationList = reservationList.filter(
-    (booking) => booking.listingId && booking.listingId._id,
-  );
+  const filteredReservationList = useMemo(() => {
+    return reservationList.filter(
+      (booking) => booking.listingId && booking.listingId._id,
+    );
+  }, [reservationList]);
 
   const goToPrevSlide = (listingIndex) => {
     setCurrentIndex((prevIndex) =>

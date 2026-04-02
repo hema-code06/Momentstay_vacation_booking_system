@@ -18,9 +18,6 @@ const Category = () => {
     try {
       const response = await fetch(
         `https://momentstay-vacation-booking-system.onrender.com/properties?category=${category}`,
-        {
-          method: "GET",
-        },
       );
 
       const data = await response.json();
@@ -29,7 +26,7 @@ const Category = () => {
     } catch (err) {
       console.log("Fetching Properties Failed", err.message);
     }
-  });
+  }, [category, dispatch]);
 
   useEffect(() => {
     getFeedListings();

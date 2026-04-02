@@ -30,7 +30,7 @@ const PropertyList = () => {
     } catch (err) {
       console.log("Fetching Properties failed", err.message);
     }
-  }, [dispatch]);
+  }, [dispatch, userId]);
 
   useEffect(() => {
     getPropertyList();
