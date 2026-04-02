@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { addToWishList } from "../redux/state.js";
@@ -30,27 +30,23 @@ const ListingDetails = () => {
   const customerId = useSelector((state) => state?.user?._id);
   const wishList = useSelector((state) => state?.user?.wishList || []);
 
-  const getListingDetails = async () => {
+  const getListingDetails = useCallback(async () => {
     try {
       const response = await fetch(
-        `https://momentstay-vacation-booking-system.onrender.com/properties/${listingId}`,
-
-        {
-          method: "GET",
-        }
+        `${process.env.REACT_APP_API_URL}/properties/${listingId}`,
+        { method: "GET" },
       );
-
       const data = await response.json();
       setListing(data);
       setLoading(false);
     } catch (err) {
       console.log("Fetching Property Details Failed", err.message);
     }
-  };
+  }, [listingId]);
 
   useEffect(() => {
     getListingDetails();
-  }, [listingId]);
+  }, [getListingDetails]);
 
   const isInWishlist = wishList.some((item) => item._id === listingId);
 
@@ -59,9 +55,7 @@ const ListingDetails = () => {
       dispatch(addToWishList(listing));
       alert("Added to wishlist");
     } catch (error) {
-      alert(
-        "Please login to add to wishlist."
-      );
+      alert("Please login to add to wishlist.");
     }
   };
 
@@ -107,7 +101,7 @@ const ListingDetails = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(bookingForm),
-        }
+        },
       );
 
       if (response.ok) {
@@ -115,12 +109,12 @@ const ListingDetails = () => {
         navigate(`/${customerId}/reservations`);
       } else {
         alert(
-          "There was a problem with your reservation. Please try again later."
+          "There was a problem with your reservation. Please try again later.",
         );
       }
     } catch (err) {
       alert(
-        "An error occurred while submitting your reservation. Please retry."
+        "An error occurred while submitting your reservation. Please retry.",
       );
       console.log("Failed to submit reservation.", err.message);
     }
@@ -141,7 +135,6 @@ const ListingDetails = () => {
           )}
         </div>
 
-
         <div className="photos">
           {[
             ...new Set(
@@ -149,9 +142,9 @@ const ListingDetails = () => {
                 (item) =>
                   `https://momentstay-vacation-booking-system.onrender.com/${item.replace(
                     "public",
-                    ""
-                  )}`
-              )
+                    "",
+                  )}`,
+              ),
             ),
           ].map((uniqueItem, index) => (
             <img key={index} src={uniqueItem} alt={"listing"} />
@@ -172,7 +165,7 @@ const ListingDetails = () => {
             <img
               src={`${process.env.REACT_APP_API_URL}/${listing.creator.profileImagePath.replace(
                 "public",
-                ""
+                "",
               )}`}
               alt="host"
             />
@@ -205,7 +198,7 @@ const ListingDetails = () => {
                     </div>
                     <p>{item}</p>
                   </div>
-                )
+                ),
               )}
             </div>
           </div>
@@ -242,8 +235,6 @@ const ListingDetails = () => {
               >
                 Book Now
               </button>
-
-
             </div>
           </div>
         </div>
@@ -254,6 +245,3 @@ const ListingDetails = () => {
 };
 
 export default ListingDetails;
-
-
-
