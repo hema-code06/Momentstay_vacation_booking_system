@@ -40,7 +40,7 @@ const ListingCards = ({
                   "public",
                   ""
                 )}`}
-                alt={`photo ${index + 1}`}
+                alt={` ${index + 1}`}
               />
               <div className="prev-button" onClick={goToPrevSlide}>
                 <ArrowBackIosNew sx={{ fontSize: "15px" }} />

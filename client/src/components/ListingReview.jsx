@@ -26,17 +26,14 @@ const ListingReview = () => {
     try {
       const response = await fetch(
         `https://momentstay-vacation-booking-system.onrender.com/properties/${listingId}`,
-        {
-          method: "GET",
-        },
       );
       const data = await response.json();
       setListing(data);
       setLoading(false);
     } catch (err) {
-      console.log("Fetching Property Details failed", err.message);
+      console.log(err);
     }
-  });
+  }, [listingId]);
 
   useEffect(() => {
     getListingReview();

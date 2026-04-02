@@ -23,18 +23,15 @@ const Listings = () => {
         selectedCategory !== "All"
           ? `https://momentstay-vacation-booking-system.onrender.com/properties?category=${selectedCategory}`
           : "https://momentstay-vacation-booking-system.onrender.com/properties",
-        {
-          method: "GET",
-        },
       );
 
       const data = await response.json();
       dispatch(setListings({ listings: data }));
       setLoading(false);
     } catch (err) {
-      console.log("Fetching Properties Failed", err.message);
+      console.log(err);
     }
-  });
+  }, [selectedCategory, dispatch]); 
 
   useEffect(() => {
     getFeedListings();

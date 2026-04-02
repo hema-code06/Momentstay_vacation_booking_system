@@ -29,7 +29,7 @@ const ListingCard = ({
   const goToPrevSlide = () => {
     setCurrentIndex(
       (prevIndex) =>
-        (prevIndex - 1 + listingPhotoPaths.length) % listingPhotoPaths.length
+        (prevIndex - 1 + listingPhotoPaths.length) % listingPhotoPaths.length,
     );
   };
 
@@ -55,7 +55,7 @@ const ListingCard = ({
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       const data = await response.json();
       dispatch(setWishList(data.wishList));
@@ -81,9 +81,9 @@ const ListingCard = ({
               <img
                 src={`https://momentstay-vacation-booking-system.onrender.com/${photo?.replace(
                   "public",
-                  ""
+                  "",
                 )}`}
-                alt={`photo ${index + 1}`}
+                alt={` ${index + 1}`}
               />
               <div
                 className="prev-button"

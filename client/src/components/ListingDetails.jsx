@@ -50,7 +50,7 @@ const ListingDetails = () => {
 
   useEffect(() => {
     getListingDetails();
-  }, []);
+  }, [listingId]);
 
   const isInWishlist = wishList.some((item) => item._id === listingId);
 
@@ -154,7 +154,7 @@ const ListingDetails = () => {
               )
             ),
           ].map((uniqueItem, index) => (
-            <img key={index} src={uniqueItem} alt={`listing photo ${index}`} />
+            <img key={index} src={uniqueItem} alt={`listing ${index}`} />
           ))}
         </div>
 
