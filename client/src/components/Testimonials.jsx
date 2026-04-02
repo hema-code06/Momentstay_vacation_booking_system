@@ -15,7 +15,7 @@ const Testimonials = () => {
     return <div>Experience not found!</div>;
   }
 
-  const [initialImage, ...otherImages] = experience.image;
+  const [ ...otherImages] = experience.image;
 
   const handleImageClick = (imgSrc) => {
     setMainImage(imgSrc);

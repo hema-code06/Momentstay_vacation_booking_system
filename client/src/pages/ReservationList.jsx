@@ -13,8 +13,7 @@ const ReservationList = () => {
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const userId = useSelector((state) => state.user._id);
-  const reservationList =
-    useSelector((state) => state.user.reservationList) || [];
+  const reservationList = useSelector((state) => state.user.reservationList);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -24,7 +23,7 @@ const ReservationList = () => {
         `https://momentstay-vacation-booking-system.onrender.com/users/${userId}/reservations`,
         {
           method: "GET",
-        }
+        },
       );
       if (!response.ok) {
         throw new Error("Failed to fetch reservations");
@@ -47,7 +46,7 @@ const ReservationList = () => {
   }, [reservationList]);
 
   const filteredReservationList = reservationList.filter(
-    (booking) => booking.listingId && booking.listingId._id
+    (booking) => booking.listingId && booking.listingId._id,
   );
 
   const goToPrevSlide = (listingIndex) => {
@@ -55,7 +54,7 @@ const ReservationList = () => {
       prevIndex === 0
         ? filteredReservationList[listingIndex]?.listingId?.listingPhotoPaths
             ?.length - 1
-        : prevIndex - 1
+        : prevIndex - 1,
     );
   };
 
@@ -66,7 +65,7 @@ const ReservationList = () => {
         ?.length -
         1
         ? 0
-        : prevIndex + 1
+        : prevIndex + 1,
     );
   };
 
@@ -84,11 +83,11 @@ const ReservationList = () => {
         `https://momentstay-vacation-booking-system.onrender.com/bookings/delete/${bookingId}`,
         {
           method: "DELETE",
-        }
+        },
       );
 
       if (response.ok) {
-        await getReservationList(); 
+        await getReservationList();
         alert("Booking canceled successfully!");
       }
     } catch (err) {
@@ -135,7 +134,7 @@ const ReservationList = () => {
                             <img
                               src={`https://momentstay-vacation-booking-system.onrender.com/${photo.replace(
                                 "public",
-                                ""
+                                "",
                               )}`}
                               alt={`Slide ${index + 1}`}
                             />

@@ -1,5 +1,5 @@
 import "../styles/PropertyList.scss";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Navbar from "../components/Navbar";
 import ListingCards from "../components/ListingCards";
@@ -16,13 +16,13 @@ const PropertyList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const getPropertyList = async () => {
+  const getPropertyList = useCallback(async () => {
     try {
       const response = await fetch(
         `https://momentstay-vacation-booking-system.onrender.com/users/${userId}/properties`,
         {
           method: "GET",
-        }
+        },
       );
       const data = await response.json();
       dispatch(setPropertyList(data));
@@ -30,11 +30,11 @@ const PropertyList = () => {
     } catch (err) {
       console.log("Fetching Properties failed", err.message);
     }
-  };
+  }, [dispatch]);
 
   useEffect(() => {
     getPropertyList();
-  }, [userId]);
+  }, [getPropertyList]);
 
   const handleStartCreating = () => {
     navigate("/create-listing");
@@ -80,14 +80,14 @@ const PropertyList = () => {
                       onEdit={handleEditProperty}
                     />
                   </div>
-                )
+                ),
               )}
             </div>
           </>
         ) : (
           <div className="empty-property-list">
             <h2>Properties</h2>
-            <p  style={{ fontWeight: "600" }}>No properties listed ... yet!</p>
+            <p style={{ fontWeight: "600" }}>No properties listed ... yet!</p>
             <p>Time to showcase your beautiful properties to the world.</p>
             <Button
               variant="contained"

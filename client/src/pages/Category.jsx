@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Navbar from "../components/Navbar";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -14,13 +14,13 @@ const Category = () => {
   const dispatch = useDispatch();
   const listings = useSelector((state) => state.listings);
 
-  const getFeedListings = async () => {
+  const getFeedListings = useCallback(async () => {
     try {
       const response = await fetch(
         `https://momentstay-vacation-booking-system.onrender.com/properties?category=${category}`,
         {
           method: "GET",
-        }
+        },
       );
 
       const data = await response.json();
@@ -29,11 +29,11 @@ const Category = () => {
     } catch (err) {
       console.log("Fetching Properties Failed", err.message);
     }
-  };
+  });
 
   useEffect(() => {
     getFeedListings();
-  }, [category]);
+  }, [getFeedListings]);
 
   return loading ? (
     <Loader />
@@ -76,7 +76,7 @@ const Category = () => {
                   booking={booking}
                 />
               </div>
-            )
+            ),
           )
         )}
       </div>
