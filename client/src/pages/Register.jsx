@@ -109,11 +109,11 @@ const Register = () => {
             {formData.profileImage ? (
               <img
                 src={URL.createObjectURL(formData.profileImage)}
-                alt="Profile"
+                alt="profile"
               />
             ) : (
               <>
-                <img src="/assets/person.png" alt="Default Profile" />
+                <img src="/assets/person.png" alt="profile" />
                 <p>Upload Profile Picture</p>
               </>
             )}

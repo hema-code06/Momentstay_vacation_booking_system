@@ -31,7 +31,7 @@ const Listings = () => {
     } catch (err) {
       console.log(err);
     }
-  }, [selectedCategory, dispatch]); 
+  }, [selectedCategory, dispatch]);
 
   useEffect(() => {
     getFeedListings();

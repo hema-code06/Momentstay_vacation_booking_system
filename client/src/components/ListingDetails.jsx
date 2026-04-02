@@ -154,7 +154,7 @@ const ListingDetails = () => {
               )
             ),
           ].map((uniqueItem, index) => (
-            <img key={index} src={uniqueItem} alt={`listing ${index}`} />
+            <img key={index} src={uniqueItem} alt={"listing"} />
           ))}
         </div>
 
