@@ -21,8 +21,8 @@ const Listings = () => {
     try {
       const response = await fetch(
         selectedCategory !== "All"
-          ? `https://momentstay-vacation-booking-system.onrender.com/properties?category=${selectedCategory}`
-          : "https://momentstay-vacation-booking-system.onrender.com/properties",
+          ? `${process.env.REACT_APP_API_URL}/properties?category=${selectedCategory}`
+          : `${process.env.REACT_APP_API_URL}/properties`,
       );
 
       const data = await response.json();

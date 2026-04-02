@@ -36,7 +36,7 @@ const ListingCards = ({
           {listingPhotoPaths?.map((photo, index) => (
             <div key={index} className="slide">
               <img
-                src={`https://momentstay-vacation-booking-system.onrender.com/${photo?.replace(
+                src={`${process.env.REACT_APP_API_URL}/${photo?.replace(
                   "public",
                   ""
                 )}`}

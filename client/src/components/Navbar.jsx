@@ -76,7 +76,7 @@ const Navbar = () => {
                 <Person sx={{ color: "darkgrey" }} />
               ) : (
                 <img
-                  src={`https://momentstay-vacation-booking-system.onrender.com/${user.profileImagePath.replace(
+                  src={`${process.env.REACT_APP_API_URL}/${user.profileImagePath.replace(
                     "public",
                     ""
                   )}`}

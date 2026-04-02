@@ -67,7 +67,7 @@ const CreateListing = () => {
         listingForm.append("listingPhotos", photo);
       });
 
-      const response = await fetch("https://momentstay-vacation-booking-system.onrender.com/properties/create", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/properties/create`, {
         method: "POST",
         body: listingForm,
       });

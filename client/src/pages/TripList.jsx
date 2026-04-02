@@ -21,7 +21,7 @@ const TripList = () => {
   const getTripList = useCallback(async () => {
     try {
       const response = await fetch(
-        `https://momentstay-vacation-booking-system.onrender.com/users/${userId}/trips`,
+        `${process.env.REACT_APP_API_URL}/users/${userId}/trips`,
         {
           method: "GET",
         },
@@ -125,7 +125,7 @@ const TripList = () => {
                                 (photo, index) => (
                                   <div key={index} className="slide">
                                     <img
-                                      src={`https://momentstay-vacation-booking-system.onrender.com/${photo.replace(
+                                      src={`${process.env.REACT_APP_API_URL}/${photo.replace(
                                         "public",
                                         "",
                                       )}`}

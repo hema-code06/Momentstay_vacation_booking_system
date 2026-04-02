@@ -115,7 +115,7 @@ const ListingReview = () => {
         <div className="photos">
           {listing.listingPhotoPaths?.map((item) => (
             <img
-              src={`https://momentstay-vacation-booking-system.onrender.com/${item.replace(
+              src={`${process.env.REACT_APP_API_URL}/${item.replace(
                 "public",
                 "",
               )}`}
@@ -137,7 +137,7 @@ const ListingReview = () => {
         {listing?.creator && listing.creator.profileImagePath && (
           <div className="profile">
             <img
-              src={`https://momentstay-vacation-booking-system.onrender.com/${listing.creator.profileImagePath.replace(
+              src={`${process.env.REACT_APP_API_URL}/${listing.creator.profileImagePath.replace(
                 "public",
                 "",
               )}`}

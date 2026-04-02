@@ -170,7 +170,7 @@ const ListingDetails = () => {
         {listing?.creator && listing.creator.profileImagePath && (
           <div className="profile">
             <img
-              src={`https://momentstay-vacation-booking-system.onrender.com/${listing.creator.profileImagePath.replace(
+              src={`${process.env.REACT_APP_API_URL}/${listing.creator.profileImagePath.replace(
                 "public",
                 ""
               )}`}

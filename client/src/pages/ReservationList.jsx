@@ -22,7 +22,7 @@ const ReservationList = () => {
   const getReservationList = useCallback(async () => {
     try {
       const response = await fetch(
-        `https://momentstay-vacation-booking-system.onrender.com/users/${userId}/reservations`,
+        `${process.env.REACT_APP_API_URL}/users/${userId}/reservations`,
         {
           method: "GET",
         },
@@ -84,7 +84,7 @@ const ReservationList = () => {
   const handleCancelBooking = async (bookingId) => {
     try {
       const response = await fetch(
-        `https://momentstay-vacation-booking-system.onrender.com/bookings/delete/${bookingId}`,
+        `${process.env.REACT_APP_API_URL}/bookings/delete/${bookingId}`,
         {
           method: "DELETE",
         },
@@ -136,7 +136,7 @@ const ReservationList = () => {
                         {listingId.listingPhotoPaths?.map((photo, index) => (
                           <div key={index} className="slide">
                             <img
-                              src={`https://momentstay-vacation-booking-system.onrender.com/${photo.replace(
+                              src={`${process.env.REACT_APP_API_URL}/${photo.replace(
                                 "public",
                                 "",
                               )}`}

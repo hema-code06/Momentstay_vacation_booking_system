@@ -17,7 +17,7 @@ const Category = () => {
   const getFeedListings = useCallback(async () => {
     try {
       const response = await fetch(
-        `https://momentstay-vacation-booking-system.onrender.com/properties?category=${category}`,
+        `${process.env.REACT_APP_API_URL}/properties?category=${category}`,
       );
 
       const data = await response.json();

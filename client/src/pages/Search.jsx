@@ -20,7 +20,7 @@ const Search = () => {
   const getSearchListings = useCallback(async () => {
     try {
       const response = await fetch(
-        `https://momentstay-vacation-booking-system.onrender.com/properties/search/${search}`,
+        `${process.env.REACT_APP_API_URL}/properties/search/${search}`,
       );
 
       const data = await response.json();

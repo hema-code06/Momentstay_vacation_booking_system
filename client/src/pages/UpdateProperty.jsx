@@ -40,7 +40,7 @@ const UpdateProperty = () => {
     const fetchPropertyDetails = async () => {
       try {
         const response = await fetch(
-          `https://momentstay-vacation-booking-system.onrender.com/properties/${listingId}`
+          `${process.env.REACT_APP_API_URL}/properties/${listingId}`
         );
         const data = await response.json();
         if (response.ok) {
@@ -116,7 +116,7 @@ const UpdateProperty = () => {
       listingForm.append("price", formDescription.price);
 
       const response = await fetch(
-        `https://momentstay-vacation-booking-system.onrender.com/properties/${listingId}`,
+        `${process.env.REACT_APP_API_URL}/properties/${listingId}`,
         {
           method: "PUT",
           body: listingForm,
@@ -134,7 +134,7 @@ const UpdateProperty = () => {
   const handleDelete = async () => {
     try {
       const response = await fetch(
-        `https://momentstay-vacation-booking-system.onrender.com/properties/${listingId}`,
+        `${process.env.REACT_APP_API_URL}/properties/${listingId}`,
         {
           method: "DELETE",
         }
