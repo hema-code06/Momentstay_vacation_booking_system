@@ -1,13 +1,13 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setListings } from "../redux/state";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
 import ListingCard from "../components/ListingCard";
 import Footer from "../components/Footer";
 import { Button } from "@mui/material";
-import '../styles/Search.scss'
+import "../styles/Search.scss";
 
 const Search = () => {
   const [loading, setLoading] = useState(true);
@@ -17,13 +17,10 @@ const Search = () => {
 
   const dispatch = useDispatch();
 
-  const getSearchListings = async () => {
+  const getSearchListings = useCallback(async () => {
     try {
       const response = await fetch(
         `https://momentstay-vacation-booking-system.onrender.com/properties/search/${search}`,
-        {
-          method: "GET",
-        }
       );
 
       const data = await response.json();
@@ -32,11 +29,11 @@ const Search = () => {
     } catch (err) {
       console.log("Fetching Search Details failed!!", err.message);
     }
-  };
+  }, [search, dispatch]);
 
   useEffect(() => {
     getSearchListings();
-  }, [search]);
+  }, [getSearchListings]);
 
   const handleGoBack = () => {
     navigate("/");
@@ -78,7 +75,7 @@ const Search = () => {
                 price={price}
                 booking={booking}
               />
-            )
+            ),
           )
         ) : (
           <div className="no-results">

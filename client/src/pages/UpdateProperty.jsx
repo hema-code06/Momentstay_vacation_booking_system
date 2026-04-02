@@ -57,7 +57,6 @@ const UpdateProperty = () => {
             bedCount,
             bathroomCount,
             amenities,
-            photos,
             title,
             description,
             highlight,

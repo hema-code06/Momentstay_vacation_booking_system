@@ -12,7 +12,7 @@ import "../styles/TripList.scss";
 const TripList = () => {
   const [loading, setLoading] = useState(true);
   const userId = useSelector((state) => state.user._id);
-  const tripList = useSelector((state) => state.user.tripList) || [];
+  const tripList = useSelector((state) => state.user.tripList);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -24,7 +24,7 @@ const TripList = () => {
         `https://momentstay-vacation-booking-system.onrender.com/users/${userId}/trips`,
         {
           method: "GET",
-        }
+        },
       );
       const data = await response.json();
       dispatch(setTripList(data));
@@ -43,8 +43,8 @@ const TripList = () => {
     console.log("Current tripList:", tripList);
   }, [tripList]);
 
-  const filteredTripList = tripList.filter(
-    (trip) => trip.listingId && trip.listingId._id
+  const filteredTripList = (tripList || []).filter(
+    (trip) => trip.listingId && trip.listingId._id,
   );
 
   const goToPrevSlide = (listingId) => {
@@ -53,7 +53,7 @@ const TripList = () => {
     setCurrentIndexes((prevIndexes) => {
       const currentIndex = prevIndexes[listingId._id] || 0;
       const trip = filteredTripList.find(
-        (trip) => trip.listingId?._id === listingId._id
+        (trip) => trip.listingId?._id === listingId._id,
       );
       const photosLength = trip?.listingId?.listingPhotoPaths?.length || 1;
 
@@ -71,7 +71,7 @@ const TripList = () => {
     setCurrentIndexes((prevIndexes) => {
       const currentIndex = prevIndexes[listingId._id] || 0;
       const trip = filteredTripList.find(
-        (trip) => trip.listingId?._id === listingId._id
+        (trip) => trip.listingId?._id === listingId._id,
       );
       const photosLength = trip?.listingId?.listingPhotoPaths?.length || 1;
 
@@ -127,12 +127,12 @@ const TripList = () => {
                                     <img
                                       src={`https://momentstay-vacation-booking-system.onrender.com/${photo.replace(
                                         "public",
-                                        ""
+                                        "",
                                       )}`}
                                       alt={`Slide ${index + 1}`}
                                     />
                                   </div>
-                                )
+                                ),
                               )}
                             </div>
                             <div
@@ -165,7 +165,7 @@ const TripList = () => {
                       </div>
                     </div>
                   );
-                }
+                },
               )}
             </div>
           </>

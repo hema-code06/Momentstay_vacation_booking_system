@@ -52,7 +52,7 @@ const UpdateBooking = () => {
       alert("Added to wishlist");
     } catch (error) {
       alert(
-        "Something went wrong with adding to your wishlist. Please try again."
+        "Something went wrong with adding to your wishlist. Please try again.",
       );
     }
   };
@@ -61,11 +61,11 @@ const UpdateBooking = () => {
     const fetchBookingAndListing = async () => {
       try {
         const bookingResponse = await fetch(
-          `https://momentstay-vacation-booking-system.onrender.com/bookings/${bookingId}`
+          `https://momentstay-vacation-booking-system.onrender.com/bookings/${bookingId}`,
         );
         if (!bookingResponse.ok) {
           throw new Error(
-            `Booking fetch failed: ${bookingResponse.statusText}`
+            `Booking fetch failed: ${bookingResponse.statusText}`,
           );
         }
         const bookingData = await bookingResponse.json();
@@ -81,11 +81,11 @@ const UpdateBooking = () => {
         const listingId = bookingData.listingId?._id;
         if (listingId) {
           const listingResponse = await fetch(
-            `https://momentstay-vacation-booking-system.onrender.com/properties/${listingId}`
+            `https://momentstay-vacation-booking-system.onrender.com/properties/${listingId}`,
           );
           if (!listingResponse.ok) {
             throw new Error(
-              `Listing fetch failed: ${listingResponse.statusText}`
+              `Listing fetch failed: ${listingResponse.statusText}`,
             );
           }
           const listingData = await listingResponse.json();
@@ -123,7 +123,7 @@ const UpdateBooking = () => {
       endDate,
       totalPrice: calculateTotalPrice(
         calculateDayCount(startDate, endDate),
-        listing.price
+        listing.price,
       ),
     };
 
@@ -136,7 +136,7 @@ const UpdateBooking = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(updatedBooking),
-        }
+        },
       );
 
       if (response.ok) {
@@ -189,9 +189,9 @@ const UpdateBooking = () => {
                   key={index}
                   src={`https://momentstay-vacation-booking-system.onrender.com/${photo.replace(
                     "public",
-                    ""
+                    "",
                   )}`}
-                  alt={`photo ${index + 1}`}
+                  alt={`slide ${index + 1}`}
                 />
               ))}
             </div>
@@ -209,9 +209,9 @@ const UpdateBooking = () => {
               <img
                 src={`https://momentstay-vacation-booking-system.onrender.com/${listing.creator.profileImagePath.replace(
                   "public",
-                  ""
+                  "",
                 )}`}
-                alt="host profile"
+                alt="host"
               />
               <h3>Hosted by {listing.creator.username}</h3>
             </div>
@@ -236,13 +236,13 @@ const UpdateBooking = () => {
                         <div className="facility_icon">
                           {
                             facilities.find(
-                              (facility) => facility.name === item
+                              (facility) => facility.name === item,
                             )?.icon
                           }
                         </div>
                         <p>{item}</p>
                       </div>
-                    )
+                    ),
                   )}
                 </div>
               </div>
