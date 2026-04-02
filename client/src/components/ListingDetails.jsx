@@ -174,7 +174,7 @@ const ListingDetails = () => {
                 "public",
                 ""
               )}`}
-              alt="host profile"
+              alt="host"
             />
             <h3>Hosted by {listing.creator.username}</h3>
           </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { addToWishList } from "../redux/state.js";
@@ -22,13 +22,13 @@ const ListingReview = () => {
   const navigate = useNavigate();
   const wishList = useSelector((state) => state?.user?.wishList || []);
 
-  const getListingReview = async () => {
+  const getListingReview = useCallback(async () => {
     try {
       const response = await fetch(
         `https://momentstay-vacation-booking-system.onrender.com/properties/${listingId}`,
         {
           method: "GET",
-        }
+        },
       );
       const data = await response.json();
       setListing(data);
@@ -36,11 +36,11 @@ const ListingReview = () => {
     } catch (err) {
       console.log("Fetching Property Details failed", err.message);
     }
-  };
+  });
 
   useEffect(() => {
     getListingReview();
-  }, []);
+  }, [getListingReview]);
 
   const isInWishlist = wishList.some((item) => item._id === listingId);
 
@@ -50,7 +50,7 @@ const ListingReview = () => {
       alert("Added to wishlist ");
     } catch (error) {
       alert(
-        "Something went wrong with adding to your wishlist. Please try again."
+        "Something went wrong with adding to your wishlist. Please try again.",
       );
     }
   };
@@ -82,7 +82,7 @@ const ListingReview = () => {
             rating: feedback.rating,
             comment: feedback.comment,
           }),
-        }
+        },
       );
 
       if (response.ok) {
@@ -95,7 +95,7 @@ const ListingReview = () => {
     } catch (err) {
       console.log(
         "Something went wrong with your feedback submission.",
-        err.message
+        err.message,
       );
     }
   };
@@ -120,9 +120,9 @@ const ListingReview = () => {
             <img
               src={`https://momentstay-vacation-booking-system.onrender.com/${item.replace(
                 "public",
-                ""
+                "",
               )}`}
-              alt="listing photo"
+              alt="listing"
               key={item}
             />
           ))}
@@ -142,9 +142,9 @@ const ListingReview = () => {
             <img
               src={`https://momentstay-vacation-booking-system.onrender.com/${listing.creator.profileImagePath.replace(
                 "public",
-                ""
+                "",
               )}`}
-              alt="host profile"
+              alt="host"
             />
             <h3>Hosted by {listing.creator.username}</h3>
           </div>
@@ -174,7 +174,7 @@ const ListingReview = () => {
                   </div>
                   <p>{item}</p>
                 </div>
-              )
+              ),
             )}
           </div>
         </div>

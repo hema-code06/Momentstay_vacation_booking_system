@@ -80,7 +80,7 @@ const Navbar = () => {
                     "public",
                     ""
                   )}`}
-                  alt="profile photo"
+                  alt="profile"
                 />
               )}
             </button>

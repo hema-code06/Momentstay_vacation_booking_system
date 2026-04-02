@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { categories } from "../data";
 import "../styles/Listings.scss";
 import ListingCard from "./ListingCard";
@@ -17,7 +17,7 @@ const Listings = () => {
 
   const listings = useSelector((state) => state.listings);
 
-  const getFeedListings = async () => {
+  const getFeedListings = useCallback(async () => {
     try {
       const response = await fetch(
         selectedCategory !== "All"
@@ -25,9 +25,8 @@ const Listings = () => {
           : "https://momentstay-vacation-booking-system.onrender.com/properties",
         {
           method: "GET",
-        }
+        },
       );
-      
 
       const data = await response.json();
       dispatch(setListings({ listings: data }));
@@ -35,11 +34,11 @@ const Listings = () => {
     } catch (err) {
       console.log("Fetching Properties Failed", err.message);
     }
-  };
+  });
 
   useEffect(() => {
     getFeedListings();
-  }, [selectedCategory]);
+  }, [getFeedListings]);
 
   const handleScroll = (direction) => {
     if (categoryListRef.current) {
@@ -62,7 +61,7 @@ const Listings = () => {
       setCanScrollRight(
         categoryListRef.current.scrollWidth >
           categoryListRef.current.clientWidth +
-            categoryListRef.current.scrollLeft
+            categoryListRef.current.scrollLeft,
       );
     }
   };
@@ -140,7 +139,7 @@ const Listings = () => {
                 price={price}
                 booking={booking}
               />
-            )
+            ),
           )}
         </div>
       )}
