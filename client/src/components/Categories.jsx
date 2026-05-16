@@ -1,11 +1,16 @@
 import { Link } from "react-router-dom";
-import { selectedCategories } from "../data"; 
+import { selectedCategories } from "../data";
 import "../styles/Categories.scss";
 
 const Categories = () => {
   return (
     <div className="categories">
-      <h2>Discover Our Best Picks</h2>
+      <div className="categories_header">
+        <span className="categories_eyebrow">Curated for You</span>
+        <h2 className="categories_title">
+          Discover Our <em>Best Picks</em>
+        </h2>
+      </div>
       <div className="categories_list">
         {selectedCategories.map((category, index) => (
           <Link to={`/properties/category/${category.label}`} key={index}>
