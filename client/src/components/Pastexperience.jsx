@@ -6,7 +6,16 @@ import { experiences } from "../data";
 const Pastexperience = () => {
   return (
     <div className="past-experiences-section">
-      <h2 className="past-experiences-heading">Past Experiences</h2>
+      <div className="past-exp__header">
+        <span className="past-exp__eyebrow">Memories Made</span>
+        <h2 className="past-exp__title">
+          Past <em>Experiences</em>
+        </h2>
+        <p className="past-exp__subtitle">
+          Every stay tells a story — here are some of our favourites
+        </p>
+      </div>
+
       <div className="experiences-grid">
         {experiences.map((experience) => (
           <Link
@@ -25,7 +34,13 @@ const Pastexperience = () => {
               <div className="experience-details">
                 <h4 className="experience-name">{experience.name}</h4>
                 <p className="experience-location">{experience.location}</p>
-                <p className="experience-host">{experience.host}</p>
+                <span className="exp-card__host">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                  {experience.host}
+                </span>
               </div>
             </div>
           </Link>
