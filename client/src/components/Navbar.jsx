@@ -1,18 +1,14 @@
 import { useState, useRef, useEffect } from "react";
-import { IconButton } from "@mui/material";
-import { Search, Person, Menu } from "@mui/icons-material";
+import { Search, Person, Menu, Close } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import ReactDatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import "../styles/Navbar.scss";
 import { setLogout } from "../redux/state";
 
 const Navbar = () => {
   const [dropdownMenu, setDropdownMenu] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
 
   const user = useSelector((state) => state.user);
@@ -20,168 +16,147 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dropdownRef = useRef(null);
+  const searchRef = useRef(null);
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
-  };
+  const isHomePage = location.pathname === "/";
 
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setDropdownMenu(false);
     }
+    if (searchRef.current && !searchRef.current.contains(event.target)) {
+      setSearchOpen(false);
+      setErrorMessage("");
+    }
   };
 
   useEffect(() => {
-    if (dropdownMenu) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownMenu]);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSearch = () => {
-    if (!search || !startDate || !endDate) {
-      setErrorMessage(
-        "Oops! Looks like some fields are missing. Please fill them in to continue."
-      );
-    } else {
+    if (!search.trim()) {
+      setErrorMessage("Please enter a location.");
+      return;
+    }
+    setErrorMessage("");
+    setSearchOpen(false);
+    navigate(`/properties/search/${search}`);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSearch();
+    if (e.key === "Escape") {
+      setSearchOpen(false);
       setErrorMessage("");
-      navigate(`/properties/search/${search}`);
     }
   };
-  const isHomePage = location.pathname === "/";
+
+  const profileSrc = user?.profileImagePath?.startsWith("http")
+    ? user.profileImagePath
+    : `${process.env.REACT_APP_API_URL}/${user?.profileImagePath?.replace("public", "")}`;
 
   return (
-    <>
-      <div className="navbar">
-        <a href="/">
-          <img src="/assets/logo.png" alt="logo" />
-        </a>
-        <div>
-          {errorMessage && <p className="error-message">{errorMessage}</p>}
-        </div>
-        {isHomePage && (
-          <div className="navbar_right">
-            <button
-              className="navbar_right_account"
-              onClick={() => setDropdownMenu(!dropdownMenu)}
-            >
-              <Menu sx={{ color: "darkgrey" }} />
-              {!user ? (
-                <Person sx={{ color: "darkgrey" }} />
-              ) : (
-                <img
-                  src={`${process.env.REACT_APP_API_URL}/${user.profileImagePath.replace(
-                    "public",
-                    ""
-                  )}`}
-                  alt="profile"
-                />
-              )}
-            </button>
-
-            {dropdownMenu && (
-              <div
-                className="navbar_right_accountmenu"
-                ref={dropdownRef} 
-              >
-                {!user ? (
-                  <>
-                    <Link to="/login">Login</Link>
-                    <Link to="/register">Register</Link>
-                  </>
-                ) : (
-                  <>
-                    <Link to={`/${user._id}/trips`}>Trips</Link>
-                    <Link to={`/${user._id}/wishList`}>Wishlists</Link>
-                    <Link to={`/${user._id}/properties`}>Property List</Link>
-                    <Link to={`/${user._id}/reservations`}>Reservation</Link>
-                    <Link to="/create-listing">Post a Property</Link>
-                    <Link
-                      to="/login"
-                      onClick={() => {
-                        dispatch(setLogout());
-                      }}
-                    >
-                      Log Out
-                    </Link>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+    <nav className={`navbar ${isHomePage ? "navbar--home" : "navbar--inner"}`}>
+      <a href="/" className="navbar__logo">
+        <img src="/assets/logo.png" alt="logo" />
+      </a>
 
       {isHomePage && (
-        <div className="navbar_search">
-          <div className="input_group">
-            <label htmlFor="search_input" className="input_label">
-              where
-            </label>
-            <input
-              id="search_input"
-              type="text"
-              placeholder="yurt"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="search_input"
-            />
-          </div>
-
-          <div className="input_group">
-            <label htmlFor="checkin_input" className="input_label">
-              Check-in
-            </label>
-            <ReactDatePicker
-              id="checkin_input"
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-              placeholderText="Add Dates"
-              className="checkin_input"
-              dateFormat="MMM d, yyyy"
-              selectsStart
-              startDate={startDate}
-              endDate={endDate}
-            />
-          </div>
-
-          <div className="input_group">
-            <label htmlFor="checkout_input" className="input_label">
-              Check-out
-            </label>
-            <ReactDatePicker
-              id="checkout_input"
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-              placeholderText="Add Dates"
-              className="checkout_input"
-              dateFormat="MMM d, yyyy"
-              selectsEnd
-              startDate={startDate}
-              endDate={endDate}
-              minDate={startDate}
-            />
-          </div>
-
-          <div className="search-button">
-            <IconButton onClick={handleSearch}>
-              <Search
-                style={{
-                  color: "whitesmoke",
-                }}
+        <div className="navbar__search-wrap" ref={searchRef}>
+          {!searchOpen ? (
+            <button
+              className="navbar__search-pill"
+              onClick={() => setSearchOpen(true)}
+              aria-label="Open search"
+            >
+              <Search fontSize="small" />
+              <span>Anywhere</span>
+            </button>
+          ) : (
+            <div className="navbar__search-expanded">
+              <Search className="navbar__search-icon" fontSize="small" />
+              <input
+                autoFocus
+                type="text"
+                placeholder="Bubble tent..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="navbar__search-input"
               />
-            </IconButton>
-          </div>
+              {search && (
+                <button
+                  className="navbar__search-clear"
+                  onClick={() => setSearch("")}
+                  aria-label="Clear"
+                >
+                  <Close fontSize="small" />
+                </button>
+              )}
+              <button className="navbar__search-btn" onClick={handleSearch}>
+                <Search fontSize="small" />
+                <span>Search</span>
+              </button>
+              {errorMessage && (
+                <span className="navbar__search-error">{errorMessage}</span>
+              )}
+            </div>
+          )}
         </div>
       )}
-    </>
+
+      <div className="navbar__right">
+        {isHomePage && (
+          <Link to="/create-listing" className="navbar__host-link">
+            List your property
+          </Link>
+        )}
+
+        <div className="navbar__account-wrap" ref={dropdownRef}>
+          <button
+            className="navbar__account-btn"
+            onClick={() => setDropdownMenu(!dropdownMenu)}
+            aria-label="Account menu"
+          >
+            <Menu fontSize="small" />
+            {!user ? (
+              <Person fontSize="small" />
+            ) : (
+              <img src={profileSrc} alt="profile" className="navbar__avatar" />
+            )}
+          </button>
+
+          {dropdownMenu && (
+            <div className="navbar__dropdown">
+              {!user ? (
+                <>
+                  <Link to="/login" onClick={() => setDropdownMenu(false)}>Login</Link>
+                  <Link to="/register" onClick={() => setDropdownMenu(false)}>Register</Link>
+                </>
+              ) : (
+                <>
+                  <Link to={`/${user._id}/trips`} onClick={() => setDropdownMenu(false)}>Trips</Link>
+                  <Link to={`/${user._id}/wishList`} onClick={() => setDropdownMenu(false)}>Wishlists</Link>
+                  <Link to={`/${user._id}/properties`} onClick={() => setDropdownMenu(false)}>Property List</Link>
+                  <Link to={`/${user._id}/reservations`} onClick={() => setDropdownMenu(false)}>Reservations</Link>
+                  <Link to="/create-listing" onClick={() => setDropdownMenu(false)}>Post a Property</Link>
+                  <div className="navbar__dropdown-divider" />
+                  <Link
+                    to="/login"
+                    onClick={() => { dispatch(setLogout()); setDropdownMenu(false); }}
+                    className="navbar__dropdown-logout"
+                  >
+                    Log Out
+                  </Link>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </nav>
   );
 };
 

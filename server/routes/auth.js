@@ -1,20 +1,11 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const multer = require("multer");
+const {uploadToS3} = require('../config/s3');
 
 const User = require("../models/User");
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
-});
-
-const upload = multer({ storage });
+const upload = uploadToS3("profiles");
 
 router.post("/register", upload.single("profileImage"), async (req, res) => {
   try {
@@ -26,7 +17,7 @@ router.post("/register", upload.single("profileImage"), async (req, res) => {
       return res.status(400).send("No file uploaded");
     }
 
-    const profileImagePath = profileImage.path;
+    const profileImagePath = profileImage.location;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {

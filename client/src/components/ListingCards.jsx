@@ -36,10 +36,7 @@ const ListingCards = ({
           {listingPhotoPaths?.map((photo, index) => (
             <div key={index} className="slide">
               <img
-                src={`${process.env.REACT_APP_API_URL}/${photo?.replace(
-                  "public",
-                  ""
-                )}`}
+               src={photo?.startsWith("http") ? photo : `${process.env.REACT_APP_API_URL}/${photo?.replace("public", "")}`}
                 alt={` ${index + 1}`}
               />
               <div className="prev-button" onClick={goToPrevSlide}>

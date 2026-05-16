@@ -1,24 +1,11 @@
 const router = require("express").Router();
-const multer = require("multer");
-const path = require("path");
-const crypto = require("crypto");
-const fs = require("fs");
+const { DeleteObjectCommand } = require("@aws-sdk/client-s3");
+const { uploadToS3, s3 } = require("../config/s3");
 
 const Listing = require("../models/Listing");
 const User = require("../models/User");
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, process.env.UPLOADS_DIR || "public/uploads/");
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = crypto.randomBytes(8).toString("hex");
-    const ext = path.extname(file.originalname);
-    cb(null, `${uniqueSuffix}${ext}`);
-  },
-});
-
-const upload = multer({ storage });
+const upload = uploadToS3("properties");
 
 router.post("/create", upload.array("listingPhotos"), async (req, res) => {
   try {
@@ -49,7 +36,7 @@ router.post("/create", upload.array("listingPhotos"), async (req, res) => {
       return res.status(400).send("No file uploaded.");
     }
 
-    const listingPhotoPaths = listingPhotos.map((file) => file.path);
+    const listingPhotoPaths = listingPhotos.map((file) => file.location);
 
     const newListing = new Listing({
       creator,
@@ -168,17 +155,17 @@ router.delete("/:listingId", async (req, res) => {
       return res.status(404).json({ message: "Properties not found!!" });
     }
 
-    listing.listingPhotoPaths.forEach((photo) => {
-      const filePath = path.join(
-        process.env.UPLOADS_DIR || "public/uploads/",
-        path.basename(photo),
+    const deletePromises = listing.listingPhotoPaths.map((photoUrl) => {
+      const key = photoUrl.split(".amazonaws.com/")[1];
+      return s3.send(
+        new DeleteObjectCommand({
+          Bucket: process.env.S3_BUCKET_NAME,
+          Key: key,
+        })
       );
-      fs.unlink(filePath, (err) => {
-        if (err) {
-          console.error(`Failed to delete photo ${photo}:`, err);
-        }
-      });
     });
+
+    await Promise.all(deletePromises);
 
     await Listing.findByIdAndDelete(listingId);
 

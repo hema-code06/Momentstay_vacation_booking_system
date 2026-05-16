@@ -1,0 +1,21 @@
+@import "./Responsive.scss";
+
+.home {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.home__hero-wrap {
+  position: relative;
+  height: 100vh;
+}
+
+.home__main {
+  flex: 1;
+  padding: 48px 40px;
+
+  @include lg { padding: 40px 28px; }
+  @include md { padding: 32px 20px; }
+  @include sm { padding: 24px 16px; }
+}

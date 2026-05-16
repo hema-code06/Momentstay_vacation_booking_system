@@ -94,7 +94,7 @@ const ListingDetails = () => {
       };
 
       const response = await fetch(
-        "https://momentstay-vacation-booking-system.onrender.com/bookings/create",
+        `${process.env.REACT_APP_API_URL}/bookings/create`,
         {
           method: "POST",
           headers: {
@@ -140,10 +140,7 @@ const ListingDetails = () => {
             ...new Set(
               listing?.listingPhotoPaths?.map(
                 (item) =>
-                  `https://momentstay-vacation-booking-system.onrender.com/${item.replace(
-                    "public",
-                    "",
-                  )}`,
+                  item?.startsWith("http") ? item : `${process.env.REACT_APP_API_URL}/${item?.replace("public", "")}`,
               ),
             ),
           ].map((uniqueItem, index) => (
@@ -163,10 +160,7 @@ const ListingDetails = () => {
         {listing?.creator && listing.creator.profileImagePath && (
           <div className="profile">
             <img
-              src={`${process.env.REACT_APP_API_URL}/${listing.creator.profileImagePath.replace(
-                "public",
-                "",
-              )}`}
+              src={listing.creator.profileImagePath?.startsWith("http") ? listing.creator.profileImagePath : `${process.env.REACT_APP_API_URL}/${listing.creator.profileImagePath?.replace("public", "")}`}
               alt="host"
             />
             <h3>Hosted by {listing.creator.username}</h3>

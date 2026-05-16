@@ -187,10 +187,7 @@ const UpdateBooking = () => {
               {listing.listingPhotoPaths?.map((photo, index) => (
                 <img
                   key={index}
-                  src={`${process.env.REACT_APP_API_URL}/${photo.replace(
-                    "public",
-                    "",
-                  )}`}
+                  src={photo?.startsWith("http") ? photo : `${process.env.REACT_APP_API_URL}/${photo?.replace("public", "")}`}
                   alt={`slide ${index + 1}`}
                 />
               ))}
@@ -207,10 +204,7 @@ const UpdateBooking = () => {
 
             <div className="profile">
               <img
-                src={`${process.env.REACT_APP_API_URL}/${listing.creator.profileImagePath.replace(
-                  "public",
-                  "",
-                )}`}
+                src={listing.creator.profileImagePath?.startsWith("http") ? listing.creator.profileImagePath : `${process.env.REACT_APP_API_URL}/${listing.creator.profileImagePath?.replace("public", "")}`}
                 alt="host"
               />
               <h3>Hosted by {listing.creator.username}</h3>

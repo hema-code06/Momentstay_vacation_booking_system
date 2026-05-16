@@ -40,7 +40,6 @@ const ListingCard = ({
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  /* ADD TO WISHLIST */
   const user = useSelector((state) => state.user);
   const wishList = user?.wishList || [];
 
@@ -79,10 +78,7 @@ const ListingCard = ({
           {listingPhotoPaths?.map((photo, index) => (
             <div key={index} className="slide">
               <img
-                src={`${process.env.REACT_APP_API_URL}/${photo?.replace(
-                  "public",
-                  "",
-                )}`}
+                src={photo?.startsWith("http") ? photo : `${process.env.REACT_APP_API_URL}/${photo?.replace("public", "")}`}
                 alt={` ${index + 1}`}
               />
               <div

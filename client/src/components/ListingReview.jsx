@@ -25,7 +25,7 @@ const ListingReview = () => {
   const getListingReview = useCallback(async () => {
     try {
       const response = await fetch(
-        `https://momentstay-vacation-booking-system.onrender.com/properties/${listingId}`,
+        `${process.env.REACT_APP_API_URL}/properties/${listingId}`
       );
       const data = await response.json();
       setListing(data);
@@ -68,7 +68,7 @@ const ListingReview = () => {
 
     try {
       const response = await fetch(
-        `https://momentstay-vacation-booking-system.onrender.com/feedback/create`,
+        `${process.env.REACT_APP_API_URL}/feedback/create`,
         {
           method: "POST",
           headers: {
@@ -115,10 +115,7 @@ const ListingReview = () => {
         <div className="photos">
           {listing.listingPhotoPaths?.map((item) => (
             <img
-              src={`${process.env.REACT_APP_API_URL}/${item.replace(
-                "public",
-                "",
-              )}`}
+              src={item?.startsWith("http") ? item : `${process.env.REACT_APP_API_URL}/${item?.replace("public", "")}`}
               alt="listing"
               key={item}
             />
@@ -137,10 +134,7 @@ const ListingReview = () => {
         {listing?.creator && listing.creator.profileImagePath && (
           <div className="profile">
             <img
-              src={`${process.env.REACT_APP_API_URL}/${listing.creator.profileImagePath.replace(
-                "public",
-                "",
-              )}`}
+              src={listing.creator.profileImagePath?.startsWith("http") ? listing.creator.profileImagePath : `${process.env.REACT_APP_API_URL}/${listing.creator.profileImagePath?.replace("public", "")}`}
               alt="host"
             />
             <h3>Hosted by {listing.creator.username}</h3>
