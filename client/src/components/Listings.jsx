@@ -57,8 +57,8 @@ const Listings = () => {
       setCanScrollLeft(categoryListRef.current.scrollLeft > 0);
       setCanScrollRight(
         categoryListRef.current.scrollWidth >
-          categoryListRef.current.clientWidth +
-            categoryListRef.current.scrollLeft,
+        categoryListRef.current.clientWidth +
+        categoryListRef.current.scrollLeft,
       );
     }
   };
@@ -85,9 +85,8 @@ const Listings = () => {
         >
           {categories?.map((category, index) => (
             <div
-              className={`category ${
-                category.label === selectedCategory ? "selected" : ""
-              }`}
+              className={`category ${category.label === selectedCategory ? "selected" : ""
+                }`}
               key={index}
               onClick={() => setSelectedCategory(category.label)}
             >
@@ -107,7 +106,14 @@ const Listings = () => {
       </div>
 
       {loading ? (
-        <Loader />
+        <div className="listings-loader">
+          <Loader />
+        </div>
+      ) : listings.length === 0 ? (
+        <div className="listings-empty">
+          <span className="listings-empty__icon">🏡</span>
+          <p>No properties found in this category.</p>
+        </div>
       ) : (
         <div className="listings">
           {listings.map(
