@@ -55,11 +55,12 @@ const Login = () => {
   return (
     <div className="login">
       <div className="login_content">
-        <h1>Login</h1>
+        <h1>Welcome back</h1>
+
         <form className="login_content_form" onSubmit={handleSubmit}>
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -71,23 +72,19 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">LOG IN</button>
+          <button type="submit">Log In</button>
+
           {emailError && (
-            <p style={{ color: "red" }} className="error_message">
-              {emailError}
-            </p>
+            <p className="error_message">{emailError}</p>
           )}
           {passwordError && (
-            <p style={{ color: "red" }} className="error_message">
-              {passwordError}
-            </p>
+            <p className="error_message">{passwordError}</p>
           )}
         </form>
+
         <span>
           Don't have an account?{" "}
-          <a href="/register" style={{ color: "blue" }}>
-            Register
-          </a>{" "}
+          <a href="/register">Register</a>{" "}
           here
         </span>
       </div>
