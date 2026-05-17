@@ -109,7 +109,14 @@ const Navbar = () => {
 
       <div className="navbar__right">
         {isHomePage && (
-          <Link to="/create-listing" className="navbar__host-link">
+          <Link to="/create-listing" className="navbar__host-link"
+            onClick={(e) => {
+              if (!user) {
+                e.preventDefault();
+                alert("Please login or register to list your property..!!");
+              }
+            }}
+          >
             List your property
           </Link>
         )}
