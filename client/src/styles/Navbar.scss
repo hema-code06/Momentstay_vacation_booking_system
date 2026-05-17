@@ -1,13 +1,5 @@
 @import "./Responsive.scss";
 
-$brand: #004369;
-$text: #222222;
-$muted: #717171;
-$border: #dddddd;
-$radius-pill: 40px;
-$radius-md: 12px;
-$shadow-nav: 0 2px 16px rgba(0, 0, 0, 0.12);
-
 .navbar {
   display: flex;
   align-items: center;
@@ -16,9 +8,18 @@ $shadow-nav: 0 2px 16px rgba(0, 0, 0, 0.12);
   gap: 16px;
   z-index: 100;
 
-  @include lg { padding: 14px 28px; }
-  @include md { padding: 12px 20px; }
-  @include sm { padding: 12px 16px; gap: 10px; }
+  @include lg {
+    padding: 14px 28px;
+  }
+
+  @include md {
+    padding: 12px 20px;
+  }
+
+  @include sm {
+    padding: 12px 16px;
+    gap: 10px;
+  }
 
   &--home {
     position: absolute;
@@ -30,13 +31,15 @@ $shadow-nav: 0 2px 16px rgba(0, 0, 0, 0.12);
 
     .navbar__search-pill {
       background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.5);
-      color: #fff;
+      border-color: rgba(60, 59, 59, 0.5);
+      color: #333;
       box-shadow: none;
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
 
-      svg { color: #fff; }
+      svg {
+        color: #004369;
+      }
 
       &:hover {
         background: rgba(255, 255, 255, 0.25);
@@ -50,15 +53,10 @@ $shadow-nav: 0 2px 16px rgba(0, 0, 0, 0.12);
       -webkit-backdrop-filter: blur(12px);
     }
 
-    .navbar__host-link {
-      color: #fff;
-      &:hover { background: rgba(255, 255, 255, 0.15); }
-    }
-
     .navbar__account-btn {
       background: rgba(255, 255, 255, 0.15);
       border-color: rgba(255, 255, 255, 0.5);
-      color: #fff;
+      color: #333;
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
 
@@ -67,28 +65,22 @@ $shadow-nav: 0 2px 16px rgba(0, 0, 0, 0.12);
         box-shadow: none;
       }
     }
-
-    .navbar__logo img {
-      filter: brightness(0) invert(1);
-    }
-  }
-
-  &--inner {
-    position: sticky;
-    top: 0;
-    background: #fff;
-    border-bottom: 1px solid $border;
   }
 }
 
 .navbar__logo {
   flex-shrink: 0;
+  margin-left: 3% !important;
+
   img {
-    width: 130px;
+    width: 150px;
     height: auto;
     display: block;
     transition: filter 0.2s ease;
-    @include sm { width: 100px; }
+
+    @include sm {
+      width: 100px;
+    }
   }
 }
 
@@ -96,7 +88,7 @@ $shadow-nav: 0 2px 16px rgba(0, 0, 0, 0.12);
   flex: 1;
   display: flex;
   justify-content: center;
-  max-width: 480px;
+  max-width: 380px;
   margin: 0 auto;
 
   @include sm {
@@ -113,20 +105,21 @@ $shadow-nav: 0 2px 16px rgba(0, 0, 0, 0.12);
   align-items: center;
   gap: 10px;
   padding: 10px 18px;
-  border: 1px solid $border;
-  border-radius: $radius-pill;
+  border: 1px solid #dddddd;
+  border-radius: 40px;
   background: #fff;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 600;
-  color: $text;
+  font-weight: 800 !important;
+  color: #222222;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   white-space: nowrap;
 
-  svg { color: $brand; font-size: 18px; }
-
-  &:hover { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14); }
+  svg {
+    color: #004369;
+    font-size: 18px;
+  }
 }
 
 .navbar__search-expanded {
@@ -136,17 +129,19 @@ $shadow-nav: 0 2px 16px rgba(0, 0, 0, 0.12);
   width: 100%;
   max-width: 480px;
   padding: 8px 10px 8px 16px;
-  border: 1px solid $brand;
-  border-radius: $radius-pill;
+  border: 1px solid #004369;
+  border-radius: 40px;
   background: #fff;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
   position: relative;
 
-  @include sm { max-width: 100%; }
+  @include sm {
+    max-width: 100%;
+  }
 }
 
 .navbar__search-icon {
-  color: $muted;
+  color: #5b5959;
   flex-shrink: 0;
   font-size: 18px !important;
 }
@@ -156,10 +151,13 @@ $shadow-nav: 0 2px 16px rgba(0, 0, 0, 0.12);
   border: none;
   outline: none;
   font-size: 14px;
-  color: $text;
+  color: #222222 !important;
   background: transparent;
   min-width: 0;
-  &::placeholder { color: $muted; }
+
+  &::placeholder {
+    color: #717171;
+  }
 }
 
 .navbar__search-clear {
@@ -173,10 +171,12 @@ $shadow-nav: 0 2px 16px rgba(0, 0, 0, 0.12);
   height: 24px;
   cursor: pointer;
   flex-shrink: 0;
-  color: $text;
+  color: #222222;
   transition: background 0.15s ease;
-  svg { font-size: 14px !important; }
-  &:hover { background: #d4d4d4; }
+
+  svg {
+    font-size: 14px !important;
+  }
 }
 
 .navbar__search-btn {
@@ -184,23 +184,27 @@ $shadow-nav: 0 2px 16px rgba(0, 0, 0, 0.12);
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  background: $brand;
+  background: #004369;
   color: #fff;
   border: none;
-  border-radius: $radius-pill;
+  border-radius: 40px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.2s ease, transform 0.1s ease;
   flex-shrink: 0;
-  svg { font-size: 16px !important; }
-  &:hover { background: darken($brand, 8%); }
-  &:active { transform: scale(0.97); }
+
+  svg {
+    font-size: 16px !important;
+  }
 
   @include sm {
     padding: 8px 12px;
-    span { display: none; }
+
+    span {
+      display: none;
+    }
   }
 }
 
@@ -222,33 +226,43 @@ $shadow-nav: 0 2px 16px rgba(0, 0, 0, 0.12);
 
 .navbar__host-link {
   font-size: 14px;
-  font-weight: 600;
-  color: $text;
+  font-weight: 700;
+  color: #222222 !important;
   text-decoration: none;
   padding: 10px 14px;
   border-radius: 24px;
   white-space: nowrap;
   transition: background 0.15s ease, color 0.2s ease;
-  &:hover { background: #f7f7f7; }
-  @include md { display: none; }
+
+  @include md {
+    display: none;
+  }
 }
 
-.navbar__account-wrap { position: relative; }
+.navbar__account-wrap {
+  position: relative;
+}
 
 .navbar__account-btn {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 6px 8px 6px 12px;
-  border: 1px solid $border;
-  border-radius: $radius-pill;
+  border: 1px solid #dddddd;
+  border-radius: 40px;
   background: #fff;
   cursor: pointer;
   height: 44px;
   transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  color: $text;
-  svg { font-size: 18px !important; }
-  &:hover { box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12); }
+  color: #222222;
+
+  svg {
+    font-size: 18px !important;
+  }
+
+  &:hover {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  }
 }
 
 .navbar__avatar {
@@ -264,37 +278,47 @@ $shadow-nav: 0 2px 16px rgba(0, 0, 0, 0.12);
   top: calc(100% + 10px);
   width: 210px;
   background: #fff;
-  border: 1px solid $border;
-  border-radius: $radius-md;
-  box-shadow: $shadow-nav;
+  border: 1px solid #dddddd;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
   z-index: 9999;
   overflow: hidden;
   animation: dropIn 0.18s ease;
 
   @keyframes dropIn {
-    from { opacity: 0; transform: translateY(-6px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   a {
     display: block;
     padding: 11px 16px;
+    font-weight: 600;
     font-size: 14px;
     text-decoration: none;
-    color: $text;
+    color: #222222;
     transition: background 0.1s ease;
-    font-weight: 400;
-    &:hover { background: #f7f7f7; }
+
+    &:hover {
+      background: #f7f7f7;
+    }
   }
 }
 
 .navbar__dropdown-divider {
   height: 1px;
-  background: $border;
+  background: #dddddd;
   margin: 4px 0;
 }
 
 .navbar__dropdown-logout {
-  color: $muted !important;
+  color: #717171 !important;
   font-size: 13px !important;
 }
