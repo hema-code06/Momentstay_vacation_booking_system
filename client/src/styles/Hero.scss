@@ -5,18 +5,26 @@
   width: 100%;
   height: 100vh;
   min-height: 520px;
-  max-height: 920px !important;
+  max-height: 920px;
   display: flex;
+  justify-content: flex-end;
   align-items: flex-end;
   overflow: hidden;
 
-  @include md {
-    height: 70vh;
-    min-height: 440px;
+  @include lg {
+    height: 88vh;
   }
+
+  @include md {
+    height: 72vh;
+    min-height: 500px;
+  }
+
   @include sm {
     height: 65vh;
-    min-height: 380px;
+    min-height: 420px;
+    justify-content: center;
+    align-items: center;
   }
 }
 
@@ -28,87 +36,207 @@
 .hero__img {
   width: 100%;
   height: 100%;
-  object-fit:fill !important;
+  object-fit: fill !important;
+  animation: heroZoom 18s ease-in-out infinite alternate;
+
+  @include sm {
+    object-position: center;
+  }
+}
+
+.hero__overlay {
+  position: absolute;
+  inset: 0;
 }
 
 .hero__content {
   position: relative;
-  z-index: 2;
-  padding: 0 80px 72px;
-  max-width: 720px;
-  color: #fff;
+  z-index: 1;
+  padding: 0 50px 35px;
+  max-width: 820px;
+  color: #1f2937;
+  text-align: right;
 
   @include lg {
     padding: 0 56px 60px;
+    max-width: 650px;
   }
+
   @include md {
-    padding: 0 32px 48px;
+    padding: 0 40px 50px;
     max-width: 100%;
   }
+
   @include sm {
+    width: 100%;
     padding: 0 20px 40px;
+    text-align: center;
   }
 }
 
 
 .hero__headline {
-  font-size: clamp(36px, 5vw, 64px);
+  font-size: clamp(38px, 5vw, 72px);
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.05;
   margin: 0 0 18px;
-  letter-spacing: -0.02em;
-  color: #fff;
+  letter-spacing: -0.03em;
+  color: #111827;
+  opacity: 0;
+  transform: translateX(-120px);
+  animation: slideLeft 1.2s ease forwards;
 
   em {
     font-style: italic;
-    color: #ffd166;
-  }
-}
+    color: #c28b00;
+    position: relative;
 
-.hero__sub {
-  font-size: clamp(14px, 1.5vw, 17px);
-  color: rgba(255, 255, 255, 0.82);
-  line-height: 1.65;
-  margin: 0 0 36px;
-  max-width: 480px;
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -5px;
+      width: 100%;
+      height: 3px;
+      background: #c28b00;
+      border-radius: 20px;
+
+      transform: scaleX(0);
+      transform-origin: left;
+
+      animation: underlineReveal 1s ease forwards;
+      animation-delay: 1s;
+    }
+  }
+
+  @include md {
+    font-size: clamp(34px, 6vw, 56px);
+    line-height: 1.1;
+  }
 
   @include sm {
-    display: none;
+    font-size: 34px;
+    line-height: 1.15;
+    margin-bottom: 14px;
+
+    br {
+      display: none;
+    }
   }
 }
+
+
+.hero__sub {
+  font-size: clamp(14px, 1.5vw, 18px);
+  color: rgba(17, 24, 39, 0.82);
+  line-height: 1.7;
+  margin: 0 0 36px auto;
+  max-width: 520px;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp 1s ease forwards;
+  animation-delay: 0.5s;
+
+  @include md {
+    max-width: 100%;
+  }
+
+  @include sm {
+    margin-bottom: 0 auto 26px;
+  }
+}
+
 
 .hero__stats {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 26px;
+  justify-content: flex-end;
+  opacity: 0;
+  transform: translateY(40px);
+  animation: fadeUp 1s ease forwards;
+  animation-delay: 0.9s;
+
+  @include md {
+    gap: 22px;
+  }
 
   @include sm {
-    gap: 16px;
+    justify-content: center;
   }
 }
 
 .hero__stat {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-6px) scale(1.05);
+  }
+
+  @include sm {
+    align-items: center;
+  }
 }
 
 .hero__stat-number {
-  font-size: clamp(20px, 2.5vw, 26px);
+  font-size: clamp(20px, 2.5vw, 28px);
   font-weight: 700;
-  color: #fff;
+  color: #111827;
   line-height: 1;
+
+  @include sm {
+    font-size: 22px;
+  }
 }
 
 .hero__stat-label {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.65);
-  font-weight: 500;
+  color: rgba(17, 24, 39, 0.7);
+  font-weight: 600;
   letter-spacing: 0.04em;
 }
 
 .hero__stat-divider {
   width: 1px;
   height: 36px;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(17, 24, 39, 0.2);
+
+  @include sm {
+    height: 28px;
+  }
+}
+
+
+@keyframes slideLeft {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes underlineReveal {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes heroZoom {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.08);
+  }
 }
