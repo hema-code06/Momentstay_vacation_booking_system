@@ -72,7 +72,7 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">Log In</button>
+          <button type="submit">Login</button>
 
           {emailError && (
             <p className="error_message">{emailError}</p>
