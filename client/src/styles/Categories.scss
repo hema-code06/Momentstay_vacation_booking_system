@@ -26,7 +26,7 @@
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #e8a838;
+  color: #ffb301;
  
   
   &::after {
@@ -34,7 +34,7 @@
     display: inline-block;
     width: 28px;
     height: 1.5px;
-    background: #e8a838;
+    background: #ffb301;
     vertical-align: middle;
     margin-left: 8px;
     border-radius: 2px;
@@ -63,7 +63,7 @@
       left: 0;
       width: 100%;
       height: 3px;
-      background: linear-gradient(90deg, #e8a838, #f5c96a);
+      background: linear-gradient(90deg, #e8a838, #ffb301);
       border-radius: 2px;
       opacity: 0.7;
     }
