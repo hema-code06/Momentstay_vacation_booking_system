@@ -1,12 +1,25 @@
 @import "./Responsive.scss";
 
 .categories {
+  margin-top: 2% !important;
   padding: 0 35px;
   display: flex;
   flex-direction: column;
 
+  @include lg {
+    padding: 0 28px;
+  }
+
+  @include md {
+    padding: 0 24px;
+  }
+
   @include sm {
-    padding: 50px 20px;
+    padding: 24px 0 20px;
+  }
+
+  @include xs {
+    padding: 20px 0 16px;
   }
 
   h2 {
@@ -14,80 +27,129 @@
     color: #004369;
   }
 
-.categories_header {
-  margin-bottom: 1%;
-  max-width: 600px;
-}
- 
-.categories_eyebrow {
-  display: inline-block;
-  font-family: "DM Sans", sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #ffb301;
- 
-  
-  &::after {
-    content: "";
-    display: inline-block;
-    width: 28px;
-    height: 1.5px;
-    background: #ffb301;
-    vertical-align: middle;
-    margin-left: 8px;
-    border-radius: 2px;
-  }
-}
- 
-.categories_title {
-  font-family: "Playfair Display", Georgia, serif;
-  font-size: clamp(28px, 4vw, 42px);
-  font-weight: 700;
-  color: #002a43;
-  line-height: 1.15;
-  margin: 0 0 12px;
-  letter-spacing: -0.01em;
- 
-  em {
-    font-style: italic;
-    color: #004369;
-    position: relative;
-    display: inline-block;
- 
-    &::after {
-      content: "";
-      position: absolute;
-      bottom: 2px;
-      left: 0;
-      width: 100%;
-      height: 3px;
-      background: linear-gradient(90deg, #e8a838, #ffb301);
-      border-radius: 2px;
-      opacity: 0.7;
+  .categories_header {
+    margin-bottom: 20px;
+    max-width: 600px;
+
+    @include sm {
+      max-width: 100%;
+      margin-bottom: 16px;
     }
   }
-}
 
-.categories_list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin-bottom: 5%;
+  .categories_eyebrow {
+    display: inline-block;
+    font-family: "DM Sans", sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #ffb301;
 
-    .category {
+
+    &::after {
+      content: "";
+      display: inline-block;
+      width: 28px;
+      height: 1.5px;
+      background: #ffb301;
+      vertical-align: middle;
+      margin-left: 8px;
+      border-radius: 2px;
+    }
+  }
+
+  .categories_title {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 700;
+    color: #002a43;
+    line-height: 1.15;
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+
+    @include sm {
+      font-size: clamp(24px, 5vw, 32px);
+    }
+
+    @include xs {
+      font-size: 22px;
+    }
+
+    em {
+      font-style: italic;
+      color: #004369;
       position: relative;
-      display: flex;
-      width: 350px;
-      height: 200px;
-      cursor: pointer;
+      display: inline-block;
 
-      img {
-        width: 110%;
-        height: 120%;
-        border-radius: 10px;
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: 2px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, #e8a838, #ffb301);
+        border-radius: 2px;
+        opacity: 0.7;
       }
+    }
+  }
+
+  .categories_list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+
+    @include lg {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 18px;
+    }
+
+    @include md {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    @include sm {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    @include xs {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+  }
+
+  .category {
+    position: relative;
+    height: 200px;
+    cursor: pointer;
+
+    @include lg {
+      height: 180px;
+    }
+
+    @include md {
+      height: 160px;
+    }
+
+    @include sm {
+      height: 140px;
+    }
+
+    @include xs {
+      height: 160px;
+    }
+
+    img {
+      width: 110%;
+      height: 120%;
+      border-radius: 10px;
     }
   }
 }
