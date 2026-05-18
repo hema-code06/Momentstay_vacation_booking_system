@@ -99,7 +99,6 @@ const TripList = () => {
       <div className="trip-list-container">
         {filteredTripList.length > 0 ? (
           <>
-            <h1 className="title-list">Trip Journal</h1>
             <div className="list">
               {filteredTripList.map(
                 ({ listingId, type, startDate, endDate, totalPrice }) => {

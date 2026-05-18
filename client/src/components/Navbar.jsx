@@ -144,7 +144,7 @@ const Navbar = () => {
                 </>
               ) : (
                 <>
-                  <Link to={`/${user._id}/trips`} onClick={() => setDropdownMenu(false)}>Trips</Link>
+                  <Link to={`/${user._id}/trips`} onClick={() => setDropdownMenu(false)}>Trip Journal</Link>
                   <Link to={`/${user._id}/wishList`} onClick={() => setDropdownMenu(false)}>Wishlists</Link>
                   <Link to={`/${user._id}/properties`} onClick={() => setDropdownMenu(false)}>Property List</Link>
                   <Link to={`/${user._id}/reservations`} onClick={() => setDropdownMenu(false)}>Reservations</Link>

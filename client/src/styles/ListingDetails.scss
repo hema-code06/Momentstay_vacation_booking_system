@@ -38,9 +38,10 @@
   }
 
   h1 {
-    font-family: "Playfair Display", Georgia, serif;
-    font-size: clamp(24px, 4vw, 40px);
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: clamp(24px, 4vw, 30px);
     font-weight: 700;
+    font-style: italic;
     color: #004369;
     line-height: 1.15;
     letter-spacing: -0.02em;
@@ -75,6 +76,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 16px;
+  margin-top: 5%;
   margin-bottom: 32px;
 
   @include md {
@@ -117,11 +119,8 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 20px;
-  background: #f8fafc;
-  border-radius: 14px;
+  margin-top: 3%;
   margin-bottom: 32px;
-  border: 1px solid #e8edf2;
   opacity: 0;
   animation: fadeUp 0.6s ease 0.2s forwards;
 
