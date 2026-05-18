@@ -52,7 +52,7 @@ const PropertyList = () => {
       <div className="property-container">
         {propertyList && propertyList.length > 0 ? (
           <>
-            <h1 className="title-list">Featured <span>Property</span> Collections</h1>
+            <h1 className="title-list">Property Collection</h1>
             <div className="list">
               {propertyList.map(
                 ({
