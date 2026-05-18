@@ -9,13 +9,57 @@
 .home__hero-wrap {
   position: relative;
   height: 100vh;
+
+  @include lg {
+    height: 90vh;
+  }
+
+  @include md {
+    height: 80vh;
+  }
+
+  @include sm {
+    height: 70vh;
+  }
+
+  @include xs {
+    height: 60vh;
+  }
 }
 
 .home__main {
   flex: 1;
   padding: 48px 40px;
 
-  @include lg { padding: 40px 28px; }
-  @include md { padding: 32px 20px; }
-  @include sm { padding: 24px 16px; }
+  @include xxl {
+    padding: 48px 40px;
+  }
+
+  @include xl {
+    padding: 44px 36px;
+  }
+
+  @include lg {
+    padding: 40px 28px;
+  }
+
+  @include ml {
+    padding: 36px 24px;
+  }
+
+  @include md {
+    padding: 32px 20px;
+  }
+
+  @include mm {
+    padding: 28px 18px;
+  }
+
+  @include sm {
+    padding: 24px 16px;
+  }
+
+  @include xs {
+    padding: 20px 12px;
+  }
 }
