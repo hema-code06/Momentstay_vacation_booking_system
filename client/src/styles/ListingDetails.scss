@@ -1,186 +1,315 @@
 @import "./Responsive.scss";
 
 .listing-details {
-  padding: 40px;
-
-  @include xl {
-    padding: 40px 80px 120px;
-  }
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 60px 80px;
+  opacity: 0;
+  animation: fadeUp 0.6s ease forwards;
 
   @include lg {
-    padding: 40px 50px 120px;
+    padding: 32px 40px 60px;
+  }
+
+  @include md {
+    padding: 28px 24px 48px;
   }
 
   @include sm {
-    padding: 40px 20px 120px;
+    padding: 24px 16px 40px;
   }
-  h1 {
-    text-align: center;
-    font-size: 35px;
-    color: #004369;
-    @include sm {
-      font-size: 26px;
-    }
-  }
-  .wishlist-button {
-    padding: 10px;
-    max-width: 150px;
-    width: 135px;
-    border: none;
-    font-size: 15px;
-    cursor: pointer;
-    font-weight: 600;
-    background-color: rgb(253, 57, 57);
-    color: whitesmoke;
-    border-radius: 10px;
-    margin-left: 89%;
-    &:hover {
-      box-shadow: 0 10px 10px 0 gray;
-    }
-    @include lg {
-      max-width: 300px;
-    }
-  }
-  .photos {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin-bottom: 3%;
-    margin-top: 5%;
 
-    img {
-      width: 100%;
-      height: 100%;
-      max-width: 300px;
-      max-height: 180px;
-      object-fit: cover;
-      display: block;
-      border-radius: 10px;
+  @include xs {
+    padding: 20px 12px 32px;
+  }
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+
+  @include sm {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  h1 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(24px, 4vw, 40px);
+    font-weight: 700;
+    color: #004369;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+}
+
+.wishlist-button {
+  flex-shrink: 0;
+  padding: 10px 20px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #e63946;
+  color: #fff;
+  border-radius: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(230, 57, 70, 0.35);
+  }
+
+  @include sm {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+
+  @include md {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  @include sm {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  @include xs {
+    grid-template-columns: 1fr;
+  }
+
+  img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    @include sm {
+      height: 160px;
+    }
+
+    @include xs {
+      height: 200px;
     }
   }
-  h2 {
-    @include xl {
-      margin-top: 2%;
-      font-size: 10px;
-    }
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 14px;
+  margin-bottom: 32px;
+  border: 1px solid #e8edf2;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.2s forwards;
+
+  img {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #004369;
+    flex-shrink: 0;
   }
-  p {
-    margin-top: 10px;
-    @include xl {
-      margin-top: 2%;
-      margin-bottom: 2%;
-      font-size: 10px;
-    }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #004369;
   }
-  .profile {
-    display: flex;
-    margin-bottom: 3%;
-    margin-top: 2%;
-    gap: 20px;
-    align-items: center;
-    h3 {
+}
+
+.info {
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.3s forwards;
+
+  h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #004369;
+    margin-bottom: 10px;
+
+    @include sm {
+      font-size: 18px;
+    }
+
+    @include xs {
       font-size: 16px;
-      @include xl {
-        font-size: 18px;
-      }
-    }
-    img {
-      border-radius: 60%;
-      width: 60px;
-      height: 60px;
-      margin: 0;
     }
   }
-  .info {
-    h3 {
-      color: #004369;
-      margin-top: 2%;
-      @include sm {
-        font-size: 20px;
-      }
-      @include xl {
-        font-size: 14px;
-      }
-    }
-    p {
-      max-width: 965px;
-      margin-top: 12px;
-      @include sm {
-        font-size: 20px;
-      }
-      @include xl {
-        font-size: 10px;
-      }
+
+  p {
+    font-size: 15px;
+    color: #4b5563;
+    line-height: 1.75;
+    max-width: 760px;
+
+    @include xs {
+      font-size: 13px;
     }
   }
 
   hr {
-    margin: 20px 0;
+    margin: 24px 0;
+    border: none;
+    border-top: 1px solid #e8edf2;
   }
-  .booking {
-    display: flex;
-    justify-content: space-between;
+}
 
-    @include lg {
-      flex-direction: column;
-      gap: 50px;
+.booking {
+  display: flex;
+  justify-content: space-between;
+  gap: 48px;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.4s forwards;
+
+  @include lg {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  @include md {
+    gap: 32px;
+  }
+
+  h2 {
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 16px;
+  }
+}
+
+.amenities {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 60px;
+  margin: 24px 0;
+  max-width: 600px;
+
+  @include md {
+    gap: 14px 32px;
+  }
+
+  @include sm {
+    gap: 12px 20px;
+  }
+
+  @include xs {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+.facility {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e8edf2;
+  transition: background 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    background: #eef4f9;
+    transform: translateY(-2px);
+  }
+
+  &_icon {
+    font-size: 22px;
+    color: #004369;
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.date-range-calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+  }
+
+  p {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+  }
+
+  .button {
+    padding: 14px;
+    border: none;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    background: #004369;
+    color: white;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 340px;
+    letter-spacing: 0.04em;
+    transition: background 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+
+    &:hover {
+      background: #002a43;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 67, 105, 0.35);
     }
 
-    .amenities {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-column-gap: 100px;
-      margin: 30px 0;
-      max-width: 700px;
-
-      @include sm {
-        grid-column-gap: 20px;
-      }
-
-      .facility {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        font-weight: 600;
-        margin-bottom: 15px;
-
-        &_icon {
-          color: #004369;
-          font-size: 22px;
-        }
-
-        p {
-          margin: 0;
-        }
-      }
+    &:active {
+      transform: translateY(0);
     }
 
-    .date-range-calendar {
-      margin: 30px 0;
-
-      h2 {
-        margin-bottom: 10px;
-      }
-
-      .button {
-        padding: 10px 15px;
-        border: none;
-        font-size: 20px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: 0.3s ease;
-        background-color: #004369;
-        color: white;
-        border-radius: 10px;
-        width: 100%;
-        margin-top: 30px;
-        &:hover {
-          box-shadow: 0 10px 10px 0 gray;
-        }
-        @include lg {
-          max-width: 300px;
-        }
-      }
+    @include sm {
+      max-width: 100%;
+      font-size: 15px;
     }
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

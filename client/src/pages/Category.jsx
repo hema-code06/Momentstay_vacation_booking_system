@@ -37,11 +37,6 @@ const Category = () => {
   ) : (
     <>
       <Navbar />
-      {listings.length > 0 && (
-        <h1 className="title-list" style={{ textAlign: "center" }}>
-          {category}
-        </h1>
-      )}
       <div className="list" style={{ minHeight: "100vh" }}>
         {listings.length === 0 ? (
           <h2 className="no-listings"> Properties not found!!</h2>
