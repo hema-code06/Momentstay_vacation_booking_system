@@ -30,6 +30,7 @@
         img {
           width: 100%;
           height: 100%;
+          object-fit: cover;
           filter: brightness(85%);
         }
 
@@ -46,7 +47,7 @@
           align-items: center;
           justify-content: center;
           background-color: rgba(255, 255, 255, 0.7);
-          z-index: 9999;
+          z-index: 9;
 
           &:hover {
             background-color: white;
@@ -63,10 +64,12 @@
       }
     }
   }
+
   .info {
     display: flex;
     flex-direction: column;
     gap: 5px;
+    margin-top: 6px;
 
     h3 {
       color: #004369;
@@ -75,13 +78,16 @@
 
     p {
       font-size: 16px;
+      color: #444;
     }
 
     span {
       font-weight: 600;
       font-size: 17px;
+      color: #004369;
     }
   }
+
   .favorite {
     position: absolute;
     right: 20px;
@@ -89,7 +95,7 @@
     border: none;
     font-size: 20px;
     cursor: pointer;
-    z-index: 999;
+    z-index: 99;
     background: none;
   }
 }
