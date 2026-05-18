@@ -4,11 +4,13 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
 }
 
 .home__hero-wrap {
   position: relative;
   height: 100vh;
+  max-height: 920px;
 
   @include lg {
     height: 90vh;
@@ -19,16 +21,20 @@
   }
 
   @include sm {
-    height: 70vh;
+    height: 55vh;
+    min-height: 320px;
+    max-height: none;
   }
 
   @include xs {
-    height: 60vh;
+    height: 50vh;
+    min-height: 280px;
+    max-height: none;
   }
 }
 
 .home__main {
-  flex: 1;
+  flex: 0 1 auto;
   padding: 48px 40px;
 
   @include xxl {
@@ -56,10 +62,10 @@
   }
 
   @include sm {
-    padding: 24px 16px;
+    padding: 0 16px 24px;
   }
 
   @include xs {
-    padding: 20px 12px;
+    padding: 0 12px 20px;
   }
 }

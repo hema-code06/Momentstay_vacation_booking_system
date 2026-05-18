@@ -14,7 +14,7 @@ const Categories = () => {
       <div className="categories_list">
         {selectedCategories.map((category, index) => (
           <Link to={`/properties/category/${category.label}`} key={index}>
-            <div className="category">
+            <div className="category" style={{ "--i": index }}>
               <img src={category.img} alt={category.label} />
             </div>
           </Link>

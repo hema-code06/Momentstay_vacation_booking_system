@@ -12,25 +12,27 @@
   overflow: hidden;
 
   @include lg {
-    height: 88vh;
+    height: 90vh;
   }
 
   @include md {
-    height: 72vh;
-    min-height: 500px;
+    height: 80vh;
   }
 
   @include sm {
-    height: 65vh;
-    min-height: 420px;
+    height: 55vh;
+    min-height: 320px;
+    max-height: none;
     justify-content: center;
     align-items: center;
   }
 
   @include xs {
-    height: 60vh;
-    min-height: 380px;
+    height: 50vh;
+    min-height: 280px;
+    max-height: none;
   }
+
 }
 
 .hero__bg {
