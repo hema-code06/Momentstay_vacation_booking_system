@@ -3,6 +3,17 @@
 .property-container {
   min-height: 100vh;
 
+  h1 {
+    font-style: italic;
+    margin-bottom: 3%;
+    text-align: left;
+    margin-left: 5.5%;
+
+    span {
+      color: #c28b00;
+    }
+  }
+
   .empty-property-list {
     padding: 40px;
 
