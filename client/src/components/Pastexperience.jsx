@@ -17,11 +17,12 @@ const Pastexperience = () => {
       </div>
 
       <div className="experiences-grid">
-        {experiences.map((experience) => (
+        {experiences.map((experience, index) => (
           <Link
             key={experience.id}
             to={`/testimonials/${experience.id}`}
             className="experience-card-link"
+            style={{ "--i": index }}
           >
             <div className="experience-card">
               <div className="experience-image-container">

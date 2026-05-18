@@ -1,10 +1,36 @@
+@import "./Responsive.scss";
+
 .past-experiences-section {
-  min-height: 130vh;
   padding: 0 85px;
+
+  @include lg {
+    padding: 0 48px;
+  }
+
+  @include md {
+    padding: 0 28px;
+  }
+
+  @include sm {
+    padding: 0 16px;
+  }
+
+  @include xs {
+    padding: 0 12px;
+  }
 
   .past-exp__header {
     max-width: 560px;
     margin-bottom: 48px;
+
+    @include sm {
+      max-width: 100%;
+      margin-bottom: 32px;
+    }
+
+    @include xs {
+      margin-bottom: 24px;
+    }
   }
 
   .past-exp__eyebrow {
@@ -38,6 +64,14 @@
     margin: 0 0 14px;
     letter-spacing: -0.015em;
 
+    @include sm {
+      font-size: clamp(24px, 5vw, 34px);
+    }
+
+    @include xs {
+      font-size: 22px;
+    }
+
     em {
       font-style: italic;
       color: #004369;
@@ -64,12 +98,34 @@
     color: #8a9ab0;
     line-height: 1.65;
     margin: 0;
+
+    @include sm {
+      font-size: 14px;
+    }
+
+    @include xs {
+      font-size: 13px;
+    }
   }
 
   .experiences-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1rem;
+
+    @include md {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+
+    @include sm {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    @include xs {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
 
     .experience-card-link {
       text-decoration: none;
@@ -81,11 +137,11 @@
       border-radius: 8px;
       overflow: hidden;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s, box-shadow 0.3s;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
 
       &:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        transform: translateY(-6px);
+        box-shadow: 0 12px 28px rgba(0, 67, 105, 0.15);
       }
 
       .experience-image-container {
@@ -99,39 +155,46 @@
       .experience-details {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 12px !important;
         padding: 1rem;
         color: #706a6a;
         font-size: 14px;
+
+        @include xs {
+          padding: 12px;
+          font-size: 13px;
+        }
+
 
         .experience-name {
           color: black;
           font-size: 16px;
           font-weight: 600;
+
+          @include xs {
+            font-size: 15px;
+          }
+        }
+
+        .experience-location {
+          font-size: 14px;
+          color: #706a6a;
         }
 
         .exp-card__host {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: 10px !important;
           font-family: "DM Sans", sans-serif;
           font-size: 13px;
-          color: #8a9ab0;
+          color: #004369;
+          font-weight: 500;
           line-height: 1;
 
           svg {
-            width: 13px;
-            height: 13px;
+            width: 15px;
+            height: 15px;
             flex-shrink: 0;
-            color: #8a9ab0;
-          }
-        }
-
-        .exp-card__host {
-          color: #004369;
-          font-weight: 500;
-
-          svg {
             color: #004369;
           }
         }

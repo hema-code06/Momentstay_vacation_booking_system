@@ -1,9 +1,19 @@
+@import "./Responsive.scss";
+
 .category-list-container {
   display: flex;
   align-items: center;
   position: relative;
-  margin-top: 8%;
+  margin-top: 48px;
+  opacity: 0;
+  animation: fadeUp 0.6s ease forwards;
+  animation-delay: 0.1s;
+
+  @include md { margin-top: 36px; }
+  @include sm { margin-top: 28px; }
+  @include xs { margin-top: 20px; }
 }
+
 .category-list {
   display: flex;
   justify-content: space-between;
@@ -14,10 +24,11 @@
   -ms-overflow-style: none;
   margin-left: 5%;
   margin-right: 5%;
-}
 
-.category-list::-webkit-scrollbar {
-  display: none;
+  @include sm { margin-left: 3%; margin-right: 3%; }
+  @include xs { margin-left: 2%; margin-right: 2%; }
+
+  &::-webkit-scrollbar { display: none; }
 }
 
 .category {
@@ -27,22 +38,32 @@
   cursor: pointer;
   white-space: nowrap;
   padding: 25px;
-  transition: transform 0.2s ease-in-out;
+  transition: transform 0.2s ease-in-out, color 0.2s ease;
 
-  &:hover {
-    transform: scale(1.1);
+  &:hover { transform: scale(1.1); }
+
+  &.selected {
+    font-weight: bold;
+    color: #004369;
+
+    .category_icon {
+      color: #ffb301;
+      transform: scale(1.15);
+    }
   }
+
   .category_icon {
     color: #004369;
     font-size: 23px;
     margin-bottom: 10px;
+    transition: transform 0.2s ease, color 0.2s ease;
   }
-  .category.selected {
-    font-weight: bold;
-  }
-  p {
-    font-size: 13px;
-  }
+
+  p { font-size: 13px; }
+
+  @include md { padding: 18px 16px; }
+  @include sm { padding: 14px 12px; .category_icon { font-size: 20px; } p { font-size: 12px; } }
+  @include xs { padding: 12px 10px; .category_icon { font-size: 18px; } p { font-size: 11px; } }
 }
 
 .scroll-icon {
@@ -63,15 +84,18 @@
   color: whitesmoke;
   outline: none;
   border: none;
-  transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.2s ease-in-out, transform 0.2s ease;
 
-  &.left {
-    left: 1%;
+  &:hover {
+    background-color: #002a43;
+    transform: translateY(-50%) scale(1.08);
   }
 
-  &.right {
-    right: 1%;
-  }
+  &.left { left: 1%; }
+  &.right { right: 1%; }
+
+  @include sm { width: 32px; height: 32px; font-size: 16px; }
+  @include xs { width: 28px; height: 28px; font-size: 14px; }
 }
 
 .listings {
@@ -80,6 +104,14 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 5px;
+  opacity: 0;
+  animation: fadeUp 0.6s ease forwards;
+  animation-delay: 0.3s;
+
+  @include lg { padding: 0 40px 100px; }
+  @include md { padding: 0 24px 80px; gap: 12px; }
+  @include sm { padding: 0 16px 60px; gap: 10px; }
+  @include xs { padding: 0 12px 40px; gap: 8px; }
 }
 
 .listings-loader {
@@ -87,6 +119,9 @@
   justify-content: center;
   align-items: center;
   padding: 80px 0;
+
+  @include sm { padding: 50px 0; }
+  @include xs { padding: 36px 0; }
 }
 
 .listings-empty {
@@ -100,14 +135,36 @@
   color: #8a9ab0;
   margin-bottom: 12.5%;
   margin-top: 2%;
- 
+  opacity: 0;
+  animation: fadeUp 0.6s ease forwards;
+
   &__icon {
     font-size: 48px;
     opacity: 0.5;
+    animation: float 3s ease-in-out infinite;
+
+    @include sm { font-size: 38px; }
+    @include xs { font-size: 32px; }
   }
- 
+
   p {
     font-size: 16px;
     margin: 0;
+
+    @include sm { font-size: 14px; }
+    @include xs { font-size: 13px; }
   }
+
+  @include sm { padding: 60px 20px; margin-bottom: 8%; }
+  @include xs { padding: 40px 16px; margin-bottom: 6%; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
 }
