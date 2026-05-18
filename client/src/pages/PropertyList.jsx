@@ -2,7 +2,7 @@ import "../styles/PropertyList.scss";
 import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Navbar from "../components/Navbar";
-import ListingCards from "../components/ListingCards";
+import UpdateListing from "../components/UpdateListing";
 import { setPropertyList } from "../redux/state";
 import Loader from "../components/Loader";
 import Footer from "../components/Footer";
@@ -67,7 +67,7 @@ const PropertyList = () => {
                   price,
                 }) => (
                   <div key={_id} className="property-item">
-                    <ListingCards
+                    <UpdateListing
                       listingId={_id}
                       creator={creator}
                       listingPhotoPaths={listingPhotoPaths}
