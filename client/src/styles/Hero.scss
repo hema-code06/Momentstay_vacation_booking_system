@@ -26,6 +26,11 @@
     justify-content: center;
     align-items: center;
   }
+
+  @include xs {
+    height: 60vh;
+    min-height: 380px;
+  }
 }
 
 .hero__bg {
@@ -41,6 +46,10 @@
 
   @include sm {
     object-position: center;
+  }
+
+  @include xs {
+    object-fit: cover !important;
   }
 }
 
@@ -71,6 +80,10 @@
     width: 100%;
     padding: 0 20px 40px;
     text-align: center;
+  }
+
+  @include xs {
+    padding: 0 14px 28px;
   }
 }
 
@@ -123,6 +136,11 @@
       display: none;
     }
   }
+
+  @include xs {
+    font-size: 26px;
+    margin-bottom: 10px;
+  }
 }
 
 
@@ -144,6 +162,12 @@
   @include sm {
     margin-bottom: 0 auto 26px;
   }
+
+  @include xs {
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0 auto 20px;
+  }
 }
 
 
@@ -164,6 +188,12 @@
   @include sm {
     justify-content: center;
   }
+
+  @include xs {
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }
 
 .hero__stat {
@@ -180,6 +210,11 @@
   @include sm {
     align-items: center;
   }
+
+  @include xs {
+    align-items: center;
+    gap: 2px;
+  }
 }
 
 .hero__stat-number {
@@ -191,6 +226,10 @@
   @include sm {
     font-size: 22px;
   }
+
+  @include xs {
+    font-size: 18px;
+  }
 }
 
 .hero__stat-label {
@@ -198,6 +237,10 @@
   color: rgba(17, 24, 39, 0.7);
   font-weight: 600;
   letter-spacing: 0.04em;
+
+  @include xs {
+    font-size: 10px;
+  }
 }
 
 .hero__stat-divider {
@@ -207,6 +250,10 @@
 
   @include sm {
     height: 28px;
+  }
+
+  @include xs {
+    display: none;
   }
 }
 
