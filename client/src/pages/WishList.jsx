@@ -1,18 +1,24 @@
 import { useSelector, useDispatch } from "react-redux";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import Navbar from "../components/Navbar";
 import ListingCard from "../components/ListingCard";
 import Footer from "../components/Footer";
+
 import { removeFromWishList } from "../redux/state";
-import "../styles/WishList.scss";
+
 import Button from "@mui/material/Button";
-import { useNavigate } from "react-router-dom";
-import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+
+import "../styles/WishList.scss";
 
 const WishList = () => {
   const dispatch = useDispatch();
-  const wishList = useSelector((state) => state.user.wishList);
   const navigate = useNavigate();
+
+  const wishList = useSelector((state) => state.user.wishList);
 
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
@@ -20,91 +26,115 @@ const WishList = () => {
   const handleRemove = (listingId) => {
     try {
       dispatch(removeFromWishList(listingId));
-      setMessage("Removed from wishlist");
+
+      setMessage("Property removed from wishlist");
       setMessageType("success");
     } catch (error) {
-      setMessage("Failed to remove property from wishlist!!");
+      setMessage("Failed to remove property");
       setMessageType("error");
     }
-
-    setTimeout(() => {
-      setMessage("");
-      setMessageType("");
-    }, 3000);
   };
 
   const handleStartExploring = () => {
     navigate("/");
   };
 
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage("");
+        setMessageType("");
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
   return (
     <>
       <Navbar />
       <div className="wish-list-container">
+        <div className="wish-list-header">
+          <div>
+            <h1>Saved Properties</h1>
+            <p>
+              Keep track of your favorite stays and explore them anytime.
+            </p>
+          </div>
+
+          {wishList.length > 0 && (
+            <div className="wishlist-count">
+              {wishList.length} {wishList.length === 1 ? "Property" : "Properties"}
+            </div>
+          )}
+        </div>
+
+        {message && (
+          <div className={`message ${messageType}`}>{message}</div>
+        )}
+
         {wishList.length === 0 ? (
           <div className="empty-wish-list">
-            <h2>WishLists</h2>
-            <p style={{ fontWeight: "600" }}>
-              Your wish list is empty ... for now!
+            <div className="empty-icon">
+              <FavoriteBorderIcon />
+            </div>
+
+            <h2>Your wishlist is empty</h2>
+
+            <p>
+              Start exploring premium properties and save your favorites here.
             </p>
-            <p>Start exploring and adding properties to your wish list.</p>
+
             <Button
               variant="contained"
               className="wish-btn"
               onClick={handleStartExploring}
             >
-              Start Your Wishlist
+              Explore Properties
             </Button>
           </div>
         ) : (
-          <>
-            {message && (
-              <div className={`message ${messageType}`}>{message}</div>
+          <div className="list">
+            {wishList.map(
+              ({
+                _id,
+                creator,
+                listingPhotoPaths,
+                city,
+                province,
+                country,
+                category,
+                type,
+                price,
+                booking = false,
+              }, index) => (
+                <div key={_id} className="listing-card-wrapper" style={{ "--i": index }}>
+                  <ListingCard
+                    listingId={_id}
+                    creator={creator}
+                    listingPhotoPaths={listingPhotoPaths}
+                    city={city}
+                    province={province}
+                    country={country}
+                    category={category}
+                    type={type}
+                    price={price}
+                    booking={booking}
+                  />
+
+                  <button
+                    className="remove-btn"
+                    onClick={() => handleRemove(_id)}
+                  >
+                    <DeleteOutlineIcon />
+                  </button>
+                </div>
+              )
             )}
-            <h1 className="title-list">Explorer's Wishlist</h1>
-            <div className="list">
-              {wishList.map(
-                ({
-                  _id,
-                  creator,
-                  listingPhotoPaths,
-                  city,
-                  province,
-                  country,
-                  category,
-                  type,
-                  price,
-                  booking = false,
-                }) => (
-                  <div key={_id} className="listing-card-wrapper">
-                    <ListingCard
-                      listingId={_id}
-                      creator={creator}
-                      listingPhotoPaths={listingPhotoPaths}
-                      city={city}
-                      province={province}
-                      country={country}
-                      category={category}
-                      type={type}
-                      price={price}
-                      booking={booking}
-                    />
-                    <DeleteIcon
-                      onClick={() => handleRemove(_id)}
-                      style={{
-                        cursor: "pointer",
-                        color: "#333",
-                        marginLeft: "10px",
-                        fontSize: "25px",
-                      }}
-                    />
-                  </div>
-                )
-              )}
-            </div>
-          </>
+          </div>
         )}
       </div>
+
       <Footer />
     </>
   );

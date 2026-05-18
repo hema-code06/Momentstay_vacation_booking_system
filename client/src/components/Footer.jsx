@@ -11,7 +11,6 @@ const Footer = () => {
           <li>Company details</li>
         </ul>
       </div>
-
       <div className="footer_right">
         <img src="/assets/payment.png" alt="payment" />
       </div>
