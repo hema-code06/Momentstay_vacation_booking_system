@@ -78,7 +78,6 @@ const UpdateProperty = () => {
     fetchPropertyDetails();
   }, [listingId]);
 
-  // ── Fix: stable blob URLs — created once per File object, not on every render
   const newPhotoPreviews = useMemo(
     () => newPhotos.map((file) => ({ file, url: URL.createObjectURL(file) })),
     [newPhotos]
@@ -89,7 +88,6 @@ const UpdateProperty = () => {
   };
 
   const removeNewPhoto = (index) => {
-    // revoke the blob URL before removing to free memory
     URL.revokeObjectURL(newPhotoPreviews[index].url);
     setNewPhotos((prev) => prev.filter((_, i) => i !== index));
   };
@@ -97,7 +95,7 @@ const UpdateProperty = () => {
   const handleAddPhotos = (e) => {
     const files = Array.from(e.target.files);
     setNewPhotos((prev) => [...prev, ...files]);
-    e.target.value = null; // reset input so same file can be re-picked
+    e.target.value = null;
   };
 
   const handleUpdate = async (e) => {
@@ -135,7 +133,6 @@ const UpdateProperty = () => {
 
       if (response.ok) {
         const data = await response.json();
-        // sync state with the real S3 URLs returned from server
         setExistingPhotos(data.listing.listingPhotoPaths || []);
         setNewPhotos([]);
         navigate("/");
@@ -341,7 +338,6 @@ const UpdateProperty = () => {
                   </div>
                 ))}
 
-                {/* Fix: use stable blob URLs from useMemo instead of inline createObjectURL */}
                 {newPhotoPreviews.map(({ url }, index) => (
                   <div key={`new-${index}`} className="photo-preview">
                     <img src={url} alt={`new-${index}`} />

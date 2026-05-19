@@ -59,7 +59,6 @@ if (process.env.NODE_ENV === "development") {
 
 mongoose.set("strictQuery", true);
 
-// MongoDB Connection
 const PORT = process.env.PORT || 3001;
 mongoose
   .connect(process.env.MONGO_URL, {

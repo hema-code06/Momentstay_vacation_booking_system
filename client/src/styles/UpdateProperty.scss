@@ -3,8 +3,8 @@
 .update-listing {
   padding: 0px 40px;
   width: 100%;
-  min-width: 0;
   box-sizing: border-box;
+
 
   @include xl {
     padding: 0px 30px;
@@ -24,7 +24,6 @@
 
   form {
     width: 100%;
-    min-width: 0;
     box-sizing: border-box;
 
     .update-listing_step1,
@@ -32,9 +31,7 @@
     .update-listing_step3,
     .update-listing_step4,
     .update-listing_step5 {
-      width: 100%;
-      min-width: 0;
-      box-sizing: border-box;
+      min-height: auto;
       padding: 40px 0px;
       border-bottom: 1px solid #e8e8e8;
 
@@ -79,7 +76,6 @@
       }
     }
 
-    // ── Step 1 ──────────────────────────────────────
     .update-listing_step1 {
       .category-list {
         display: flex;
@@ -204,7 +200,6 @@
       }
     }
 
-    // ── Step 2 ──────────────────────────────────────
     .update-listing_step2 {
       p {
         font-weight: 600;
@@ -388,33 +383,29 @@
       }
     }
 
-    // ── Step 3 — THE FIX ────────────────────────────
     .update-listing_step3 {
       width: 100%;
-      min-width: 0;
       box-sizing: border-box;
 
       .amenities {
         display: grid;
-        // key: 1fr columns fill ALL available space — no fixed minmax cap issue
-        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
         gap: 12px;
-        width: 100%;
-        min-width: 0;
-        box-sizing: border-box;
         margin-top: 2%;
+        width: 100%;
+        box-sizing: border-box;
 
         @include lg {
-          grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
         }
 
         @include md {
-          grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
           gap: 10px;
         }
 
         @include sm {
-          grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
           gap: 8px;
         }
 
@@ -431,8 +422,6 @@
           text-align: center;
           gap: 5px;
           width: 100%;
-          min-width: 0;
-          box-sizing: border-box;
           height: 85px;
           border: 1px solid #ddd;
           border-radius: 5px;
@@ -481,7 +470,6 @@
       }
     }
 
-    // ── Step 4 ──────────────────────────────────────
     .update-listing_step4 {
       .photo-hint {
         font-size: 14px;
@@ -621,7 +609,6 @@
       }
     }
 
-    // ── Step 5 ──────────────────────────────────────
     .update-listing_step5 {
       .full {
         display: flex;
@@ -704,7 +691,6 @@
       }
     }
 
-    // ── Navigation ───────────────────────────────────
     .navigation-buttons {
       display: flex;
       justify-content: space-between;
@@ -759,7 +745,6 @@
       }
     }
 
-    // ── Selected state ───────────────────────────────
     .selected {
       border-color: #004369 !important;
       background-color: #e8f0f6;

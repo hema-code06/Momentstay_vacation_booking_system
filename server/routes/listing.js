@@ -86,7 +86,6 @@ router.get("/:listingId", async (req, res) => {
 router.put("/:listingId", upload.array("listingPhotos"), async (req, res) => {
   const { listingId } = req.params;
 
-  // ── debug logs placed AFTER params are destructured ──
   console.log("PUT /properties/:listingId called");
   console.log("req.files count:", req.files?.length);
   console.log("req.body.existingPhotos:", req.body.existingPhotos);
@@ -97,7 +96,6 @@ router.put("/:listingId", upload.array("listingPhotos"), async (req, res) => {
       return res.status(404).json({ message: "Properties not found!" });
     }
 
-    // 1. Parse the existing photo URLs the client chose to keep
     let keptPhotos = [];
     if (req.body.existingPhotos) {
       try {
@@ -107,14 +105,12 @@ router.put("/:listingId", upload.array("listingPhotos"), async (req, res) => {
       }
     }
 
-    // 2. Delete from S3 any photos that were removed by the user
     const removedPhotos = listing.listingPhotoPaths.filter(
       (url) => !keptPhotos.includes(url)
     );
 
     if (removedPhotos.length > 0) {
       const deletePromises = removedPhotos.map((photoUrl) => {
-        // Fix: handle both path formats safely
         const key = photoUrl.includes(".amazonaws.com/")
           ? photoUrl.split(".amazonaws.com/")[1]
           : photoUrl;
@@ -129,18 +125,15 @@ router.put("/:listingId", upload.array("listingPhotos"), async (req, res) => {
       console.log("Deleted from S3:", removedPhotos.length, "photo(s)");
     }
 
-    // 3. Collect URLs of newly uploaded photos
     const newPhotoPaths = req.files && req.files.length > 0
       ? req.files.map((file) => file.location)
       : [];
 
     console.log("New photo S3 URLs:", newPhotoPaths);
 
-    // 4. Merge kept + new
     const updatedPhotoPaths = [...keptPhotos, ...newPhotoPaths];
     console.log("Total photos after update:", updatedPhotoPaths.length);
 
-    // 5. Update all fields
     const {
       creator, category, type, streetAddress, aptSuite, city, province,
       country, guestCount, bedroomCount, bedCount, bathroomCount,
@@ -171,7 +164,6 @@ router.delete("/:listingId", async (req, res) => {
       return res.status(404).json({ message: "Properties not found!" });
     }
 
-    // Delete all photos from S3
     if (listing.listingPhotoPaths?.length > 0) {
       const deletePromises = listing.listingPhotoPaths.map((photoUrl) => {
         const key = photoUrl.includes(".amazonaws.com/")
