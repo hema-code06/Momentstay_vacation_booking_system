@@ -38,12 +38,12 @@
   }
 
   h1 {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif !important;
     font-size: clamp(24px, 4vw, 30px);
     font-weight: 700;
-    font-style: italic;
     color: #004369;
     line-height: 1.15;
+    text-transform: capitalize;
     letter-spacing: -0.02em;
   }
 }

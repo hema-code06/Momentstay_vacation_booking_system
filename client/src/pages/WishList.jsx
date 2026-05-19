@@ -55,13 +55,6 @@ const WishList = () => {
       <Navbar />
       <div className="wish-list-container">
         <div className="wish-list-header">
-          <div>
-            <h1>Saved Properties</h1>
-            <p>
-              Keep track of your favorite stays and explore them anytime.
-            </p>
-          </div>
-
           {wishList.length > 0 && (
             <div className="wishlist-count">
               {wishList.length} {wishList.length === 1 ? "Property" : "Properties"}

@@ -35,27 +35,11 @@
       margin-bottom: 24px;
     }
 
-    h1 {
-      font-family: "Playfair Display", Georgia, serif;
-      font-size: clamp(24px, 4vw, 36px);
-      font-weight: 700;
-      color: #004369;
-      line-height: 1.15;
-      margin-bottom: 6px;
-    }
-
-    p {
-      font-size: 15px;
-      color: #6b7280;
-      line-height: 1.6;
-
-      @include xs {
-        font-size: 13px;
-      }
-    }
-
     .wishlist-count {
       flex-shrink: 0;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
       background: #fff;
       border: 1px solid #e2e8f0;
       padding: 10px 18px;
@@ -65,10 +49,13 @@
       color: #004369;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
       white-space: nowrap;
+      margin-left: auto; 
 
       @include sm {
         width: 100%;
         text-align: center;
+        margin-left: 0;
+        justify-content: center;
       }
     }
   }
@@ -102,10 +89,6 @@
     justify-content: center;
     min-height: 60vh;
     text-align: center;
-    background: #fff;
-    border-radius: 20px;
-    padding: 60px 24px;
-    border: 1px solid #e2e8f0;
     opacity: 0;
     animation: fadeUp 0.6s ease forwards;
 
