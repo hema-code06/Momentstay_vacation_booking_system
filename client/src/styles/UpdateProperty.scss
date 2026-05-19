@@ -3,28 +3,84 @@
 .update-listing {
   padding: 0px 40px;
 
+  @include xl {
+    padding: 0 30px;
+  }
+
+  @include lg {
+    padding: 0 24px;
+  }
+
+  @include md {
+    padding: 0 18px;
+  }
+
+  @include sm {
+    padding: 0 12px;
+  }
+
+  @include xs {
+    padding: 0 8px;
+  }
+
   form {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
 
     .update-listing_step1,
     .update-listing_step2,
     .update-listing_step3,
     .update-listing_step4,
     .update-listing_step5 {
-      min-height: 70vh !important;
 
       h2 {
         text-align: center;
         margin-bottom: 3%;
+        font-size: 22px;
 
-        span {
-          color: #004369;
+        @include lg {
+          font-size: 20px;
         }
+
+        @include md {
+          font-size: 18px;
+          margin-bottom: 4%;
+        }
+
+        @include sm {
+          font-size: 15px;
+          margin-bottom: 5%;
+        }
+
+        @include xs {
+          font-size: 13px;
+          margin-bottom: 6%;
+        }
+      }
+
+      span {
+        color: #004369;
       }
 
       h3 {
         margin-bottom: 2%;
         font-size: 16px;
         color: grey;
+
+        @include md {
+          font-size: 14px;
+        }
+
+        @include sm {
+          font-size: 13px;
+          margin-bottom: 3%;
+        }
+
+        @include xs {
+          font-size: 12px;
+          margin-bottom: 4%;
+        }
       }
     }
 
@@ -32,26 +88,78 @@
       .category-list {
         display: flex;
         flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
+        gap: 10px;
         margin-bottom: 3%;
+
+        @include sm {
+          gap: 8px;
+          margin-bottom: 4%;
+        }
+
+        @include xs {
+          gap: 6px;
+          margin-bottom: 5%;
+        }
 
         .category {
           display: flex;
-          width: 100px;
-          height: 90px;
-          margin-top: 1%;
-          margin-bottom: 1%;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          gap: 8px;
+          padding: 13px 18px;
           border: 1px solid #ddd;
-          border-radius: 5px;
+          border-radius: 20px;
           cursor: pointer;
+          transition: all 0.2s ease;
+
+          @include md {
+            padding: 10px 14px;
+            gap: 6px;
+          }
+
+          @include sm {
+            padding: 7px 11px;
+            gap: 5px;
+          }
+
+          @include xs {
+            padding: 5px 9px;
+            gap: 4px;
+          }
 
           .category_icon {
             color: #004369;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            margin: 0;
+            padding: 0;
+
+            @include sm {
+              font-size: 14px;
+            }
+
+            @include xs {
+              font-size: 12px;
+            }
           }
 
+
           p {
-            font-size: 13px;
+            font-size: 14px;
+            white-space: nowrap;
+            margin: 0;
+
+            @include sm {
+              font-size: 12px;
+            }
+
+            @include xs {
+              font-size: 11px;
+            }
           }
         }
       }
@@ -62,29 +170,72 @@
         justify-content: center;
         gap: 15px;
 
+        @include sm {
+          gap: 10px;
+        }
 
-        .type-text {
-          display: flex;
-          flex-direction: row;
-          gap: 20px;
+        @include xs {
+          gap: 8px;
         }
 
         .type {
           display: flex;
           flex-wrap: wrap;
+          gap: 5px;
           width: 345px;
           padding: 10px;
-          max-width: 800px;
           border: 1px solid #ddd;
           border-radius: 5px;
           cursor: pointer;
 
+          @include lg {
+            width: 300px;
+          }
+
+          @include md {
+            width: 100%;
+          }
+
+          @include sm {
+            width: 100%;
+            padding: 8px;
+          }
+
+          .type-text {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            width: 100%;
+            align-items: center;
+            justify-content: space-between;
+
+            @include sm {
+              gap: 12px;
+            }
+          }
+
           h4 {
             font-size: 15px;
+
+            @include sm {
+              font-size: 13px;
+            }
+
+            @include xs {
+              font-size: 12px;
+            }
           }
 
           p {
             font-size: 12px;
+
+            @include sm {
+              font-size: 12px;
+            }
+
+            @include xs {
+              font-size: 11px;
+            }
           }
 
           .type_icon {
@@ -95,8 +246,21 @@
     }
 
     .update-listing_step2 {
-      h2 {
+
+      @include xl {
         margin-top: 5%;
+      }
+
+      @include md {
+        margin-top: 3%;
+      }
+
+      @include sm {
+        margin-top: 2%;
+      }
+
+      h2 {
+        margin-top: 8%;
         margin-bottom: 3%;
       }
 
@@ -105,10 +269,28 @@
         font-size: 14px;
         margin-bottom: 1%;
         color: #333;
+
+        @include sm {
+          font-size: 12px;
+          margin-bottom: 2%;
+        }
+
+        @include xs {
+          font-size: 11px;
+          margin-bottom: 3%;
+        }
       }
 
       .location {
         margin-bottom: 15px;
+
+        @include sm {
+          margin-bottom: 12px;
+        }
+
+        @include xs {
+          margin-bottom: 10px;
+        }
       }
 
       .full {
@@ -125,6 +307,17 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             letter-spacing: 0.5px;
+            box-sizing: border-box;
+
+            @include sm {
+              font-size: 12px;
+              padding: 9px;
+            }
+
+            @include xs {
+              font-size: 11px;
+              padding: 7px;
+            }
 
             &:focus {
               outline: none;
@@ -137,9 +330,19 @@
       .half {
         display: flex;
         justify-content: space-between;
+        gap: 16px;
+
+        @include md {
+          flex-direction: column;
+          gap: 0;
+        }
 
         .location {
           flex: 0 0 48%;
+
+          @include md {
+            flex: 1;
+          }
 
           input {
             width: 100%;
@@ -148,6 +351,17 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             letter-spacing: 0.5px;
+            box-sizing: border-box;
+
+            @include sm {
+              font-size: 12px;
+              padding: 9px;
+            }
+
+            @include xs {
+              font-size: 11px;
+              padding: 7px;
+            }
 
             &:focus {
               outline: none;
@@ -159,13 +373,38 @@
 
       .count-container {
         display: flex;
-        flex-direction: row;
         margin-left: 2%;
+
+        @include md {
+          margin-left: 0;
+        }
+
 
         .half2 {
           display: flex;
+          flex-wrap: wrap;
           flex-direction: row;
-          gap: 100px;
+          gap: 60px;
+
+          @include xl {
+            gap: 40px;
+          }
+
+          @include lg {
+            gap: 30px;
+          }
+
+          @include md {
+            gap: 20px;
+          }
+
+          @include sm {
+            gap: 14px;
+          }
+
+          @include xs {
+            gap: 10px;
+          }
 
           .counts {
             display: flex;
@@ -173,6 +412,14 @@
 
             p {
               margin: 0 10px 0 0;
+
+              @include sm {
+                margin: 0 7px 0 0;
+              }
+
+              @include xs {
+                margin: 0 5px 0 0;
+              }
             }
 
             .input-group {
@@ -181,23 +428,33 @@
 
               input {
                 width: 40px;
-                text-align: center !important;
+                text-align: center;
                 padding: 6px;
                 font-size: 16px;
                 border: 1px solid #ccc;
                 border-radius: 4px;
                 margin: 0 5px;
-              }
-
-              input[type="number"] {
                 -moz-appearance: textfield;
                 appearance: textfield;
-              }
 
-              input[type="number"]::-webkit-inner-spin-button,
-              input[type="number"]::-webkit-outer-spin-button {
-                -webkit-appearance: none;
-                margin: 0;
+                @include sm {
+                  font-size: 14px;
+                  width: 36px;
+                  padding: 5px;
+                }
+
+                @include xs {
+                  font-size: 12px;
+                  width: 30px;
+                  padding: 4px;
+                  margin: 0 3px;
+                }
+
+                &::-webkit-inner-spin-button,
+                &::-webkit-outer-spin-button {
+                  -webkit-appearance: none;
+                  margin: 0;
+                }
               }
 
               button {
@@ -214,6 +471,20 @@
                 cursor: pointer;
                 margin: 0 5px;
 
+                @include sm {
+                  font-size: 14px;
+                  width: 26px;
+                  height: 26px;
+                  margin: 0 4px;
+                }
+
+                @include xs {
+                  font-size: 12px;
+                  width: 22px;
+                  height: 22px;
+                  margin: 0 3px;
+                }
+
                 &:hover {
                   background-color: #00304d;
                 }
@@ -225,15 +496,38 @@
     }
 
     .update-listing_step3 {
-      padding: 8px;
+      margin-top: 8%;
+
+      @include xl {
+        margin-top: 5%;
+      }
+
+      @include md {
+        margin-top: 3%;
+      }
+
+      @include sm {
+        margin-top: 2%;
+      }
 
       .amenities {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
         gap: 15px;
-        margin-top: 2%;
         max-width: 1200px;
+
+        @include md {
+          gap: 12px;
+        }
+
+        @include sm {
+          gap: 10px;
+        }
+
+        @include xs {
+          gap: 8px;
+        }
 
         .facility {
           display: flex;
@@ -243,13 +537,33 @@
           text-align: center;
           gap: 5px;
           width: 120px;
-          height: 85px;
+          height: 80px;
           border: 1px solid #ddd;
           border-radius: 5px;
           cursor: pointer;
 
+          @include lg {
+            width: 115px;
+            height: 78px;
+          }
+
+          @include md {
+            width: 110px;
+            height: 75px;
+          }
+
+          @include sm {
+            width: 95px;
+            height: 68px;
+          }
+
+          @include xs {
+            width: 82px;
+            height: 62px;
+          }
+
           &:hover {
-            border-color: #004369;
+            border-color: #004369 !important;
             background-color: #f0f6fa;
           }
 
@@ -260,16 +574,46 @@
 
           .facility_icon {
             color: #004369;
+
+            @include sm {
+              font-size: 18px;
+            }
+
+            @include xs {
+              font-size: 16px;
+            }
           }
 
           p {
             font-size: 14px;
+
+            @include sm {
+              font-size: 12px;
+            }
+
+            @include xs {
+              font-size: 11px;
+            }
           }
         }
       }
     }
 
     .update-listing_step4 {
+      margin-top: 5%;
+
+      @include xl {
+        margin-top: 5%;
+      }
+
+      @include md {
+        margin-top: 3%;
+      }
+
+      @include sm {
+        margin-top: 2%;
+      }
+
       .photo-hint {
         font-size: 14px;
         color: grey;
@@ -278,7 +622,6 @@
       }
 
       .photos-upload {
-        margin-top: 8px;
 
         input[type="file"] {
           display: none;
@@ -288,9 +631,18 @@
           display: flex;
           flex-wrap: wrap;
           gap: 15px;
+          justify-content: center;
+
+          @include md {
+            gap: 12px;
+          }
 
           @include sm {
             gap: 10px;
+          }
+
+          @include xs {
+            gap: 8px;
           }
 
           .upload-placeholder,
@@ -301,7 +653,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
             background-color: #f0f0f0;
             border: 2px dashed #ccc;
             color: #888;
@@ -312,9 +663,43 @@
             cursor: pointer;
             transition: border-color 0.2s ease, background-color 0.2s ease;
 
+
+            @include lg {
+              width: 220px;
+              height: 135px;
+            }
+
+            @include md {
+              width: 200px;
+              height: 125px;
+            }
+
+            @include sm {
+              width: 160px;
+              height: 108px;
+              font-size: 12px;
+              gap: 10px;
+            }
+
+            @include xs {
+              width: 138px;
+              height: 96px;
+              font-size: 11px;
+              gap: 8px;
+              border-radius: 7px;
+            }
+
             .icon {
               font-size: 30px;
               color: #888;
+
+              @include sm {
+                font-size: 22px;
+              }
+
+              @include xs {
+                font-size: 18px;
+              }
             }
 
             &:hover {
@@ -363,7 +748,7 @@
               right: 6px;
               cursor: pointer;
               color: red;
-              font-size: 16px;
+              font-size: 20px;
               background: rgba(255, 255, 255, 0.85);
               border-radius: 50%;
               padding: 3px;
@@ -379,23 +764,88 @@
     }
 
     .update-listing_step5 {
-      margin-top: 3%;
+      margin-top: 8%;
+
+      @include xl {
+        margin-top: 5%;
+      }
+
+      @include md {
+        margin-top: 3%;
+      }
+
+      @include sm {
+        margin-top: 2%;
+      }
+
 
       .full {
         display: flex;
         flex-direction: column;
         gap: 20px;
 
+        @include md {
+          gap: 16px;
+        }
+
+        @include sm {
+          gap: 12px;
+        }
+
+        @include xs {
+          gap: 10px;
+        }
+
         .description {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 20px;
+
+          @include md {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+          }
+
+          @include sm {
+            gap: 5px;
+          }
+
           p {
             font-size: 14px;
-            margin-bottom: 10px;
             font-weight: 600;
             word-spacing: 5px;
+            width: 350px;
+            min-width: 300px;
+            margin-bottom: 0;
+
+            @include xl {
+              width: 260px;
+              min-width: 260px;
+            }
+
+            @include lg {
+              width: 220px;
+              min-width: 220px;
+            }
+
+            @include md {
+              width: 100%;
+              min-width: unset;
+            }
+
+            @include sm {
+              font-size: 13px;
+            }
+
+            @include xs {
+              font-size: 12px;
+            }
 
             span {
-              font-weight: 400;
-              color: grey;
+              font-weight: 600;
+              color: #004369;
               word-spacing: normal;
             }
           }
@@ -403,7 +853,8 @@
           input[type="text"],
           input[type="number"],
           textarea {
-            width: 55%;
+            flex: 1;
+            width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -411,6 +862,17 @@
             word-spacing: 5px;
             color: #333;
             background-color: #f9f9f9;
+            box-sizing: border-box;
+
+            @include sm {
+              font-size: 12px;
+              padding: 8px;
+            }
+
+            @include xs {
+              font-size: 11px;
+              padding: 7px;
+            }
 
             &:focus {
               outline: none;
@@ -418,19 +880,17 @@
             }
           }
 
-          input[type="number"] {
-            -moz-appearance: textfield;
-            appearance: textfield;
-
-            &::-webkit-inner-spin-button,
-            &::-webkit-outer-spin-button {
-              -webkit-appearance: none;
-            }
-          }
-
           textarea {
             resize: vertical;
             min-height: 100px;
+
+            @include sm {
+              min-height: 80px;
+            }
+
+            @include xs {
+              min-height: 70px;
+            }
           }
         }
       }
@@ -442,6 +902,20 @@
       align-items: center;
       margin-top: 5%;
       margin-bottom: 5%;
+      padding: 16px 0 24px;
+      position: sticky;
+      bottom: 0;
+      background-color: #fff;
+      z-index: 10;
+      border-top: 1px solid #eee;
+
+      @include sm {
+        padding: 12px 0 18px;
+      }
+
+      @include xs {
+        padding: 10px 0 14px;
+      }
 
       button {
         background-color: #004369;
@@ -455,6 +929,25 @@
         border-radius: 4px;
         cursor: pointer;
         transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+        @include md {
+          font-size: 14px;
+          padding: 9px 20px;
+        }
+
+        @include sm {
+          font-size: 13px;
+          padding: 8px 16px;
+          min-width: 78px;
+          letter-spacing: 0.5px;
+        }
+
+        @include xs {
+          font-size: 12px;
+          padding: 7px 13px;
+          min-width: 68px;
+          letter-spacing: 0.3px;
+        }
 
         &:hover {
           background-color: #00304d;
@@ -478,12 +971,6 @@
 
   .selected {
     border-color: #004369 !important;
-    background-color: #e8f0f6;
-
-    .category_icon,
-    .facility_icon,
-    .type_icon {
-      color: #004369;
-    }
+    background-color: rgb(233, 232, 232);
   }
 }

@@ -5,7 +5,6 @@ import { IoIosImages } from "react-icons/io";
 import { BiTrash } from "react-icons/bi";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import Footer from "../components/Footer";
 import "../styles/UpdateProperty.scss";
 
 const UpdateProperty = () => {
@@ -185,7 +184,7 @@ const UpdateProperty = () => {
                 </div>
               ))}
             </div>
-            
+
             <h3>What type of place will guests have?</h3>
             <div className="type-list">
               {types?.map((item, index) => (
@@ -411,7 +410,6 @@ const UpdateProperty = () => {
 
         </form>
       </div>
-      <Footer />
     </>
   );
 };
