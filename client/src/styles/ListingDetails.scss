@@ -72,7 +72,6 @@
   }
 }
 
-// ── Photos grid — flexible, shows ALL photos ──
 .photos {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -210,7 +209,6 @@
   }
 }
 
-// ── Amenities inside listing detail — 2 col layout ──
 .amenities {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
