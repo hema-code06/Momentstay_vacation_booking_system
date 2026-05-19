@@ -72,15 +72,23 @@
   }
 }
 
+// ── Photos grid — flexible, shows ALL photos ──
 .photos {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
   margin-top: 5%;
   margin-bottom: 32px;
+  width: 100%;
+  box-sizing: border-box;
+
+  @include lg {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+  }
 
   @include md {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
     gap: 12px;
   }
 
@@ -202,19 +210,21 @@
   }
 }
 
+// ── Amenities inside listing detail — 2 col layout ──
 .amenities {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px 60px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px 32px;
   margin: 24px 0;
-  max-width: 600px;
+  width: 100%;
+  box-sizing: border-box;
 
   @include md {
-    gap: 14px 32px;
+    gap: 14px 24px;
   }
 
   @include sm {
-    gap: 12px 20px;
+    gap: 12px 16px;
   }
 
   @include xs {
