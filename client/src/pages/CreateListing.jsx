@@ -117,9 +117,8 @@ const CreateListing = () => {
               <div className="category-list">
                 {categories?.map((item, index) => (
                   <div
-                    className={`category ${
-                      category === item.label ? "selected" : ""
-                    }`}
+                    className={`category ${category === item.label ? "selected" : ""
+                      }`}
                     key={index}
                     onClick={() => setCategory(item.label)}
                   >
@@ -151,7 +150,6 @@ const CreateListing = () => {
           {currentStep === 2 && (
             <div className="create-listing_step2">
               <h2>
-                {" "}
                 <span>Step 2 :</span> Share some basics about your place
               </h2>
               <div className="full">
@@ -380,9 +378,8 @@ const CreateListing = () => {
               <div className="amenities">
                 {facilities?.map((item, index) => (
                   <div
-                    className={`facility ${
-                      amenities.includes(item.name) ? "selected" : ""
-                    }`}
+                    className={`facility ${amenities.includes(item.name) ? "selected" : ""
+                      }`}
                     key={index}
                     onClick={() =>
                       setAmenities((prev) =>

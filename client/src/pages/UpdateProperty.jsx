@@ -185,7 +185,7 @@ const UpdateProperty = () => {
                 </div>
               ))}
             </div>
-
+            
             <h3>What type of place will guests have?</h3>
             <div className="type-list">
               {types?.map((item, index) => (
