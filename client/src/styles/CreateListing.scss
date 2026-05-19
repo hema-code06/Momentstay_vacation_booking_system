@@ -2,7 +2,8 @@
 
 .create-listing {
   padding: 0px 40px;
-  min-height: 100vh;
+  min-height: auto !important;
+  overflow: hidden !important;
 
   form {
 
@@ -11,7 +12,7 @@
     .create-listing_step3,
     .create-listing_step4,
     .create-listing_step5 {
-      min-height: 70vh !important;
+      min-height: 60vh !important;
 
       h2 {
         text-align: center;
@@ -41,31 +42,44 @@
       .category-list {
         display: flex;
         flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
+        gap: 10px;
         margin-bottom: 3%;
 
         .category {
           display: flex;
-          width: 100px;
-          height: 90px;
-          margin-top: 1%;
-          margin-bottom: 1%;
+          flex-direction: row;
+          gap: 8px;
+          padding: 13px 18px;
+          height: auto;
+          width: auto;
           border: 1px solid #ddd;
-          border-radius: 5px;
+          border-radius: 20px;
           cursor: pointer;
+          transition: all 0.2s ease;
 
           @include sm {
-            width: 80px;
-            height: 70px;
+            padding: 6px 10px;
           }
 
           .category_icon {
             color: #004369;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            margin: 0;
+            padding: 0;
+
+            @include sm {
+              font-size: 13px;
+            }
           }
 
           p {
-            font-size: 13px;
+            font-size: 14px;
+            white-space: nowrap; 
+            margin: 0;
 
             @include sm {
               font-size: 11px;
@@ -125,7 +139,6 @@
       }
 
       h2 {
-        margin-top: 3%;
         margin-bottom: 3%;
 
         @include xl {
@@ -281,7 +294,6 @@
     }
 
     .create-listing_step3 {
-      padding: 8px;
 
       @include xl {
         margin-top: 5%;
@@ -293,7 +305,7 @@
         justify-content: center;
         gap: 15px;
         margin-top: 2%;
-        max-width: 1200px;
+        max-width: 1200px !important;
 
         .facility {
           display: flex;
@@ -412,21 +424,31 @@
         gap: 20px;
 
         .description {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 20px;
+
           p {
             font-size: 14px;
-            margin-bottom: 10px;
             font-weight: 600;
             word-spacing: 5px;
+            width: 300px;
+            min-width: 350px;
+            text-align: left;
+            margin-bottom: 0;
 
             @include sm {
               font-size: 12px;
+              width: 120px;
+              min-width: 120px;
             }
           }
 
           input[type="text"],
           input[type="number"],
           textarea {
-            width: 55%;
+            flex: 1;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -436,7 +458,6 @@
             background-color: #f9f9f9;
 
             @include sm {
-              width: 100%;
               font-size: 12px;
               padding: 8px;
             }
@@ -454,8 +475,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 5%;
-      margin-bottom: 5%;
+      margin-top: 3%;
 
       .next-btn {
         margin-left: auto;
