@@ -5,6 +5,7 @@
   min-height: 100vh;
 
   form {
+
     .create-listing_step1,
     .create-listing_step2,
     .create-listing_step3,
@@ -29,6 +30,7 @@
         @include sm {
           font-size: 12px;
         }
+
         @include md {
           font-size: 14px;
         }
@@ -57,6 +59,7 @@
             width: 80px;
             height: 70px;
           }
+
           .category_icon {
             color: #004369;
           }
@@ -290,6 +293,7 @@
         justify-content: center;
         gap: 15px;
         margin-top: 2%;
+        max-width: 1200px;
 
         .facility {
           display: flex;
@@ -450,10 +454,12 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 5%; 
+      margin-top: 5%;
+      margin-bottom: 5%;
+
       .next-btn {
         margin-left: auto;
-       
+
       }
 
       button {
