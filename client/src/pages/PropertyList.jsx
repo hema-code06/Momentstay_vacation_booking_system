@@ -5,9 +5,9 @@ import Navbar from "../components/Navbar";
 import UpdateListing from "../components/UpdateListing";
 import { setPropertyList } from "../redux/state";
 import Loader from "../components/Loader";
-import Footer from "../components/Footer";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
+import HomeWorkOutlinedIcon from "@mui/icons-material/HomeWorkOutlined";
 
 const PropertyList = () => {
   const [loading, setLoading] = useState(true);
@@ -50,6 +50,13 @@ const PropertyList = () => {
     <>
       <Navbar />
       <div className="property-container">
+        <div className="property-list-header">
+          {propertyList.length > 0 && (
+            <div className="propertylist-count">
+              {propertyList.length} {propertyList.length === 1 ? "Property" : "Properties"}
+            </div>
+          )}
+        </div>
         {propertyList && propertyList.length > 0 ? (
           <>
             <div className="list">
@@ -85,8 +92,10 @@ const PropertyList = () => {
           </>
         ) : (
           <div className="empty-property-list">
-            <h2>Properties</h2>
-            <p style={{ fontWeight: "600" }}>No properties listed ... yet!</p>
+            <div className="empty-icon">
+              <HomeWorkOutlinedIcon />
+            </div>
+            <h2>No properties listed ... yet!</h2>
             <p>Time to showcase your beautiful properties to the world.</p>
             <Button
               variant="contained"
@@ -98,7 +107,6 @@ const PropertyList = () => {
           </div>
         )}
       </div>
-      <Footer />
     </>
   );
 };

@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
 import ListingCard from "../components/ListingCard";
-import Footer from "../components/Footer";
 
 import { removeFromWishList } from "../redux/state";
 
@@ -127,8 +126,6 @@ const WishList = () => {
           </div>
         )}
       </div>
-
-      <Footer />
     </>
   );
 };

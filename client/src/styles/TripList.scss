@@ -1,7 +1,45 @@
 @import "./Responsive.scss";
 
 .trip-list-container {
-  min-height: 100vh;
+  max-height: auto;
+  overflow: hidden;
+
+  .trip-list-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 3%;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+
+    @include sm {
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .triplist-count {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #004369;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      white-space: nowrap;
+
+      @include sm {
+        width: 100%;
+        text-align: center;
+        margin-left: 0;
+        justify-content: center;
+      }
+    }
+  }
+
   .slider-container {
     position: relative;
     overflow: hidden;
@@ -40,6 +78,7 @@
   .next-button {
     right: 10px;
   }
+
   .info {
     display: flex;
     flex-direction: column;
@@ -61,29 +100,94 @@
   }
 
   .empty-trip-list {
-    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    text-align: center;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+
+    @include sm {
+      padding: 40px 16px;
+      border-radius: 16px;
+    }
+
+    .empty-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+
+      svg {
+        font-size: 36px;
+        color: #004369;
+      }
+    }
 
     h2 {
-      color: #004369;
-      font-size: 2rem;
-      margin-bottom: 2%;
+      font-size: clamp(20px, 3vw, 28px);
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 12px;
     }
 
     p {
-      margin: 10px 0;
-      font-size: 1.1rem;
+      font-size: 15px;
+      color: #6b7280;
+      max-width: 620px;
+      line-height: 1.7;
+      margin-bottom: 28px;
+
+      @include xs {
+        font-size: 13px;
+      }
     }
 
     .trip-btn {
-      margin-top: 3%;
-      background-color: transparent;
-      color: #333;
-      border: 1px solid #333;
+      background: #004369 !important;
+      color: #fff !important;
+      padding: 12px 28px !important;
+      border-radius: 10px !important;
+      font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif !important;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.04em !important;
+      text-transform: uppercase !important;
+      box-shadow: 0 4px 12px rgba(0, 67, 105, 0.25) !important;
+      transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
 
       &:hover {
-        box-shadow: 0 5px 5px 0 gray;
-        background-color: transparent;
+        background: #002a43 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 20px rgba(0, 67, 105, 0.35) !important;
       }
+
+      &:active {
+        transform: translateY(0) !important;
+      }
+
+      @include sm {
+        width: 100%;
+        max-width: 300px;
+      }
+    }
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 }

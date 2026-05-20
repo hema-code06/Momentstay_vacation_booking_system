@@ -4,10 +4,10 @@ import Navbar from "../components/Navbar";
 import { useDispatch, useSelector } from "react-redux";
 import { setReservationList } from "../redux/state";
 import { useNavigate } from "react-router-dom";
-import Footer from "../components/Footer";
 import { ArrowBackIosNew, ArrowForwardIos } from "@mui/icons-material";
 import Button from "@mui/material/Button";
 import "../styles/ReservationList.scss";
+import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
 
 const ReservationList = () => {
   const [loading, setLoading] = useState(true);
@@ -57,7 +57,7 @@ const ReservationList = () => {
     setCurrentIndex((prevIndex) =>
       prevIndex === 0
         ? filteredReservationList[listingIndex]?.listingId?.listingPhotoPaths
-            ?.length - 1
+          ?.length - 1
         : prevIndex - 1,
     );
   };
@@ -65,8 +65,8 @@ const ReservationList = () => {
   const goToNextSlide = (listingIndex) => {
     setCurrentIndex((prevIndex) =>
       prevIndex ===
-      filteredReservationList[listingIndex]?.listingId?.listingPhotoPaths
-        ?.length -
+        filteredReservationList[listingIndex]?.listingId?.listingPhotoPaths
+          ?.length -
         1
         ? 0
         : prevIndex + 1,
@@ -112,9 +112,15 @@ const ReservationList = () => {
     <>
       <Navbar />
       <div className="reserve-container">
+        <div className="reservation-list-header">
+          {reservationList.length > 0 && (
+            <div className="reservationlist-count">
+              {reservationList.length} {reservationList.length === 1 ? "Property" : "Properties"}
+            </div>
+          )}
+        </div>
         {filteredReservationList.length > 0 ? (
           <>
-            <h1 className="title-list">Booking Overview</h1>
             <div className="list">
               {filteredReservationList.map((booking, listingIndex) => {
                 if (!booking || !booking.listingId) {
@@ -136,7 +142,7 @@ const ReservationList = () => {
                         {listingId.listingPhotoPaths?.map((photo, index) => (
                           <div key={index} className="slide">
                             <img
-                             src={photo?.startsWith("http") ? photo : `${process.env.REACT_APP_API_URL}/${photo?.replace("public", "")}`}
+                              src={photo?.startsWith("http") ? photo : `${process.env.REACT_APP_API_URL}/${photo?.replace("public", "")}`}
                               alt={`Slide ${index + 1}`}
                             />
                           </div>
@@ -193,8 +199,11 @@ const ReservationList = () => {
           </>
         ) : (
           <div className="empty-reservation-list">
-            <h2>Reservations</h2>
-            <p style={{ fontWeight: "600" }}>No reservations made ... yet!</p>
+            <div className="empty-icon">
+              <EventAvailableOutlinedIcon />
+            </div>
+
+            <h2>No reservations made ... yet!</h2>
             <p>Time to find the perfect spot and make your next booking.</p>
             <Button
               className="reserve-btn"
@@ -206,7 +215,6 @@ const ReservationList = () => {
           </div>
         )}
       </div>
-      <Footer />
     </>
   );
 };

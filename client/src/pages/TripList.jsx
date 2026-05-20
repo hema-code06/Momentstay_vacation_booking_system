@@ -4,10 +4,10 @@ import Navbar from "../components/Navbar";
 import { useDispatch, useSelector } from "react-redux";
 import { setTripList } from "../redux/state";
 import { useNavigate } from "react-router-dom";
-import Footer from "../components/Footer";
 import { ArrowBackIosNew, ArrowForwardIos } from "@mui/icons-material";
 import Button from "@mui/material/Button";
 import "../styles/TripList.scss";
+import LuggageOutlinedIcon from "@mui/icons-material/LuggageOutlined";
 
 const TripList = () => {
   const [loading, setLoading] = useState(true);
@@ -97,6 +97,13 @@ const TripList = () => {
     <>
       <Navbar />
       <div className="trip-list-container">
+        <div className="trip-list-header">
+          {tripList.length > 0 && (
+            <div className="triplist-count">
+              {tripList.length} {tripList.length === 1 ? "Property" : "Properties"}
+            </div>
+          )}
+        </div>
         {filteredTripList.length > 0 ? (
           <>
             <div className="list">
@@ -115,16 +122,15 @@ const TripList = () => {
                             <div
                               className="slider"
                               style={{
-                                transform: `translateX(-${
-                                  currentIndex * 100
-                                }%)`,
+                                transform: `translateX(-${currentIndex * 100
+                                  }%)`,
                               }}
                             >
                               {listingId.listingPhotoPaths.map(
                                 (photo, index) => (
                                   <div key={index} className="slide">
                                     <img
-                                     src={photo?.startsWith("http") ? photo : `${process.env.REACT_APP_API_URL}/${photo?.replace("public", "")}`}
+                                      src={photo?.startsWith("http") ? photo : `${process.env.REACT_APP_API_URL}/${photo?.replace("public", "")}`}
                                       alt={`Slide ${index + 1}`}
                                     />
                                   </div>
@@ -167,8 +173,10 @@ const TripList = () => {
           </>
         ) : (
           <div className="empty-trip-list">
-            <h2>Trips</h2>
-            <p style={{ fontWeight: "600" }}>No trips booked ... yet!</p>
+            <div className="empty-icon">
+              <LuggageOutlinedIcon />
+            </div>
+            <h2>No trips booked ... yet!</h2>
             <p>
               Time to dust off your bags and start planning your next adventure.
             </p>
@@ -182,7 +190,6 @@ const TripList = () => {
           </div>
         )}
       </div>
-      <Footer />
     </>
   );
 };
