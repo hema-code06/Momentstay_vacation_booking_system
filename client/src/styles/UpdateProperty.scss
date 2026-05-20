@@ -108,7 +108,7 @@
           align-items: center;
           gap: 8px;
           padding: 13px 18px;
-          border: 1px solid #ddd;
+          border: 2px solid #ddd;
           border-radius: 20px;
           cursor: pointer;
           transition: all 0.2s ease;
@@ -184,7 +184,7 @@
           gap: 5px;
           width: 345px;
           padding: 10px;
-          border: 1px solid #ddd;
+          border: 2px solid #ddd;
           border-radius: 5px;
           cursor: pointer;
 
@@ -431,7 +431,7 @@
                 text-align: center;
                 padding: 6px;
                 font-size: 16px;
-                border: 1px solid #ccc;
+                border: 1px solid #004369;
                 border-radius: 4px;
                 margin: 0 5px;
                 -moz-appearance: textfield;
@@ -538,7 +538,7 @@
           gap: 5px;
           width: 120px;
           height: 80px;
-          border: 1px solid #ddd;
+          border: 2px solid #ddd;
           border-radius: 5px;
           cursor: pointer;
 
@@ -565,11 +565,6 @@
           &:hover {
             border-color: #004369 !important;
             background-color: #f0f6fa;
-          }
-
-          &.selected {
-            border-color: #004369 !important;
-            background-color: #e8f0f6;
           }
 
           .facility_icon {
@@ -714,7 +709,7 @@
           }
 
           .photo-preview {
-            border: 1px solid #ddd;
+            border: 2px solid #ddd;
             overflow: hidden;
 
             img {
@@ -969,7 +964,21 @@
   }
 
   .selected {
-    border-color: #004369 !important;
-    background-color: rgb(233, 232, 232);
+    border: 2px solid #004369 !important;
+    background-color: #e8f4fb !important;
+    box-shadow: 0 4px 12px rgba(0, 67, 105, 0.15);
+
+    p,
+    h4,
+    .facility_icon,
+    .category_icon,
+    .type_icon {
+      color: #004369 !important;
+    }
+
+    p,
+    h4 {
+      font-weight: 600;
+    }
   }
 }
