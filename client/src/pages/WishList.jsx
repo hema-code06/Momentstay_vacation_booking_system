@@ -16,6 +16,7 @@ const WishList = () => {
   const navigate = useNavigate();
 
   const wishList = useSelector((state) => state.user.wishList);
+  const userId = useSelector((state) => state.user._id);
 
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
@@ -33,7 +34,7 @@ const WishList = () => {
   };
 
   const handleStartExploring = () => {
-    navigate("/");
+    navigate(`/${userId}/trips`);
   };
 
   useEffect(() => {
