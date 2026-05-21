@@ -99,7 +99,6 @@ const ReservationList = () => {
       <Navbar />
       <div className="reserve-container">
         <div className="reservation-header">
-          <h1 className="page-title">My Reservations</h1>
           {filteredReservationList.length > 0 && (
             <span className="reservation-count">
               {filteredReservationList.length}{" "}
