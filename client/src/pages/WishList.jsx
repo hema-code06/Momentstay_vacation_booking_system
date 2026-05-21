@@ -1,15 +1,13 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 import Navbar from "../components/Navbar";
 import ListingCard from "../components/ListingCard";
-
 import { removeFromWishList } from "../redux/state";
-
 import Button from "@mui/material/Button";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { FaHeart } from "react-icons/fa";
 
 import "../styles/WishList.scss";
 
@@ -56,7 +54,8 @@ const WishList = () => {
         <div className="wish-list-header">
           {wishList.length > 0 && (
             <div className="wishlist-count">
-              {wishList.length} {wishList.length === 1 ? "Property" : "Properties"}
+              <FaHeart style={{ color: "red", marginRight: "6px" }} />
+              {wishList.length} {wishList.length === 1 ? "Favorite" : "Favorites"}
             </div>
           )}
         </div>

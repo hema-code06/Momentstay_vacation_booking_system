@@ -84,14 +84,6 @@ const TripList = () => {
     <>
       <Navbar />
       <div className="trip-list-container">
-        <div className="trip-list-header">
-          {filteredTripList.length > 0 && (
-            <div className="triplist-count">
-              {filteredTripList.length}{" "}
-              {filteredTripList.length === 1 ? "Property" : "Properties"}
-            </div>
-          )}
-        </div>
 
         {filteredTripList.length > 0 ? (
           <div className="list">
@@ -101,8 +93,8 @@ const TripList = () => {
               const currentIndex = currentIndexes[listingId._id] || 0;
               const nights = calcNights(startDate, endDate);
               const photos = listingId?.listingPhotoPaths || [];
-              const location = listingId?.address          // if single field
-                || listingId?.location                     // if stored as "location"
+              const location = listingId?.address          
+                || listingId?.location                     
                 || [listingId?.city, listingId?.state, listingId?.country].filter(Boolean).join(", ");
 
               return (

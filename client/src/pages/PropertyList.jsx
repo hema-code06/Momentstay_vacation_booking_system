@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import HomeWorkOutlinedIcon from "@mui/icons-material/HomeWorkOutlined";
 
+
 const PropertyList = () => {
   const [loading, setLoading] = useState(true);
   const userId = useSelector((state) => state.user._id);
@@ -53,6 +54,9 @@ const PropertyList = () => {
         <div className="property-list-header">
           {propertyList.length > 0 && (
             <div className="propertylist-count">
+              <HomeWorkOutlinedIcon
+                style={{ color: "#004369", marginRight: "6px", fontSize: "20px" }}
+              />
               {propertyList.length} {propertyList.length === 1 ? "Property" : "Properties"}
             </div>
           )}
