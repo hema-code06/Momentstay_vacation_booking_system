@@ -60,7 +60,11 @@ const UpdateProperty = () => {
           setBedroomCount(data.bedroomCount);
           setBedCount(data.bedCount);
           setBathroomCount(data.bathroomCount);
-          setAmenities(data.amenities || []);
+          const rawAmenities = data.amenities || [];
+          const normalizedAmenities = Array.isArray(rawAmenities)
+            ? rawAmenities.flatMap((item) => item.split(",").map((s) => s.trim())).filter(Boolean)
+            : String(rawAmenities).split(",").map((s) => s.trim()).filter(Boolean);
+          setAmenities(normalizedAmenities);
           setExistingPhotos(data.listingPhotoPaths || []);
           setFormDescription({
             title: data.title,
