@@ -4,6 +4,7 @@
   padding: 0 70px;
   max-height: auto;
   overflow: hidden;
+  margin-bottom: 2%;
 
   @include lg {
     max-width: 100%;
@@ -72,7 +73,9 @@
 .card-image {
   position: relative;
   width: 360px;
+  height: 220px;
   min-width: 260px;
+  min-height: auto;
   overflow: hidden;
   background: #f1f5f9;
   border-radius: 14px;
@@ -173,8 +176,10 @@
   padding: 20px 22px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   min-width: 0;
+  min-height: auto;
+  gap: 16px;
 
   @include sm {
     padding: 16px;
@@ -222,7 +227,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 16px;
+  margin-top: 0;
   padding-top: 14px;
   border-top: 1px solid #f1f5f9;
 
