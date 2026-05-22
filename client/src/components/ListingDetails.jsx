@@ -256,6 +256,7 @@ const ListingDetails = () => {
               <DateRange
                 ranges={dateRange}
                 onChange={handleSelect}
+                minDate={new Date()}
               />
 
               {dayCount > 1 ? (
