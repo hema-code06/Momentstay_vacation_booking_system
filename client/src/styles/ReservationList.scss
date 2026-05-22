@@ -1,6 +1,7 @@
 @import "./Responsive.scss";
 
 .reserve-container {
+  padding: 0 70px;
   max-height: auto;
   overflow: hidden;
 
@@ -70,10 +71,11 @@
 
 .card-image {
   position: relative;
-  width: 260px;
+  width: 360px;
   min-width: 260px;
   overflow: hidden;
   background: #f1f5f9;
+  border-radius: 14px;
 
   @include lg {
     width: 220px;
@@ -197,14 +199,14 @@
   .detail-row {
     display: flex;
     align-items: center;
-    gap: 7px;
-    font-size: 13px;
+    gap: 10px;
+    font-size: 14px;
     color: #64748b;
     line-height: 1.4;
 
     .detail-icon {
       font-size: 15px !important;
-      color: #94a3b8;
+      color: #004369;
       flex-shrink: 0;
     }
 

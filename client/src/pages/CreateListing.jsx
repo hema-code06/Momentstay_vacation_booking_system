@@ -6,13 +6,12 @@ import { useState } from "react";
 import { BiTrash } from "react-icons/bi";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { FiCheckCircle } from "react-icons/fi";
 
 const CreateListing = () => {
   const [currentStep, setCurrentStep] = useState(1);
-
   const [category, setCategory] = useState("");
   const [type, setType] = useState("");
-
   const [formLocation, setFormLocation] = useState({
     streetAddress: "",
     aptSuite: "",
@@ -20,25 +19,21 @@ const CreateListing = () => {
     province: "",
     country: "",
   });
-
   const [guestCount, setGuestCount] = useState(1);
   const [bedroomCount, setBedroomCount] = useState(1);
   const [bedCount, setBedCount] = useState(1);
   const [bathroomCount, setBathroomCount] = useState(1);
-
   const [amenities, setAmenities] = useState([]);
   const [photos, setPhotos] = useState([]);
-
   const [formDescription, setFormDescription] = useState({
     title: "",
     description: "",
     highlight: "",
     price: 0,
   });
-
   const creatorId = useSelector((state) => state.user._id);
   const navigate = useNavigate();
-
+  const [showToast, setShowToast] = useState(false);
   const handlePost = async (e) => {
     e.preventDefault();
 
@@ -72,7 +67,12 @@ const CreateListing = () => {
       });
 
       if (response.ok) {
-        navigate("/");
+        setShowToast(true);
+
+        setTimeout(() => {
+          setShowToast(false);
+          navigate("/");
+        }, 2500);
       }
     } catch (err) {
       console.log("Publish Properties failed", err.message);
@@ -102,6 +102,12 @@ const CreateListing = () => {
   return (
     <>
       <Navbar />
+      {showToast && (
+        <div className="custom-toast">
+          <FiCheckCircle className="toast-icon" />
+          <span>Property Created Successfully!</span>
+        </div>
+      )}
       <div className="create-listing">
         <form onSubmit={handlePost}>
           {currentStep === 1 && (

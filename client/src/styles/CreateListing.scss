@@ -25,6 +25,74 @@
   }
 }
 
+.custom-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-30px);
+  background: linear-gradient(135deg, #004369, #0b5c8f);
+  color: #fff;
+  padding: 14px 22px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  z-index: 9999;
+  box-shadow: 0 10px 30px rgba(0, 67, 105, 0.25);
+  animation: toastSlideDown 0.5s ease forwards;
+
+  .toast-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  @include md {
+    top: 20px;
+    padding: 12px 18px;
+    font-size: 14px;
+
+    .toast-icon {
+      font-size: 20px;
+    }
+  }
+
+  @include sm {
+    width: calc(100% - 32px);
+    justify-content: center;
+    text-align: center;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+  }
+
+  @include xs {
+    top: 16px;
+    width: calc(100% - 20px);
+    padding: 10px 14px;
+    gap: 8px;
+    font-size: 12px;
+
+    .toast-icon {
+      font-size: 18px;
+    }
+  }
+}
+
+@keyframes toastSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-30px) scale(0.95);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
 .create-listing form {
   display: flex;
   flex-direction: column;
@@ -815,19 +883,30 @@
     justify-content: space-between;
     align-items: center;
     margin-top: auto;
-    padding: 16px 0 24px;
-    position: sticky;
+    padding: 16px 40px 24px;
+    position: fixed;
     bottom: 0;
+    left: 0;
+    width: 100%;
     background-color: #fff;
-    z-index: 10;
-    border-top: 1px solid #eee;
+    z-index: 1000;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+
+
+    @include lg {
+      padding: 14px 28px 22px;
+    }
+
+    @include md {
+      padding: 12px 20px 18px;
+    }
 
     @include sm {
-      padding: 12px 0 18px;
+      padding: 10px 16px 14px;
     }
 
     @include xs {
-      padding: 10px 0 14px;
+      padding: 8px 12px 12px;
     }
 
     .next-btn {

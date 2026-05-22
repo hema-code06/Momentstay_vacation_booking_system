@@ -10,6 +10,7 @@ import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/UpdateBooking.scss";
+import { FiCheckCircle } from "react-icons/fi";
 
 const UpdateBooking = () => {
   const { listingId } = useParams();
@@ -17,6 +18,7 @@ const UpdateBooking = () => {
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState(null);
   const [listing, setListing] = useState(null);
+  const [showToast, setShowToast] = useState(false);
   const [dateRange, setDateRange] = useState([
     {
       startDate: new Date(),
@@ -49,7 +51,11 @@ const UpdateBooking = () => {
   const handleAddToWishlist = () => {
     try {
       dispatch(addToWishList(listing));
-      alert("Added to wishlist");
+      setShowToast(true);
+
+      setTimeout(() => {
+        setShowToast(false);
+      }, 2500);
     } catch (error) {
       alert(
         "Something went wrong with adding to your wishlist. Please try again.",
@@ -171,6 +177,12 @@ const UpdateBooking = () => {
   ) : (
     <>
       <Navbar />
+      {showToast && (
+        <div className="custom-toast">
+          <FiCheckCircle className="toast-icon" />
+          <span>Added to wishlist successfully!</span>
+        </div>
+      )}
       <div className="update-details">
         <div className="title">
           <h1>{listing.title}</h1>

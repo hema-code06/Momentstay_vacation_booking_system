@@ -8,11 +8,13 @@ import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/ListingReview.scss";
+import { FiCheckCircle } from "react-icons/fi";
 
 const ListingReview = () => {
   const { listingId } = useParams();
   const [loading, setLoading] = useState(true);
   const [listing, setListing] = useState(null);
+  const [showToast, setShowToast] = useState(false);
   const [feedback, setFeedback] = useState({
     rating: 0,
     comment: "",
@@ -44,7 +46,11 @@ const ListingReview = () => {
   const handleAddToWishlist = () => {
     try {
       dispatch(addToWishList(listing));
-      alert("Added to wishlist ");
+      setShowToast(true);
+
+      setTimeout(() => {
+        setShowToast(false);
+      }, 2500);
     } catch (error) {
       alert(
         "Something went wrong with adding to your wishlist. Please try again.",
@@ -102,6 +108,12 @@ const ListingReview = () => {
   ) : (
     <>
       <Navbar />
+      {showToast && (
+        <div className="custom-toast">
+          <FiCheckCircle className="toast-icon" />
+          <span>Added to wishlist successfully!</span>
+        </div>
+      )}
       <div className="listing-reviews">
         <div className="title">
           <h1>{listing.title}</h1>

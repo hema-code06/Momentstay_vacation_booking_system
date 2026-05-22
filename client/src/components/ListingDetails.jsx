@@ -10,13 +10,14 @@ import Loader from "./Loader.jsx";
 import Navbar from "./Navbar.jsx";
 import Footer from "./Footer.jsx";
 import "../styles/ListingDetails.scss";
+import { FiCheckCircle } from "react-icons/fi";
 
 const ListingDetails = () => {
   const user = useSelector((state) => state.user);
-
   const { listingId } = useParams();
   const [loading, setLoading] = useState(true);
   const [listing, setListing] = useState(null);
+  const [showToast, setShowToast] = useState(false);
   const [dateRange, setDateRange] = useState([
     {
       startDate: new Date(),
@@ -24,12 +25,10 @@ const ListingDetails = () => {
       key: "selection",
     },
   ]);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const customerId = useSelector((state) => state?.user?._id);
   const wishList = useSelector((state) => state?.user?.wishList || []);
-
   const getListingDetails = useCallback(async () => {
     try {
       const response = await fetch(
@@ -43,30 +42,28 @@ const ListingDetails = () => {
       console.log("Fetching Property Details Failed", err.message);
     }
   }, [listingId]);
-
   useEffect(() => {
     getListingDetails();
   }, [getListingDetails]);
-
   const isInWishlist = wishList.some((item) => item._id === listingId);
-
   const handleAddToWishlist = () => {
     try {
       dispatch(addToWishList(listing));
-      alert("Added to wishlist");
+      setShowToast(true);
+
+      setTimeout(() => {
+        setShowToast(false);
+      }, 2500);
     } catch (error) {
       alert("Please login to add to wishlist.");
     }
   };
-
   const handleSelect = (ranges) => {
     setDateRange([ranges.selection]);
   };
-
   const start = new Date(dateRange[0].startDate);
   const end = new Date(dateRange[0].endDate);
   const dayCount = Math.round((end - start) / (1000 * 60 * 60 * 24));
-
   const handleSubmit = async () => {
     const startDate = new Date(dateRange[0].startDate);
     const endDate = new Date(dateRange[0].endDate);
@@ -75,7 +72,6 @@ const ListingDetails = () => {
       alert("Please Select Dates For Reservation");
       return;
     }
-
     const dayCount = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24));
 
     if (dayCount < 2) {
@@ -125,6 +121,12 @@ const ListingDetails = () => {
   ) : (
     <>
       <Navbar />
+      {showToast && (
+        <div className="custom-toast">
+          <FiCheckCircle className="toast-icon" />
+          <span>Added to wishlist successfully!</span>
+        </div>
+      )}
       <div className="listing-details">
         <div className="title">
           <h1>{listing.title}</h1>
