@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Register.scss";
+import { FiCheckCircle } from "react-icons/fi";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -10,7 +11,7 @@ const Register = () => {
     password: "",
     confirmPassword: "",
   });
-
+  const [showToast, setShowToast] = useState(false);
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [success, setSuccess] = useState(null);
   const [error, setError] = useState({
@@ -56,7 +57,12 @@ const Register = () => {
 
         if (response.ok) {
           setSuccess("Registered successfully");
-          setTimeout(() => navigate("/login"), 2000);
+
+          setShowToast(true);
+
+          setTimeout(() => {
+            navigate("/login");
+          }, 2200);
         } else {
           const result = await response.json();
           setError({ ...errors, general: result.message || "Registration Failed!" });
@@ -69,6 +75,12 @@ const Register = () => {
 
   return (
     <div className="register">
+      {showToast && (
+        <div className="custom-toast">
+          <FiCheckCircle className="toast-icon" />
+          <span>Registration successfully</span>
+        </div>
+      )}
       <div className="register_content">
         <h1>Create account</h1>
 

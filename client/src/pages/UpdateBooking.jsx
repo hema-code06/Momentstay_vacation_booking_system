@@ -13,53 +13,42 @@ import "../styles/UpdateBooking.scss";
 import { FiCheckCircle } from "react-icons/fi";
 
 const UpdateBooking = () => {
-  const { listingId } = useParams();
   const { bookingId } = useParams();
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState(null);
   const [listing, setListing] = useState(null);
-  const [showToast, setShowToast] = useState(false);
+  const [showWishlistToast, setShowWishlistToast] = useState(false);
+  const [showBookingToast, setShowBookingToast] = useState(false);
   const [dateRange, setDateRange] = useState([
-    {
-      startDate: new Date(),
-      endDate: new Date(),
-      key: "selection",
-    },
+    { startDate: new Date(), endDate: new Date(), key: "selection" },
   ]);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const wishList = useSelector((state) => state?.user?.wishList || []);
 
+  const isInWishlist = listing
+    ? wishList.some((item) => String(item._id) === String(listing._id))
+    : true; 
+
   const calculateDayCount = (startDate, endDate) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
-    const differenceInTime = end - start;
-    if (isNaN(differenceInTime) || !startDate || !endDate) {
-      console.error("Invalid date range:", startDate, endDate);
-      return 0;
-    }
-    return Math.ceil(differenceInTime / (1000 * 3600 * 24));
+    const diff = end - start;
+    if (isNaN(diff) || !startDate || !endDate) return 0;
+    return Math.ceil(diff / (1000 * 3600 * 24));
   };
 
-  const calculateTotalPrice = (dayCount, pricePerNight) => {
-    return dayCount * pricePerNight;
-  };
-
-  const isInWishlist = wishList.some((item) => item._id === listingId);
+  const calculateTotalPrice = (dayCount, pricePerNight) =>
+    dayCount * pricePerNight;
 
   const handleAddToWishlist = () => {
     try {
       dispatch(addToWishList(listing));
-      setShowToast(true);
-
-      setTimeout(() => {
-        setShowToast(false);
-      }, 2500);
+      setShowWishlistToast(true);
+      setTimeout(() => setShowWishlistToast(false), 2500);
     } catch (error) {
-      alert(
-        "Something went wrong with adding to your wishlist. Please try again.",
-      );
+      alert("Something went wrong with adding to your wishlist. Please try again.");
     }
   };
 
@@ -67,13 +56,11 @@ const UpdateBooking = () => {
     const fetchBookingAndListing = async () => {
       try {
         const bookingResponse = await fetch(
-          `${process.env.REACT_APP_API_URL}/bookings/${bookingId}`,
+          `${process.env.REACT_APP_API_URL}/bookings/${bookingId}`
         );
-        if (!bookingResponse.ok) {
-          throw new Error(
-            `Booking fetch failed: ${bookingResponse.statusText}`,
-          );
-        }
+        if (!bookingResponse.ok)
+          throw new Error(`Booking fetch failed: ${bookingResponse.statusText}`);
+
         const bookingData = await bookingResponse.json();
         setBooking(bookingData);
         setDateRange([
@@ -84,16 +71,13 @@ const UpdateBooking = () => {
           },
         ]);
 
-        const listingId = bookingData.listingId?._id;
-        if (listingId) {
+        const fetchedListingId = bookingData.listingId?._id;
+        if (fetchedListingId) {
           const listingResponse = await fetch(
-            `${process.env.REACT_APP_API_URL}/properties/${listingId}`,
+            `${process.env.REACT_APP_API_URL}/properties/${fetchedListingId}`
           );
-          if (!listingResponse.ok) {
-            throw new Error(
-              `Listing fetch failed: ${listingResponse.statusText}`,
-            );
-          }
+          if (!listingResponse.ok)
+            throw new Error(`Listing fetch failed: ${listingResponse.statusText}`);
           const listingData = await listingResponse.json();
           setListing(listingData);
         } else {
@@ -113,8 +97,6 @@ const UpdateBooking = () => {
     const { startDate, endDate } = ranges.selection;
     if (startDate && endDate && endDate >= startDate) {
       setDateRange([ranges.selection]);
-    } else {
-      console.error("Invalid date range selected");
     }
   };
 
@@ -129,7 +111,7 @@ const UpdateBooking = () => {
       endDate,
       totalPrice: calculateTotalPrice(
         calculateDayCount(startDate, endDate),
-        listing.price,
+        listing.price
       ),
     };
 
@@ -138,18 +120,17 @@ const UpdateBooking = () => {
         `${process.env.REACT_APP_API_URL}/bookings/update/${bookingId}`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updatedBooking),
-        },
+        }
       );
 
       if (response.ok) {
-        window.alert("Booking updated successfully!");
+        setShowBookingToast(true);
         setTimeout(() => {
+          setShowBookingToast(false);
           navigate("/:userId/reservations");
-        }, 2000);
+        }, 2500);
       } else {
         window.alert("Failed to update booking.");
       }
@@ -165,24 +146,27 @@ const UpdateBooking = () => {
   const newDayCount = dateRange[0]
     ? calculateDayCount(dateRange[0].startDate, dateRange[0].endDate)
     : 0;
-  const oldTotalPrice = listing
-    ? calculateTotalPrice(oldDayCount, listing.price)
-    : 0;
-  const newTotalPrice = listing
-    ? calculateTotalPrice(newDayCount, listing.price)
-    : 0;
+  const oldTotalPrice = listing ? calculateTotalPrice(oldDayCount, listing.price) : 0;
+  const newTotalPrice = listing ? calculateTotalPrice(newDayCount, listing.price) : 0;
 
-  return loading ? (
-    <Loader />
-  ) : (
+  if (loading) return <Loader />;
+
+  return (
     <>
       <Navbar />
-      {showToast && (
+      {showWishlistToast && (
         <div className="custom-toast">
           <FiCheckCircle className="toast-icon" />
           <span>Added to wishlist successfully!</span>
         </div>
       )}
+      {showBookingToast && (
+        <div className="custom-toast">
+          <FiCheckCircle className="toast-icon" />
+          <span>Booking updated successfully!</span>
+        </div>
+      )}
+
       <div className="update-details">
         <div className="title">
           <h1>{listing.title}</h1>
@@ -199,7 +183,11 @@ const UpdateBooking = () => {
               {listing.listingPhotoPaths?.map((photo, index) => (
                 <img
                   key={index}
-                  src={photo?.startsWith("http") ? photo : `${process.env.REACT_APP_API_URL}/${photo?.replace("public", "")}`}
+                  src={
+                    photo?.startsWith("http")
+                      ? photo
+                      : `${process.env.REACT_APP_API_URL}/${photo?.replace("public", "")}`
+                  }
                   alt={`slide ${index + 1}`}
                 />
               ))}
@@ -216,7 +204,11 @@ const UpdateBooking = () => {
 
             <div className="profile">
               <img
-                src={listing.creator.profileImagePath?.startsWith("http") ? listing.creator.profileImagePath : `${process.env.REACT_APP_API_URL}/${listing.creator.profileImagePath?.replace("public", "")}`}
+                src={
+                  listing.creator.profileImagePath?.startsWith("http")
+                    ? listing.creator.profileImagePath
+                    : `${process.env.REACT_APP_API_URL}/${listing.creator.profileImagePath?.replace("public", "")}`
+                }
                 alt="host"
               />
               <h3>Hosted by {listing.creator.username}</h3>
@@ -226,7 +218,6 @@ const UpdateBooking = () => {
               <h3>Description</h3>
               <p>{listing?.description}</p>
               <hr />
-
               <h3>Highlights</h3>
               <p>{listing?.highlight}</p>
               <hr />
@@ -240,15 +231,11 @@ const UpdateBooking = () => {
                     (item, index) => (
                       <div className="facility" key={index}>
                         <div className="facility_icon">
-                          {
-                            facilities.find(
-                              (facility) => facility.name === item,
-                            )?.icon
-                          }
+                          {facilities.find((f) => f.name === item)?.icon}
                         </div>
                         <p>{item}</p>
                       </div>
-                    ),
+                    )
                   )}
                 </div>
               </div>
@@ -261,12 +248,8 @@ const UpdateBooking = () => {
                     onChange={handleSelect}
                     minDate={new Date()}
                   />
-                  <p style={{ fontSize: "17px" }}>
-                    Old Price: ₹{oldTotalPrice}
-                  </p>
-                  <p style={{ fontSize: "17px" }}>
-                    New Price: ₹{newTotalPrice}
-                  </p>
+                  <p style={{ fontSize: "17px" }}>Old Price: ₹{oldTotalPrice}</p>
+                  <p style={{ fontSize: "17px" }}>New Price: ₹{newTotalPrice}</p>
                   <button onClick={handleUpdate} className="update-button">
                     Update Booking
                   </button>

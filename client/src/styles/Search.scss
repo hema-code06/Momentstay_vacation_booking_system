@@ -3,6 +3,7 @@
 .title-list {
   text-align: center;
   color: #004369;
+  text-transform: capitalize;
 
   @include sm {
     margin: 40px 50px;

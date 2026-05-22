@@ -6,12 +6,13 @@ import { BiTrash } from "react-icons/bi";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/UpdateProperty.scss";
+import { FiCheckCircle } from "react-icons/fi";
 
 const UpdateProperty = () => {
   const { listingId } = useParams();
   const [category, setCategory] = useState("");
   const [type, setType] = useState("");
-
+  const [showToast, setShowToast] = useState(false);
   const [formLocation, setFormLocation] = useState({
     streetAddress: "",
     aptSuite: "",
@@ -138,7 +139,12 @@ const UpdateProperty = () => {
         const data = await response.json();
         setExistingPhotos(data.listing.listingPhotoPaths || []);
         setNewPhotos([]);
-        navigate("/");
+        setShowToast(true);
+
+        setTimeout(() => {
+          setShowToast(false);
+          navigate("/");
+        }, 2500);
       } else {
         const err = await response.json();
         alert("Update failed: " + (err.message || "Unknown error"));
@@ -170,6 +176,12 @@ const UpdateProperty = () => {
   return (
     <>
       <Navbar />
+      {showToast && (
+        <div className="custom-toast">
+          <FiCheckCircle className="toast-icon" />
+          <span>Property updated</span>
+        </div>
+      )}
       <div className="update-listing">
         <form onSubmit={handleUpdate}>
 

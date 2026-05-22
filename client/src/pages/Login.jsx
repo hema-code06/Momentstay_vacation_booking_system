@@ -3,13 +3,14 @@ import { setLogin } from "../redux/state";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import "../styles/Login.scss";
+import { FiCheckCircle } from "react-icons/fi";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-
+  const [showToast, setShowToast] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -36,7 +37,11 @@ const Login = () => {
             token: loggedIn.token,
           })
         );
-        navigate("/");
+        setShowToast(true);
+
+        setTimeout(() => {
+          navigate("/");
+        }, 2200);
       } else {
         if (loggedIn.message.includes("email")) {
           setEmailError(loggedIn.message);
@@ -54,6 +59,12 @@ const Login = () => {
 
   return (
     <div className="login">
+      {showToast && (
+        <div className="custom-toast">
+          <FiCheckCircle className="toast-icon" />
+          <span>Login successfully</span>
+        </div>
+      )}
       <div className="login_content">
         <h1>Welcome back</h1>
 
