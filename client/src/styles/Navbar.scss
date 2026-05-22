@@ -90,6 +90,7 @@
   justify-content: center;
   max-width: 380px;
   margin: 0 auto;
+  position: relative;
 
   @include sm {
     max-width: 100%;
@@ -113,8 +114,14 @@
   font-weight: 800 !important;
   color: #222222;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: all 0.35s ease;
   white-space: nowrap;
+  transform-origin: center;
+
+  &:hover {
+    transform: scale(1.03);
+  }
+
 
   svg {
     color: #004369;
@@ -135,8 +142,31 @@
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
   position: relative;
 
+  animation: expandSearch 0.35s ease forwards;
+  transform-origin: center;
+
   @include sm {
     max-width: 100%;
+  }
+}
+
+@keyframes expandSearch {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.6) scaleY(0.85);
+    filter: blur(4px);
+  }
+
+  60% {
+    opacity: 1;
+    transform: scaleX(1.03) scaleY(1.02);
+    filter: blur(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scaleX(1) scaleY(1);
+    filter: blur(0);
   }
 }
 
@@ -155,8 +185,22 @@
   background: transparent;
   min-width: 0;
 
+  animation: fadeInput 0.25s ease 0.15s both;
+
   &::placeholder {
     color: #717171;
+  }
+}
+
+@keyframes fadeInput {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
