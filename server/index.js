@@ -32,16 +32,16 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 app.get("/", (req, res) => {
   res.status(200).json({
     status: "success",
     message: "Server is running 🚀",
   });
 });
-app.use("/properties", listingRoutes);
-app.use("/bookings", bookingRoutes);
-app.use("/users", userRoutes);
+app.use("/api/properties", listingRoutes);
+app.use("/api/bookings", bookingRoutes);
+app.use("/api/users", userRoutes);
 
 app.post("/feedback/create", async (req, res) => {
   try {
