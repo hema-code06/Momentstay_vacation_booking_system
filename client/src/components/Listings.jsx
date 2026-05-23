@@ -25,7 +25,18 @@ const Listings = () => {
           : `${process.env.REACT_APP_API_URL}/properties`,
       );
 
-      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      let data;
+
+      try {
+        data = await response.json();
+      } catch (err) {
+        throw new Error("Server returned invalid JSON");
+      }
+
       dispatch(setListings({ listings: data }));
       setLoading(false);
     } catch (err) {

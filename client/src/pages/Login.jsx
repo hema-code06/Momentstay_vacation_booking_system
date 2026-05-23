@@ -28,7 +28,13 @@ const Login = () => {
         body: JSON.stringify({ email, password }),
       });
 
-      const loggedIn = await response.json();
+      let loggedIn;
+
+      try {
+        loggedIn = await response.json();
+      } catch (err) {
+        throw new Error("Invalid server response");
+      }
 
       if (response.ok) {
         dispatch(
