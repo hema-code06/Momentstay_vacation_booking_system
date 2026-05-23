@@ -217,8 +217,8 @@
 
       >div {
         flex: 1;
-        background: rgba(255, 255, 255, 0.08); // was #f8fafc
-        border: 1px solid rgba(255, 255, 255, 0.15); // was #e2e8f0
+        background: #d7d6d6;
+        border: 1px solid rgba(255, 255, 255, 0.15); 
         border-radius: 10px;
         padding: 8px 10px;
         display: flex;
@@ -227,7 +227,7 @@
 
         .label {
           font-size: 10px;
-          color: #94a3b8;
+          color: gray;
           text-transform: uppercase;
           letter-spacing: 0.05em;
         }
@@ -235,7 +235,7 @@
         strong {
           font-size: 13px;
           font-weight: 600;
-          color: #fff;
+          color: #004369;
         }
       }
 
