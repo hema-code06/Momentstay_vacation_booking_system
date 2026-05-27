@@ -39,6 +39,9 @@ app.get("/", (req, res) => {
     message: "Server is running 🚀",
   });
 });
+app.get("/api/test", (req, res) => {
+  res.json({ message: "API working" });
+});
 app.use("/api/properties", listingRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/users", userRoutes);
@@ -68,7 +71,9 @@ mongoose
   })
   .then(() => {
     console.log("✅ Connected to MongoDB");
-    app.listen(PORT, () => console.log(`🚀 Server running on port: ${PORT}`));
+    app.listen(PORT, "0.0.0.0", () =>
+      console.log(`🚀 Server running on port: ${PORT}`)
+    );
   })
   .catch((err) => {
     console.error(`❌Error connecting to MongoDB: ${err}`);
