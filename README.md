@@ -1,6 +1,6 @@
 # 🏡 MomentStay — Vacation Booking Platform
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://momentstay-vacation-booking-system-f3o8aor59.vercel.app/)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://momentstay-vacation-booking-system.vercel.app/)
 [![Backend](https://img.shields.io/badge/Backend-AWS%20EC2-orange)](https://aws.amazon.com/ec2/)
 
 **MomentStay** is a full-stack platform for **booking and hosting rental homes**, offering secure property management, interactive reservations, and user reviews. Guests can easily find and book stays, while hosts manage listings with photos, categories, and real-time updates.
@@ -11,7 +11,7 @@
 
 | Service | URL |
 |---|---|
-| Frontend | (https://momentstay-vacation-booking-system-f3o8aor59.vercel.app/) |
+| Frontend | (https://momentstay-vacation-booking-system.vercel.app/) |
 | Backend API | AWS EC2 (Node.js + Express + PM2 + Nginx) |
 | Image Storage | AWS S3  |
 | Database | MongoDB Atlas |
