@@ -65,7 +65,7 @@
 ## 🚀 Features
 
 ### Guest Features
-- Browse and search rental homes by location, category, price, and amenities.
+- Browse and search rental homes by category.
 - Use **interactive calendar** for booking availability.
 - Leave ratings and reviews for stays.
 - Manage personal bookings and view booking history.
@@ -74,14 +74,14 @@
 ### Host Features
 - Add, edit, and manage property listings with photos uploaded to **AWS S3**.
 - Set property pricing, availability, and categories.
-- Manage guest feedback and monitor property performance.
-- Role-based dashboard for property and booking management.
+- Role-based (Host, Guest) for property and booking management.
 
 ### General Features
 - Secure user authentication with **JWT and Bcrypt**.
 - Profile image upload stored in **AWS S3**.
 - Real-time updates for bookings and property listings.
 - Fully responsive design for mobile and desktop devices.
+- Toast notifications for authentication, bookings, wishlist actions, and real-time user feedback.
 
 ---
 
