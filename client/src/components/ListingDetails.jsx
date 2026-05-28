@@ -74,6 +74,11 @@ const ListingDetails = () => {
     wishList.some((item) => item?._id === listingId);
 
   const handleAddToWishlist = async () => {
+
+    if (!customerId) {
+      showCustomToast("Please login first.");
+      return;
+    }
     try {
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/users/${user?._id}/${listingId}`,
@@ -312,7 +317,7 @@ const ListingDetails = () => {
                 onClick={(e) => {
                   e.preventDefault();
 
-                  if (!user) {
+                  if (!customerId) {
                     showCustomToast(
                       "Please login to make a reservation.",
                     );
