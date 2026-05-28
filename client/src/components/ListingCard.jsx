@@ -40,8 +40,11 @@ const ListingCard = ({
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const user = useSelector((state) => state.user);
-  const wishList = user?.wishList || [];
+  const user = useSelector((state) => state.user.user);
+
+  const wishList = Array.isArray(user?.wishList)
+    ? user.wishList
+    : [];
 
   const isLiked = wishList?.find((item) => item?._id === listingId);
   const patchWishList = async () => {
