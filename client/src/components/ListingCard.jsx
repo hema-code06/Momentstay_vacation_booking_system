@@ -40,7 +40,7 @@ const ListingCard = ({
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const user = useSelector((state) => state.user.user);
+  const user = useSelector((state) => state?.user?.user);
 
   const wishList = Array.isArray(user?.wishList)
     ? user.wishList

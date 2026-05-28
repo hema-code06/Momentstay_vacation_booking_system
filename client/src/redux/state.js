@@ -22,23 +22,39 @@ export const userSlice = createSlice({
       state.listings = action.payload.listings;
     },
     setTripList: (state, action) => {
-      state.user.tripList = action.payload;
-    },
-    setWishList: (state, action) => {
-      state.user.wishList = action.payload;
-    },
-    setPropertyList: (state, action) => {
-      state.user.propertyList = action.payload;
-    },
-    setReservationList: (state, action) => {
-      state.user.reservationList = action.payload;
-    },
-   addToWishList: (state, action) => {
-  state.user.wishList = action.payload;
+  if (state.user) {
+    state.user.tripList = action.payload;
+  }
+},
+
+setWishList: (state, action) => {
+  if (state.user) {
+    state.user.wishList = action.payload;
+  }
+},
+
+setPropertyList: (state, action) => {
+  if (state.user) {
+    state.user.propertyList = action.payload;
+  }
+},
+
+setReservationList: (state, action) => {
+  if (state.user) {
+    state.user.reservationList = action.payload;
+  }
+},
+
+addToWishList: (state, action) => {
+  if (state.user) {
+    state.user.wishList = action.payload.wishList;
+  }
 },
 
 removeFromWishList: (state, action) => {
-  state.user.wishList = action.payload;
+  if (state.user) {
+    state.user.wishList = action.payload.wishList;
+  }
 },
   },
 });

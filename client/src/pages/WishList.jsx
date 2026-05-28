@@ -15,38 +15,43 @@ const WishList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const wishList = useSelector((state) => state.user.wishList);
-  const userId = useSelector((state) => state.user._id);
+  const wishList = useSelector(
+    (state) => state?.user?.user?.wishList || []
+  );
+
+  const userId = useSelector(
+    (state) => state?.user?.user?._id
+  );
 
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
   const handleRemove = async (listingId) => {
-  try {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_URL}/users/${userId}/${listingId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/users/${userId}/${listingId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    const data = await response.json();
+      const data = await response.json();
 
-    dispatch(removeFromWishList(data));
+      dispatch(removeFromWishList(data));
 
-    setMessage("Property removed from wishlist");
-    setMessageType("success");
+      setMessage("Property removed from wishlist");
+      setMessageType("success");
 
-  } catch (error) {
-    console.log(error);
+    } catch (error) {
+      console.log(error);
 
-    setMessage("Failed to remove property");
-    setMessageType("error");
-  }
-};
+      setMessage("Failed to remove property");
+      setMessageType("error");
+    }
+  };
 
   const handleStartExploring = () => {
     navigate(`/${userId}/trips`);

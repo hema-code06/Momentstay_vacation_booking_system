@@ -25,11 +25,11 @@ const UpdateBooking = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state.user.user);
+  const user = useSelector((state) => state?.user?.user);
 
-  const wishList = Array.isArray(user?.wishList)
-    ? user.wishList
-    : [];
+  const wishList = useSelector(
+    (state) => state?.user?.user?.wishList || []
+  );
   const isInWishlist = listing
     ? Array.isArray(wishList) &&
     wishList.some(
@@ -48,13 +48,30 @@ const UpdateBooking = () => {
   const calculateTotalPrice = (dayCount, pricePerNight) =>
     dayCount * pricePerNight;
 
-  const handleAddToWishlist = () => {
+  const handleAddToWishlist = async () => {
     try {
-      dispatch(addToWishList(listing));
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/users/${user?._id}/${listing?._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      dispatch(addToWishList(data));
+
       setShowWishlistToast(true);
-      setTimeout(() => setShowWishlistToast(false), 2500);
+
+      setTimeout(() => {
+        setShowWishlistToast(false);
+      }, 2500);
+
     } catch (error) {
-      alert("Something went wrong with adding to your wishlist. Please try again.");
+      alert("Something went wrong.");
     }
   };
 
@@ -135,7 +152,7 @@ const UpdateBooking = () => {
         setShowBookingToast(true);
         setTimeout(() => {
           setShowBookingToast(false);
-          navigate("/:userId/reservations");
+          navigate(`/${user?._id}/reservations`);
         }, 2500);
       } else {
         window.alert("Failed to update booking.");
@@ -233,7 +250,7 @@ const UpdateBooking = () => {
               <div>
                 <h2>What this place offers?</h2>
                 <div className="amenities">
-                  {[...new Set(listing?.amenities[0].split(","))].map(
+                  {[...new Set(listing?.amenities?.[0]?.split(",") || [])].map(
                     (item, index) => (
                       <div className="facility" key={index}>
                         <div className="facility_icon">

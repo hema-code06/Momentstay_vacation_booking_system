@@ -13,7 +13,6 @@ import "../styles/ListingDetails.scss";
 import { FiCheckCircle } from "react-icons/fi";
 
 const ListingDetails = () => {
-  const user = useSelector((state) => state.user.user);
   const { listingId } = useParams();
   const [loading, setLoading] = useState(true);
   const [listing, setListing] = useState(null);
@@ -31,10 +30,17 @@ const ListingDetails = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const customerId = user?._id;
-  const wishList = Array.isArray(user?.wishList)
-    ? user.wishList
-    : [];
+
+  const user = useSelector((state) => state?.user?.user);
+
+  const customerId = useSelector(
+    (state) => state?.user?.user?._id
+  );
+
+  const wishList = useSelector(
+    (state) => state?.user?.user?.wishList || []
+  );
+
   const showCustomToast = (message) => {
     setToastMessage(message);
     setShowToast(true);
@@ -67,10 +73,24 @@ const ListingDetails = () => {
     Array.isArray(wishList) &&
     wishList.some((item) => item?._id === listingId);
 
-  const handleAddToWishlist = () => {
+  const handleAddToWishlist = async () => {
     try {
-      dispatch(addToWishList(listing));
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/users/${user?._id}/${listingId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      dispatch(addToWishList(data));
+
       showCustomToast("Added to wishlist successfully!");
+
     } catch (error) {
       showCustomToast("Please login to add to wishlist.");
     }
@@ -98,7 +118,7 @@ const ListingDetails = () => {
       (endDate - startDate) / (1000 * 60 * 60 * 24),
     );
 
-    if (dayCount < 2) {
+    if (dayCount < 1) {
       showCustomToast(
         "Please select a start and end date for reservation.",
       );
@@ -234,7 +254,7 @@ const ListingDetails = () => {
             <h2>What this place offers?</h2>
 
             <div className="amenities">
-              {[...new Set(listing?.amenities[0].split(","))].map(
+              {[...new Set(listing?.amenities?.[0]?.split(",") || [])].map(
                 (item, index) => (
                   <div className="facility" key={index}>
                     <div className="facility_icon">

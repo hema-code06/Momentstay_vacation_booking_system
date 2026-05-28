@@ -22,11 +22,11 @@ const ListingReview = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state.user.user);
+  const user = useSelector((state) => state?.user?.user);
 
-  const wishList = Array.isArray(user?.wishList)
-    ? user.wishList
-    : [];
+  const wishList = useSelector(
+    (state) => state?.user?.user?.wishList || []
+  );
   const getListingReview = useCallback(async () => {
     try {
       const response = await fetch(
@@ -48,18 +48,30 @@ const ListingReview = () => {
     Array.isArray(wishList) &&
     wishList.some((item) => item?._id === listingId);
 
-  const handleAddToWishlist = () => {
+  const handleAddToWishlist = async () => {
     try {
-      dispatch(addToWishList(listing));
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/users/${user?._id}/${listingId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      dispatch(addToWishList(data));
+
       setShowToast(true);
 
       setTimeout(() => {
         setShowToast(false);
       }, 2500);
+
     } catch (error) {
-      alert(
-        "Something went wrong with adding to your wishlist. Please try again.",
-      );
+      alert("Something went wrong.");
     }
   };
 
@@ -171,7 +183,7 @@ const ListingReview = () => {
         <div>
           <h2>What this place offers?</h2>
           <div className="amenities">
-            {[...new Set(listing?.amenities[0].split(","))].map(
+            {[...new Set(listing?.amenities?.[0]?.split(",") || [])].map(
               (item, index) => (
                 <div className="facility" key={index}>
                   <div className="facility_icon">
