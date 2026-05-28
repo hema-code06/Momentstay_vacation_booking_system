@@ -22,8 +22,11 @@ const ListingReview = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const wishList = useSelector((state) => state?.user?.wishList || []);
+  const user = useSelector((state) => state.user.user);
 
+  const wishList = Array.isArray(user?.wishList)
+    ? user.wishList
+    : [];
   const getListingReview = useCallback(async () => {
     try {
       const response = await fetch(
@@ -41,7 +44,9 @@ const ListingReview = () => {
     getListingReview();
   }, [getListingReview]);
 
-  const isInWishlist = wishList.some((item) => item._id === listingId);
+  const isInWishlist =
+    Array.isArray(wishList) &&
+    wishList.some((item) => item?._id === listingId);
 
   const handleAddToWishlist = () => {
     try {

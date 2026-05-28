@@ -25,11 +25,17 @@ const UpdateBooking = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const wishList = useSelector((state) => state?.user?.wishList || []);
+  const user = useSelector((state) => state.user.user);
 
+  const wishList = Array.isArray(user?.wishList)
+    ? user.wishList
+    : [];
   const isInWishlist = listing
-    ? wishList.some((item) => String(item._id) === String(listing._id))
-    : true; 
+    ? Array.isArray(wishList) &&
+    wishList.some(
+      (item) => String(item?._id) === String(listing?._id)
+    )
+    : true;
 
   const calculateDayCount = (startDate, endDate) => {
     const start = new Date(startDate);

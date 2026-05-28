@@ -46,7 +46,9 @@ const ListingCard = ({
     ? user.wishList
     : [];
 
-  const isLiked = wishList?.find((item) => item?._id === listingId);
+  const isLiked =
+    Array.isArray(wishList) &&
+    wishList.some((item) => item?._id === listingId);
   const patchWishList = async () => {
     try {
       if (user?._id === creator._id) return;

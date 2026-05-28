@@ -13,7 +13,7 @@ import "../styles/ListingDetails.scss";
 import { FiCheckCircle } from "react-icons/fi";
 
 const ListingDetails = () => {
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user.user);
   const { listingId } = useParams();
   const [loading, setLoading] = useState(true);
   const [listing, setListing] = useState(null);
@@ -31,9 +31,10 @@ const ListingDetails = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const customerId = useSelector((state) => state?.user?._id);
-  const wishList = useSelector((state) => state?.user?.wishList || []);
-
+  const customerId = user?._id;
+  const wishList = Array.isArray(user?.wishList)
+    ? user.wishList
+    : [];
   const showCustomToast = (message) => {
     setToastMessage(message);
     setShowToast(true);
@@ -62,7 +63,9 @@ const ListingDetails = () => {
     getListingDetails();
   }, [getListingDetails]);
 
-  const isInWishlist = wishList.some((item) => item._id === listingId);
+  const isInWishlist =
+    Array.isArray(wishList) &&
+    wishList.some((item) => item?._id === listingId);
 
   const handleAddToWishlist = () => {
     try {
