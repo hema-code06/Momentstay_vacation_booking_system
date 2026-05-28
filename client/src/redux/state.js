@@ -3,7 +3,6 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   user: null,
   token: null,
-  listings:[],
 };
 
 export const userSlice = createSlice({
@@ -22,40 +21,27 @@ export const userSlice = createSlice({
       state.listings = action.payload.listings;
     },
     setTripList: (state, action) => {
-  if (state.user) {
-    state.user.tripList = action.payload;
-  }
-},
-
-setWishList: (state, action) => {
-  if (state.user) {
-    state.user.wishList = action.payload;
-  }
-},
-
-setPropertyList: (state, action) => {
-  if (state.user) {
-    state.user.propertyList = action.payload;
-  }
-},
-
-setReservationList: (state, action) => {
-  if (state.user) {
-    state.user.reservationList = action.payload;
-  }
-},
-
-addToWishList: (state, action) => {
-  if (state.user) {
-    state.user.wishList = action.payload.wishList;
-  }
-},
-
-removeFromWishList: (state, action) => {
-  if (state.user) {
-    state.user.wishList = action.payload.wishList;
-  }
-},
+      state.user.tripList = action.payload;
+    },
+    setWishList: (state, action) => {
+      state.user.wishList = action.payload;
+    },
+    setPropertyList: (state, action) => {
+      state.user.propertyList = action.payload;
+    },
+    setReservationList: (state, action) => {
+      state.user.reservationList = action.payload;
+    },
+    addToWishList: (state, action) => {
+      if (!state.user.wishList.find(listing => listing._id === action.payload._id)) {
+        state.user.wishList.push(action.payload);
+      }
+    },
+    removeFromWishList: (state, action) => {
+      state.user.wishList = state.user.wishList.filter(
+        (listing) => listing._id !== action.payload
+      );
+    },
   },
 });
 

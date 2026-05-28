@@ -1,4 +1,4 @@
-const mongoose = require("mongoose")
+ const mongoose = require("mongoose")
 
 const UserSchema = new mongoose.Schema(
   {
@@ -23,12 +23,10 @@ const UserSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
-    wishList: [
-  {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Listing",
-  },
-],
+    wishList: {
+      type: Array,
+      default: [],
+    },
     propertyList: {
       type: Array,
       default: [],

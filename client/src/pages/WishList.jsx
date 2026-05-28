@@ -1,4 +1,4 @@
-import { useSelector, useDispatch } from "react-redux";
+ import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
@@ -15,39 +15,19 @@ const WishList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const wishList = useSelector(
-    (state) => state?.user?.user?.wishList || []
-  );
-
-  const userId = useSelector(
-    (state) => state?.user?.user?._id
-  );
+  const wishList = useSelector((state) => state.user.wishList);
+  const userId = useSelector((state) => state.user._id);
 
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
-  const handleRemove = async (listingId) => {
+  const handleRemove = (listingId) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/users/${userId}/${listingId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const data = await response.json();
-
-      dispatch(removeFromWishList(data));
+      dispatch(removeFromWishList(listingId));
 
       setMessage("Property removed from wishlist");
       setMessageType("success");
-
     } catch (error) {
-      console.log(error);
-
       setMessage("Failed to remove property");
       setMessageType("error");
     }

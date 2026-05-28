@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { addToWishList } from "../redux/state.js";
+import { setWishList } from "../redux/state.js";
 import { facilities } from "../data.js";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
@@ -13,6 +13,7 @@ import "../styles/ListingDetails.scss";
 import { FiCheckCircle } from "react-icons/fi";
 
 const ListingDetails = () => {
+  const user = useSelector((state) => state.user);
   const { listingId } = useParams();
   const [loading, setLoading] = useState(true);
   const [listing, setListing] = useState(null);
@@ -30,16 +31,8 @@ const ListingDetails = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const user = useSelector((state) => state?.user?.user);
-
-  const customerId = useSelector(
-    (state) => state?.user?.user?._id
-  );
-
-  const wishList = useSelector(
-    (state) => state?.user?.user?.wishList || []
-  );
+  const customerId = useSelector((state) => state?.user?._id);
+  const wishList = useSelector((state) => state?.user?.wishList || []);
 
   const showCustomToast = (message) => {
     setToastMessage(message);
@@ -69,35 +62,27 @@ const ListingDetails = () => {
     getListingDetails();
   }, [getListingDetails]);
 
-  const isInWishlist =
-    Array.isArray(wishList) &&
-    wishList.some((item) => item?._id === listingId);
-
+  const isInWishlist = wishList.some((item) => item._id === listingId);
   const handleAddToWishlist = async () => {
-
-    if (!customerId) {
-      showCustomToast("Please login first.");
+    if (!user) {
+      showCustomToast("Please login to add to wishlist.");
       return;
     }
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/users/${user?._id}/${listingId}`,
+        `${process.env.REACT_APP_API_URL}/users/${user._id}/${listingId}`,
         {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         }
       );
-
       const data = await response.json();
-
-      dispatch(addToWishList(data));
-
-      showCustomToast("Added to wishlist successfully!");
-
+      dispatch(setWishList(data.wishList));
+      showCustomToast(
+        isInWishlist ? "Removed from wishlist!" : "Added to wishlist!"
+      );
     } catch (error) {
-      showCustomToast("Please login to add to wishlist.");
+      showCustomToast("Failed to update wishlist.");
     }
   };
 
@@ -123,7 +108,7 @@ const ListingDetails = () => {
       (endDate - startDate) / (1000 * 60 * 60 * 24),
     );
 
-    if (dayCount < 1) {
+    if (dayCount < 2) {
       showCustomToast(
         "Please select a start and end date for reservation.",
       );
@@ -259,7 +244,7 @@ const ListingDetails = () => {
             <h2>What this place offers?</h2>
 
             <div className="amenities">
-              {[...new Set(listing?.amenities?.[0]?.split(",") || [])].map(
+              {[...new Set(listing?.amenities[0].split(","))].map(
                 (item, index) => (
                   <div className="facility" key={index}>
                     <div className="facility_icon">
@@ -317,7 +302,7 @@ const ListingDetails = () => {
                 onClick={(e) => {
                   e.preventDefault();
 
-                  if (!customerId) {
+                  if (!user) {
                     showCustomToast(
                       "Please login to make a reservation.",
                     );

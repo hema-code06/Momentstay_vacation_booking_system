@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { addToWishList } from "../redux/state.js";
+import { setWishList } from "../redux/state.js";
 import { facilities } from "../data.js";
 import { FaStar } from "react-icons/fa";
 import Loader from "../components/Loader";
@@ -13,6 +13,7 @@ import { FiCheckCircle } from "react-icons/fi";
 const ListingReview = () => {
   const { listingId } = useParams();
   const [loading, setLoading] = useState(true);
+  const user = useSelector((state) => state.user);
   const [listing, setListing] = useState(null);
   const [showToast, setShowToast] = useState(false);
   const [feedback, setFeedback] = useState({
@@ -22,11 +23,8 @@ const ListingReview = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state?.user?.user);
+  const wishList = useSelector((state) => state?.user?.wishList || []);
 
-  const wishList = useSelector(
-    (state) => state?.user?.user?.wishList || []
-  );
   const getListingReview = useCallback(async () => {
     try {
       const response = await fetch(
@@ -44,34 +42,27 @@ const ListingReview = () => {
     getListingReview();
   }, [getListingReview]);
 
-  const isInWishlist =
-    Array.isArray(wishList) &&
-    wishList.some((item) => item?._id === listingId);
+  const isInWishlist = wishList.some((item) => item._id === listingId);
 
   const handleAddToWishlist = async () => {
+    if (!user) {
+      alert("Please login to add to wishlist.");
+      return;
+    }
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/users/${user?._id}/${listingId}`,
+        `${process.env.REACT_APP_API_URL}/users/${user._id}/${listingId}`,
         {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         }
       );
-
       const data = await response.json();
-
-      dispatch(addToWishList(data));
-
+      dispatch(setWishList(data.wishList));
       setShowToast(true);
-
-      setTimeout(() => {
-        setShowToast(false);
-      }, 2500);
-
+      setTimeout(() => setShowToast(false), 2500);
     } catch (error) {
-      alert("Something went wrong.");
+      alert("Failed to update wishlist. Please try again.");
     }
   };
 
@@ -183,7 +174,7 @@ const ListingReview = () => {
         <div>
           <h2>What this place offers?</h2>
           <div className="amenities">
-            {[...new Set(listing?.amenities?.[0]?.split(",") || [])].map(
+            {[...new Set(listing?.amenities[0].split(","))].map(
               (item, index) => (
                 <div className="facility" key={index}>
                   <div className="facility_icon">

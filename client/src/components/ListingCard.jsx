@@ -7,7 +7,7 @@ import {
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { addToWishList } from "../redux/state";
+import { setWishList } from "../redux/state";
 
 const ListingCard = ({
   listingId,
@@ -40,19 +40,13 @@ const ListingCard = ({
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const user = useSelector((state) => state?.user?.user);
+  const user = useSelector((state) => state.user);
+  const wishList = user?.wishList || [];
 
-  const wishList = Array.isArray(user?.wishList)
-    ? user.wishList
-    : [];
+  const isLiked = wishList?.find((item) => item?._id === listingId);
 
-  const isLiked =
-    Array.isArray(wishList) &&
-    wishList.some((item) => item?._id === listingId);
   const patchWishList = async () => {
-    try {
-      if (user?._id === creator._id) return;
-
+    if (user?._id !== creator._id) {
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/users/${user?._id}/${listingId}`,
         {
@@ -60,15 +54,12 @@ const ListingCard = ({
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
-
       const data = await response.json();
-
-      dispatch(addToWishList(data));
-
-    } catch (error) {
-      console.log(error);
+      dispatch(setWishList(data.wishList));
+    } else {
+      return;
     }
   };
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { addToWishList } from "../redux/state.js";
+import { setWishList } from "../redux/state.js";
 import { facilities } from "../data";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
@@ -15,6 +15,7 @@ import { FiCheckCircle } from "react-icons/fi";
 const UpdateBooking = () => {
   const { bookingId } = useParams();
   const [loading, setLoading] = useState(true);
+  const user = useSelector((state) => state?.user);
   const [booking, setBooking] = useState(null);
   const [listing, setListing] = useState(null);
   const [showWishlistToast, setShowWishlistToast] = useState(false);
@@ -25,16 +26,10 @@ const UpdateBooking = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state?.user?.user);
+  const wishList = useSelector((state) => state?.user?.wishList || []);
 
-  const wishList = useSelector(
-    (state) => state?.user?.user?.wishList || []
-  );
   const isInWishlist = listing
-    ? Array.isArray(wishList) &&
-    wishList.some(
-      (item) => String(item?._id) === String(listing?._id)
-    )
+    ? wishList.some((item) => String(item._id) === String(listing._id))
     : true;
 
   const calculateDayCount = (startDate, endDate) => {
@@ -49,29 +44,24 @@ const UpdateBooking = () => {
     dayCount * pricePerNight;
 
   const handleAddToWishlist = async () => {
+    if (!user) {
+      alert("Please login to add to wishlist.");
+      return;
+    }
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/users/${user?._id}/${listing?._id}`,
+        `${process.env.REACT_APP_API_URL}/users/${user._id}/${listing._id}`,
         {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         }
       );
-
       const data = await response.json();
-
-      dispatch(addToWishList(data));
-
+      dispatch(setWishList(data.wishList));
       setShowWishlistToast(true);
-
-      setTimeout(() => {
-        setShowWishlistToast(false);
-      }, 2500);
-
+      setTimeout(() => setShowWishlistToast(false), 2500);
     } catch (error) {
-      alert("Something went wrong.");
+      alert("Something went wrong. Please try again.");
     }
   };
 
@@ -152,7 +142,7 @@ const UpdateBooking = () => {
         setShowBookingToast(true);
         setTimeout(() => {
           setShowBookingToast(false);
-          navigate(`/${user?._id}/reservations`);
+          navigate("/:userId/reservations");
         }, 2500);
       } else {
         window.alert("Failed to update booking.");
@@ -250,7 +240,7 @@ const UpdateBooking = () => {
               <div>
                 <h2>What this place offers?</h2>
                 <div className="amenities">
-                  {[...new Set(listing?.amenities?.[0]?.split(",") || [])].map(
+                  {[...new Set(listing?.amenities[0].split(","))].map(
                     (item, index) => (
                       <div className="facility" key={index}>
                         <div className="facility_icon">
@@ -287,4 +277,4 @@ const UpdateBooking = () => {
   );
 };
 
-export default UpdateBooking;
+export default UpdateBooking; 
