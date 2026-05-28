@@ -21,33 +21,37 @@ router.get("/:userId/trips", async (req, res) => {
 router.patch("/:userId/:listingId", async (req, res) => {
   try {
     const { userId, listingId } = req.params;
+
     const user = await User.findById(userId);
-    const listing = await Listing.findById(listingId).populate("creator");
 
-    const favoriteListing = user.wishList.find(
-      (item) => item._id.toString() === listingId,
-    );
-
-    if (favoriteListing) {
-      user.wishList = user.wishList.filter(
-        (item) => item._id.toString() !== listingId,
-      );
-      await user.save();
-      res.status(200).json({
-        message: "Property is removed from wish list",
-        wishList: user.wishList,
-      });
-    } else {
-      user.wishList.push(listing);
-      await user.save();
-      res.status(200).json({
-        message: "Property is added to wish list",
-        wishList: user.wishList,
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
       });
     }
+
+    const isFavorite = user.wishList.includes(listingId);
+
+    if (isFavorite) {
+      user.wishList = user.wishList.filter(
+        (id) => id.toString() !== listingId
+      );
+    } else {
+      user.wishList.push(listingId);
+    }
+
+    await user.save();
+
+    const updatedUser = await User.findById(userId).populate("wishList");
+
+    res.status(200).json(updatedUser.wishList);
+
   } catch (err) {
     console.log(err);
-    res.status(404).json({ error: err.message });
+
+    res.status(500).json({
+      error: err.message,
+    });
   }
 });
 

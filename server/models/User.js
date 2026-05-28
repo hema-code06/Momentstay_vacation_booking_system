@@ -23,10 +23,12 @@ const UserSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
-    wishList: {
-      type: Array,
-      default: [],
-    },
+    wishList: [
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Listing",
+  },
+],
     propertyList: {
       type: Array,
       default: [],

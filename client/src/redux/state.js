@@ -33,16 +33,13 @@ export const userSlice = createSlice({
     setReservationList: (state, action) => {
       state.user.reservationList = action.payload;
     },
-    addToWishList: (state, action) => {
-      if (!state.user.wishList.find(listing => listing._id === action.payload._id)) {
-        state.user.wishList.push(action.payload);
-      }
-    },
-    removeFromWishList: (state, action) => {
-      state.user.wishList = state.user.wishList.filter(
-        (listing) => listing._id !== action.payload
-      );
-    },
+   addToWishList: (state, action) => {
+  state.user.wishList = action.payload;
+},
+
+removeFromWishList: (state, action) => {
+  state.user.wishList = action.payload;
+},
   },
 });
 
