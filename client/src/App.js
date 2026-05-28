@@ -16,23 +16,13 @@ import Pastexperience from "./components/Pastexperience";
 import Testimonials from "./components/Testimonials";
 import UpdateBooking from "./pages/UpdateBooking";
 import UpdateProperty from "./pages/UpdateProperty";
-import Loader from "./components/Loader";
-import { useState, useEffect } from "react";
 
 
 function App() {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 2000);
-  }, []);
 
   return (
     <div>
       <BrowserRouter>
-        {loading ? (
-          <Loader />
-        ) : (
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
@@ -60,7 +50,6 @@ function App() {
               element={<UpdateProperty />}
             />
           </Routes>
-        )}
       </BrowserRouter>
     </div>
   );

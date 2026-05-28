@@ -12,7 +12,7 @@ router.post("/create", upload.array("listingPhotos"), async (req, res) => {
     const {
       creator, category, type, streetAddress, aptSuite, city, province,
       country, guestCount, bedroomCount, bedCount, bathroomCount,
-      amenities, title, description, highlight, highlightDesc, price,
+      amenities, title, description, highlight, price,
     } = req.body;
 
     const listingPhotos = req.files;
@@ -26,8 +26,7 @@ router.post("/create", upload.array("listingPhotos"), async (req, res) => {
     const newListing = new Listing({
       creator, category, type, streetAddress, aptSuite, city, province,
       country, guestCount, bedroomCount, bedCount, bathroomCount,
-      amenities, listingPhotoPaths, title, description, highlight,
-      highlightDesc, price,
+      amenities, listingPhotoPaths, title, description, highlight, price,
     });
 
     await newListing.save();
