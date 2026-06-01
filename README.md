@@ -3,7 +3,7 @@
 [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://momentstay-vacation-booking-system.vercel.app/)
 [![Backend](https://img.shields.io/badge/Backend-AWS%20EC2-orange)](https://aws.amazon.com/ec2/)
 
-**MomentStay** is a full-stack platform for **booking and hosting rental homes**, offering secure property management, interactive reservations, and user reviews. Guests can easily find and book stays, while hosts manage listings with photos, categories, and real-time updates.
+**MomentStay** is a Airbnb-inspired full-stack web application enabling users to search, book, wishlist, review, and rate properties, while also creating and managing their own properties with real-time availability and dynamic pricing controls across 16+ categories.
 
 ---
 
