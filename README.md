@@ -25,7 +25,7 @@ Users can browse 16+ property categories, use an interactive calendar to check a
 - Interactive date range calendar for real-time booking availability
 - Book properties with date selection and automatic total price calculation
 - Update or cancel bookings
-- Add properties to a personal wishlist (Redux-persisted)
+- Save your favorite properties to a personal wishlist (Redux-persisted)
 - Leave ratings and reviews on stays
 - View full booking history (trip list)
 
