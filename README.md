@@ -1,8 +1,8 @@
 # MomentStay — Airbnb-Inspired Vacation Booking Platform
 
-MomentStay is a full-stack web application for booking short and long-term homestays. Every registered user gets a **single account** that works for both guest and host actions — the same credentials let you browse and book properties, and also list and manage your own properties. No role switching or separate accounts needed.
+MomentStay is a full-stack web application for booking unique short-term stays. Every registered user gets a **single account** that works for both guest and host actions — the same credentials let you browse and book stays, and also add and manage your own stays. No role switching or separate accounts needed.
 
-Users can browse 16+ property categories, use an interactive calendar to check availability, book stays, and leave reviews. The same user add their own property, upload property photos with details, set pricing, and track reservations.
+Users can explore 16+ stay categories, use an interactive calendar to check availability, book stays, and leave ratings and reviews. The same user can also add their own stay, upload photos with details, set pricing, and track reservations.
 
 ---
 
@@ -20,22 +20,22 @@ Users can browse 16+ property categories, use an interactive calendar to check a
 ## 🚀 Features
 
 ### Booking & Search (any logged-in user)
-- Browse and search properties by 16+ categories (Beachfront, Luxury, Treehouse, Lakefront, Arctic, Desert, Camping, Boat House, and more)
+- Browse and search stays by 16+ categories (Beachfront, Luxury, Treehouse, Lakefront, Arctic, Desert, Camping, Boat House, and more)
 - Full-text and category-based search with MongoDB regex queries
 - Interactive date range calendar for real-time booking availability
-- Book properties with date selection and automatic total price calculation
+- Book stays with date selection and automatic total price calculation
 - Update or cancel bookings
-- Save your favorite properties to a personal wishlist (Redux-persisted)
+- Save your favorite stays to a personal wishlist (Redux-persisted)
 - Leave ratings and reviews on stays
 - View full booking history (trip list)
 
-### Property Management (same user account)
-- Any user can also list their own property — no separate host account needed
-- Create listings with multi-photo upload directly to AWS S3
-- Edit existing properties — add new photos, remove old ones (auto-deleted from S3 via `DeleteObjectCommand`)
-- Delete properties with automatic S3 cleanup of all associated images
-- Set property type, price, amenities, category, guest/bedroom/bed/bathroom counts
-- View all reservations made on your listed properties
+### Add & Manage Your Stay (same account)
+- Any user can also add their own property — no separate host account needed
+- Add your stay with multi-photo upload directly to AWS S3
+- Edit existing stays — add new photos, remove old ones (auto-deleted from S3 via `DeleteObjectCommand`)
+- Delete stays with automatic S3 cleanup of all associated images
+- Set stay type, price, amenities, category, guest/bedroom/bed/bathroom counts
+- View all reservations made on your added stays
 
 ### Authentication
 - Register with profile image upload to AWS S3
@@ -134,9 +134,9 @@ Open: [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 📸 Property Categories
+## 📸 Stay Categories
 
-MomentStay supports 16+ property categories:
+MomentStay supports 16+ stay categories:
 
 `All` `Luxury` `Arctic` `Beachfront` `Windmills` `Yurt` `Lakefront` `Bubble Tent` `Amazing Pools` `Boat House` `Camping` `OW Bungalow` `Desert` `Light House` `Barns` `Treehouse`
 
@@ -144,11 +144,11 @@ MomentStay supports 16+ property categories:
 
 ## 🔮 Future Improvements
 
-- [ ] Map integration (Google Maps / Mapbox) for property location
+- [ ] Map integration (Google Maps / Mapbox) for stay location
 - [ ] Email notifications for booking confirmations
 - [ ] Advanced filters (price range, amenities, guest count)
 - [ ] Payment gateway integration (Stripe / Razorpay)
-- [ ] AI-based property recommendations
+- [ ] AI-based stay recommendations
 
 ---
 
