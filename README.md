@@ -1,6 +1,6 @@
 # MomentStay — Airbnb-Inspired Vacation Booking Platform
 
-> An online marketplace that connects travelers with people who want to share their unique stays — where travelers discover and book unique stays or list your own stay and start welcoming travelers. Everything in one account.
+> An online marketplace that connects travelers with people who want to share their unique stays — where travelers discover and book unique stays or list their own. Everything in one account.
 
 ---
 
