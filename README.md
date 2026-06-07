@@ -1,8 +1,8 @@
 # MomentStay — Airbnb-Inspired Vacation Booking Platform
 
-MomentStay is a full-stack web application for booking unique short-term stays. Every registered user gets a **single account** that works for both guest and host actions — the same credentials let you browse and book stays, and also add and manage your own stays. No role switching or separate accounts needed.
+> MomentStay is a full-stack web application for booking unique short-term stays. Every registered user gets a **single account** that works for both guest and host actions — the same credentials let you browse and book stays, and also add and manage your own stays. No role switching or separate accounts needed.
 
-Users can explore 16+ stay categories, use an interactive calendar to check availability, book stays, and leave ratings and reviews. The same user can also add their own stay, upload photos with details, set pricing, and track reservations.
+> Users can explore 16+ stay categories, use an interactive calendar to check availability, book stays, and leave ratings and reviews. The same user can also add their own stay, upload photos with details, set pricing, and track reservations.
 
 ---
 
