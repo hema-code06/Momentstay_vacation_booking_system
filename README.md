@@ -115,7 +115,7 @@ npm install
 
 ### 3. Install Client Dependencies
 ```bash
-cd ../client
+cd client
 npm install
 ```
 
