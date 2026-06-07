@@ -47,9 +47,12 @@ The key difference from Airbnb: **MomentStay uses a single account for both**. T
 - Delete your stay anytime
 - View all reservations made on your stays
 
-### Authentication & Trust
-- Register with a profile photo upload to AWS S3
-- JWT-based authentication with `bcryptjs` password hashing
+### For Security
+- JWT tokens for all authenticated routes
+- Bcrypt password hashing (salted)
+- AWS IAM user with minimum required S3 permissions
+- Environment variables never committed to GitHub
+- EC2 Security Group — only required ports open
 
 ### General
 - Fully responsive design — mobile and desktop
@@ -136,16 +139,6 @@ npm start
 ```
 
 Open: [http://localhost:3000](http://localhost:3000)
-
----
-
-## 🔐 Security
-
-- JWT tokens for all authenticated routes
-- Bcrypt password hashing (salted)
-- AWS IAM user with minimum required S3 permissions
-- Environment variables never committed to GitHub
-- EC2 Security Group — only required ports open
 
 ---
 
