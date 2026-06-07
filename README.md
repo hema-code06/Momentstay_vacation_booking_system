@@ -1,8 +1,6 @@
 # MomentStay — Airbnb-Inspired Vacation Booking Platform
 
-> MomentStay is a full-stack web application for booking unique short-term stays. Every registered user gets a **single account** that works for both guest and host actions — the same credentials let you browse and book stays, and also add and manage your own stays. No role switching or separate accounts needed.
-
-> Users can explore 16+ stay categories, use an interactive calendar to check availability, book stays, and leave ratings and reviews. The same user can also add their own stay, upload photos with details, set pricing, and track reservations.
+> An online marketplace that connects travelers with people who want to share their unique stays — where travelers discover and book unique stays or list your own stay and start welcoming travelers. Everything in one account.
 
 ---
 
@@ -17,36 +15,43 @@
 
 ---
 
+## 📌 About MomentStay
+
+MomentStay is a full-stack vacation rental marketplace — inspired by how Airbnb connects travelers with people who want to share their spaces.
+
+Just like Airbnb, MomentStay works in two ways:
+
+- **As a Traveler** — Search stays by destination or category, pick your dates on an interactive calendar, and book instantly. Leave ratings and reviews after your stay to help future travelers.
+- **As a Stay Owner** — Anyone can add their own stay for free. Set your nightly rate, amenities, availability, and upload photos. 
+
+The key difference from Airbnb: **MomentStay uses a single account for both**. The same credentials let you book a stay and add your own — no role switching, no separate accounts needed.
+
+---
+
 ## 🚀 Features
 
-### Booking & Search (any logged-in user)
-- Browse and search stays by 16+ categories (Beachfront, Luxury, Treehouse, Lakefront, Arctic, Desert, Camping, Boat House, and more)
-- Full-text and category-based search with MongoDB regex queries
-- Interactive date range calendar for real-time booking availability
+### For Travelers — Search & Book
+- Browse stays across 16+ unique categories (Beachfront, Luxury, Treehouse, Lakefront, Arctic, Desert, Camping, Boat House, and more)
+- Full-text and category-based search powered by MongoDB regex queries
+- Interactive date range calendar for real-time availability checking
 - Book stays with date selection and automatic total price calculation
-- Update or cancel bookings
-- Save your favorite stays to a personal wishlist (Redux-persisted)
-- Leave ratings and reviews on stays
-- View full booking history (trip list)
+- Update or cancel existing bookings anytime
+- Save your favorite stays to a personal wishlist, synced across sessions with Redux Persist
+- Submit ratings and reviews after your stay to help the community
+- View your complete booking history (trip list)
 
-### Add & Manage Your Stay (same account)
-- Any user can also add their own property — no separate host account needed
-- Add your stay with multi-photo upload directly to AWS S3
-- Edit existing stays — add new photos, remove old ones (auto-deleted from S3 via `DeleteObjectCommand`)
-- Delete stays with automatic S3 cleanup of all associated images
-- Set stay type, price, amenities, category, guest/bedroom/bed/bathroom counts
-- View all reservations made on your added stays
+### For Stay Owners — Add & Manage
+- Any user can add their own stay — no separate account needed
+- Set stay type, nightly price, amenities, category, and guest/bedroom/bed/bathroom counts with multi-photo upload directly to AWS S3
+- Edit your stay — add new extra details and photos or modify existing ones.
+- Delete your stay anytime
+- View all reservations made on your stays
 
-### Authentication
-- Register with profile image upload to AWS S3
+### Authentication & Trust
+- Register with a profile photo upload to AWS S3
 - JWT-based authentication with `bcryptjs` password hashing
-- Persisted login state using Redux Persist
-- Protected routes for all user-specific pages
 
-### General Features
-- Response compression for faster API delivery
-- Request logging middleware (method, URL, response time)
-- Global error handling middleware
+### General
 - Fully responsive design — mobile and desktop
 - Toast notifications for bookings, wishlist actions, and authentication feedback
 
@@ -57,7 +62,7 @@
 ### Frontend
 | Technology | Purpose |
 |------------|---------|
-| React.js 18 | UI framework |
+| React.js | UI framework |
 | Redux Toolkit + Redux Persist | Global state management & persistence |
 | React Router DOM v6 | Client-side routing |
 | Sass (SCSS) | Custom styling |
@@ -74,13 +79,13 @@
 | JWT (`jsonwebtoken`) | Authentication tokens |
 | Bcryptjs | Password hashing |
 | Multer + Multer-S3 | Multipart file upload to AWS S3 |
-| AWS SDK v3 (`@aws-sdk/client-s3`) | S3 integration & `DeleteObjectCommand` |
+| AWS SDK | S3 integration & `DeleteObjectCommand` |
 
 ### DevOps & Cloud
 | Technology | Purpose |
 |------------|---------|
 | AWS EC2 | Backend server hosting |
-| AWS S3 | Image storage and delivery |
+| AWS S3 | Stay & profile photo storage |
 | AWS IAM | Least-privilege access control |
 | PM2 | Node.js process management & auto-restart |
 | Nginx | Reverse proxy server |
@@ -110,7 +115,7 @@ npm install
 
 ### 3. Install Client Dependencies
 ```bash
-cd client
+cd ../client
 npm install
 ```
 
@@ -134,17 +139,20 @@ Open: [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 📸 Stay Categories
+## 🔐 Security
 
-MomentStay supports 16+ stay categories:
-
-`All` `Luxury` `Arctic` `Beachfront` `Windmills` `Yurt` `Lakefront` `Bubble Tent` `Amazing Pools` `Boat House` `Camping` `OW Bungalow` `Desert` `Light House` `Barns` `Treehouse`
+- JWT tokens for all authenticated routes
+- Bcrypt password hashing (salted)
+- AWS IAM user with minimum required S3 permissions
+- Environment variables never committed to GitHub
+- EC2 Security Group — only required ports open
 
 ---
 
 ## 🔮 Future Improvements
 
 - [ ] Map integration (Google Maps / Mapbox) for stay location
+- [ ] Real-time chat between travelers and stay owners
 - [ ] Email notifications for booking confirmations
 - [ ] Advanced filters (price range, amenities, guest count)
 - [ ] Payment gateway integration (Stripe / Razorpay)
