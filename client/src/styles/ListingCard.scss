@@ -1,23 +1,35 @@
+@import "./_tokens.scss";
+
 .listing-card {
   position: relative;
   cursor: pointer;
-  padding: 10px;
-  border-radius: 10px;
-  margin-top: 5%;
+  width: 300px;
+  transition: transform $t-base $ease-standard;
 
   &:hover {
-    box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.2);
+    transform: translateY(-4px);
+
+    .slider-container {
+      box-shadow: $shadow-md;
+    }
+
+    .slide img {
+      transform: scale(1.04);
+    }
   }
 
   .slider-container {
-    width: 300px;
+    position: relative;
+    width: 100%;
     overflow: hidden;
-    border-radius: 10px;
-    margin-bottom: 10px;
+    border-radius: $radius-lg;
+    margin-bottom: 12px;
+    box-shadow: $shadow-sm;
+    transition: box-shadow $t-base $ease-standard;
 
     .slider {
       display: flex;
-      transition: transform 0.5s ease;
+      transition: transform 0.5s $ease-standard;
 
       .slide {
         position: relative;
@@ -26,12 +38,13 @@
         height: 270px;
         display: flex;
         align-items: center;
+        overflow: hidden;
 
         img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          filter: brightness(85%);
+          transition: transform 0.5s $ease-standard;
         }
 
         .prev-button,
@@ -39,18 +52,22 @@
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
-          padding: 6px;
+          width: 30px;
+          height: 30px;
           border-radius: 50%;
           border: none;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          background-color: rgba(255, 255, 255, 0.7);
+          background-color: rgba(255, 255, 255, 0.85);
+          box-shadow: $shadow-xs;
           z-index: 9;
+          transition: background-color $t-fast $ease-standard, transform $t-fast $ease-standard;
 
           &:hover {
-            background-color: white;
+            background-color: $white;
+            transform: translateY(-50%) scale(1.08);
           }
         }
 
@@ -68,33 +85,50 @@
   .info {
     display: flex;
     flex-direction: column;
-    margin: 0 !important;
+    gap: 2px;
+    margin: 0 2px !important;
 
     h3 {
-      color: #004369;
-      font-size: 18px;
+      font-family: $font-body;
+      color: $ink-900;
+      font-size: 16px;
+      font-weight: 700;
     }
 
     p {
-      font-size: 16px;
-      color: #444;
+      font-size: 14px;
+      color: $ink-500;
     }
 
     span {
-      font-weight: 600;
-      font-size: 17px;
-      color: #004369;
+      font-weight: 700;
+      font-size: 16px;
+      color: $navy-600;
     }
   }
 
   .favorite {
     position: absolute;
-    right: 20px;
-    top: 20px;
+    right: 16px;
+    top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
     border: none;
-    font-size: 20px;
+    border-radius: 50%;
+    font-size: 17px;
     cursor: pointer;
     z-index: 99;
-    background: none;
+    background: rgba(15, 27, 45, 0.35);
+    color: $white;
+    backdrop-filter: blur(4px);
+    transition: transform $t-fast $ease-spring, background $t-fast $ease-standard;
+
+    &:hover {
+      transform: scale(1.1);
+      background: rgba(15, 27, 45, 0.55);
+    }
   }
 }

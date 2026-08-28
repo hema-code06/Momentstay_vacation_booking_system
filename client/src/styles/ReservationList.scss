@@ -1,3 +1,4 @@
+@import "./_tokens.scss";
 @import "./Responsive.scss";
 
 .reserve-container {
@@ -34,12 +35,13 @@
   }
 
   .reservation-count {
-    background: #eef4ff;
-    color: #004369;
+    background: $navy-100;
+    color: $navy-600;
+    font-family: $font-body;
     font-size: 12px;
-    font-weight: 600;
-    padding: 4px 12px;
-    border-radius: 20px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: $radius-pill;
     letter-spacing: 0.03em;
   }
 }
@@ -52,16 +54,16 @@
 
 .reservation-card {
   display: flex;
-  border-radius: 14px;
+  border-radius: $radius-lg;
   overflow: hidden;
-  background: #fff;
-  border: 1px solid #e8edf3;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  background: $white;
+  border: 1px solid $ink-100;
+  box-shadow: $shadow-sm;
+  transition: box-shadow $t-base $ease-standard, transform $t-base $ease-standard;
   animation: fadeUp 0.5s ease forwards;
 
   &:hover {
-    box-shadow: 0 6px 24px rgba(0, 67, 105, 0.12);
+    box-shadow: $shadow-md;
     transform: translateY(-2px);
   }
 
@@ -77,8 +79,7 @@
   min-width: 260px;
   min-height: auto;
   overflow: hidden;
-  background: #f1f5f9;
-  border-radius: 14px;
+  background: $ink-50;
 
   @include lg {
     width: 220px;
@@ -102,7 +103,7 @@
   .slider-track {
     display: flex;
     height: 100%;
-    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.45s $ease-standard;
   }
 
   .slide {
@@ -125,17 +126,17 @@
     height: 28px;
     border-radius: 50%;
     border: none;
-    background: rgba(255, 255, 255, 0.88);
+    background: rgba(255, 255, 255, 0.9);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    box-shadow: $shadow-xs;
     z-index: 2;
-    transition: background 0.2s ease, transform 0.2s ease;
+    transition: background $t-fast $ease-standard, transform $t-fast $ease-standard;
 
     &:hover {
-      background: #fff;
+      background: $white;
       transform: translateY(-50%) scale(1.1);
     }
 
@@ -161,10 +162,10 @@
       height: 6px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.55);
-      transition: background 0.2s ease, transform 0.2s ease;
+      transition: background $t-fast $ease-standard, transform $t-fast $ease-standard;
 
       &.active {
-        background: #fff;
+        background: $white;
         transform: scale(1.3);
       }
     }
@@ -192,9 +193,10 @@
   gap: 8px;
 
   .listing-title {
-    font-size: clamp(18px, 2vw, 17px);
+    font-family: $font-display;
+    font-size: clamp(18px, 2vw, 19px);
     font-weight: 700;
-    color: #004369;
+    color: $navy-600;
     margin: 0 0 4px;
     white-space: nowrap;
     overflow: hidden;
@@ -206,12 +208,12 @@
     align-items: center;
     gap: 10px;
     font-size: 14px;
-    color: #64748b;
+    color: $ink-500;
     line-height: 1.4;
 
     .detail-icon {
       font-size: 15px !important;
-      color: #004369;
+      color: $navy-600;
       flex-shrink: 0;
     }
 
@@ -229,7 +231,7 @@
   justify-content: space-between;
   margin-top: 0;
   padding-top: 14px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid $ink-100;
 
   @include xs {
     flex-direction: column;
@@ -243,17 +245,18 @@
 
     .price-label {
       font-size: 11px;
-      font-weight: 500;
-      color: #94a3b8;
+      font-weight: 600;
+      color: $ink-400;
       text-transform: uppercase;
       letter-spacing: 0.07em;
     }
 
     .price-value {
-      font-size: clamp(16px, 2vw, 20px);
+      font-family: $font-display;
+      font-size: clamp(17px, 2vw, 21px);
       font-weight: 700;
-      color: #004369;
-      letter-spacing: -0.3px;
+      color: $navy-600;
+      letter-spacing: -0.2px;
     }
   }
 
@@ -270,39 +273,39 @@
 .icon-btn {
   width: 38px;
   height: 38px;
-  border-radius: 10px;
+  border-radius: $radius-md;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  transition: background $t-base $ease-standard, transform $t-base $ease-standard, box-shadow $t-base $ease-standard;
 
   svg {
     font-size: 19px !important;
   }
 
   &.edit-btn {
-    background: #eef4ff;
-    color: #004369;
+    background: $navy-100;
+    color: $navy-600;
 
     &:hover {
-      background: #004369;
-      color: #fff;
+      background: $navy-600;
+      color: $white;
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 67, 105, 0.25);
+      box-shadow: $shadow-brand;
     }
   }
 
   &.delete-btn {
-    background: #fff1f1;
-    color: #e03e3e;
+    background: $danger-bg;
+    color: $danger-dark;
 
     &:hover {
-      background: #e03e3e;
-      color: #fff;
+      background: $danger;
+      color: $white;
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(224, 62, 62, 0.25);
+      box-shadow: 0 4px 12px rgba(224, 56, 79, 0.28);
     }
 
     &.loading {
@@ -332,7 +335,7 @@
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background: #eef4ff;
+    background: $navy-100;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -340,47 +343,32 @@
 
     svg {
       font-size: 32px !important;
-      color: #004369;
+      color: $navy-600;
     }
   }
 
   h2 {
-    font-size: clamp(18px, 3vw, 24px);
+    font-family: $font-display;
+    font-size: clamp(18px, 3vw, 26px);
     font-weight: 700;
-    color: #0f172a;
+    color: $ink-900;
     margin: 0 0 10px;
   }
 
   p {
     font-size: 14px;
-    color: #64748b;
+    color: $ink-500;
     max-width: 380px;
     line-height: 1.7;
     margin: 0 0 28px;
   }
 
   .start-btn {
-    background: #004369;
-    color: #fff;
-    border: none;
+    @include btn-primary;
     padding: 12px 30px;
-    border-radius: 10px;
     font-size: 14px;
-    font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-
-    &:hover {
-      background: #002a43;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0, 67, 105, 0.3);
-    }
-
-    &:active {
-      transform: translateY(0);
-    }
 
     @include sm {
       width: 100%;

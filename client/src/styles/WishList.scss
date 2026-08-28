@@ -1,3 +1,4 @@
+@import "./_tokens.scss";
 @import "./Responsive.scss";
 
 .wish-list-container {
@@ -37,14 +38,15 @@
       flex-shrink: 0;
       display: flex;
       align-items: center;
-      background: #fff;
-      border: 1px solid #e2e8f0;
+      background: $white;
+      border: 1px solid $ink-100;
       padding: 10px 18px;
-      border-radius: 10px;
+      border-radius: $radius-md;
+      font-family: $font-body;
       font-size: 14px;
-      font-weight: 600;
-      color: #004369;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      font-weight: 700;
+      color: $navy-600;
+      box-shadow: $shadow-xs;
       white-space: nowrap;
 
       @include sm {
@@ -59,22 +61,22 @@
   .message {
     display: inline-block;
     padding: 10px 16px;
-    border-radius: 10px;
+    border-radius: $radius-md;
     margin-bottom: 24px;
     font-size: 13px;
     font-weight: 600;
     animation: fadeUp 0.3s ease forwards;
 
     &.success {
-      background: #dcfce7;
+      background: $success-bg;
       color: #166534;
-      border: 1px solid #86efac;
+      border: 1px solid $success-border;
     }
 
     &.error {
-      background: #fee2e2;
-      color: #991b1b;
-      border: 1px solid #fca5a5;
+      background: $danger-bg;
+      color: $danger-dark;
+      border: 1px solid $danger-border;
     }
   }
 
@@ -90,14 +92,14 @@
 
     @include sm {
       padding: 40px 16px;
-      border-radius: 16px;
+      border-radius: $radius-lg;
     }
 
     .empty-icon {
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      background: #f1f5f9;
+      background: $navy-50;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -105,20 +107,21 @@
 
       svg {
         font-size: 36px;
-        color: #004369;
+        color: $navy-600;
       }
     }
 
     h2 {
+      font-family: $font-display;
       font-size: clamp(20px, 3vw, 28px);
       font-weight: 700;
-      color: #0f172a;
+      color: $ink-900;
       margin-bottom: 12px;
     }
 
     p {
       font-size: 15px;
-      color: #6b7280;
+      color: $ink-500;
       max-width: 420px;
       line-height: 1.7;
       margin-bottom: 28px;
@@ -129,27 +132,10 @@
     }
 
     .wish-btn {
-      background: #004369 !important;
-      color: #fff !important;
+      @include btn-primary;
       padding: 12px 28px !important;
-      border-radius: 10px !important;
-      font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif !important;
       font-size: 14px !important;
-      font-weight: 600 !important;
-      letter-spacing: 0.04em !important;
-      text-transform: uppercase !important;
-      box-shadow: 0 4px 12px rgba(0, 67, 105, 0.25) !important;
-      transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
-
-      &:hover {
-        background: #002a43 !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 8px 20px rgba(0, 67, 105, 0.35) !important;
-      }
-
-      &:active {
-        transform: translateY(0) !important;
-      }
+      text-transform: uppercase;
 
       @include sm {
         width: 100%;
@@ -188,7 +174,7 @@
       opacity: 0;
       animation: fadeUp 0.5s ease forwards;
       animation-delay: calc(var(--i, 0) * 0.06s + 0.2s);
-      transition: transform 0.3s ease;
+      transition: transform $t-base $ease-standard;
 
       &:hover {
         transform: translateY(-4px);
@@ -200,8 +186,8 @@
 
       .remove-btn {
         position: absolute;
-        top: 30px;
-        left: 20px;
+        top: 18px;
+        left: 14px;
         width: 38px;
         height: 38px;
         border: none;
@@ -211,21 +197,22 @@
         align-items: center;
         cursor: pointer;
         z-index: 10;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-        transition: background 0.2s ease, transform 0.2s ease;
+        background: $white;
+        box-shadow: $shadow-sm;
+        transition: background $t-base $ease-standard, transform $t-base $ease-standard;
 
         svg {
           font-size: 20px;
-          color: #0f172a;
-          transition: color 0.2s ease;
+          color: $ink-900;
+          transition: color $t-base $ease-standard;
         }
 
         &:hover {
-          background: #ef4444;
+          background: $danger;
           transform: scale(1.1);
 
           svg {
-            color: #fff;
+            color: $white;
           }
         }
       }

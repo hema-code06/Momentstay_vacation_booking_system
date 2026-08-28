@@ -1,3 +1,4 @@
+@import "./_tokens.scss";
 @import "./Responsive.scss";
 
 .create-listing {
@@ -30,18 +31,19 @@
   top: 24px;
   left: 50%;
   transform: translateX(-50%) translateY(-30px);
-  background: linear-gradient(135deg, #004369, #0b5c8f);
-  color: #fff;
+  background: linear-gradient(135deg, $navy-600, $navy-500);
+  color: $white;
   padding: 14px 22px;
-  border-radius: 14px;
+  border-radius: $radius-lg;
   display: flex;
   align-items: center;
   gap: 12px;
+  font-family: $font-body;
   font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.4px;
   z-index: 9999;
-  box-shadow: 0 10px 30px rgba(0, 67, 105, 0.25);
+  box-shadow: $shadow-brand;
   animation: toastSlideDown 0.5s ease forwards;
 
   .toast-icon {
@@ -64,7 +66,7 @@
     justify-content: center;
     text-align: center;
     padding: 12px 16px;
-    border-radius: 12px;
+    border-radius: $radius-md;
     font-size: 13px;
   }
 
@@ -106,40 +108,42 @@
     flex: 1;
     padding-bottom: 20px;
 
-
     h2 {
       text-align: center;
+      font-family: $font-display;
+      color: $ink-900;
       margin-bottom: 3%;
-      font-size: 22px;
+      font-size: 24px;
 
       @include lg {
-        font-size: 20px;
+        font-size: 21px;
       }
 
       @include md {
-        font-size: 18px;
+        font-size: 19px;
         margin-bottom: 4%;
       }
 
       @include sm {
-        font-size: 15px;
+        font-size: 16px;
         margin-bottom: 5%;
       }
 
       @include xs {
-        font-size: 13px;
+        font-size: 14px;
         margin-bottom: 6%;
       }
     }
 
     span {
-      color: #004369;
+      color: $navy-600;
     }
 
     h3 {
       margin-bottom: 2%;
-      font-size: 16px;
-      color: grey;
+      font-family: $font-body;
+      font-size: 15px;
+      color: $ink-500;
 
       @include md {
         font-size: 14px;
@@ -182,10 +186,16 @@
         align-items: center;
         gap: 8px;
         padding: 13px 18px;
-        border: 1px solid #ddd;
-        border-radius: 20px;
+        border: 1.5px solid $ink-200;
+        border-radius: $radius-pill;
         cursor: pointer;
-        transition: all 0.2s ease;
+        background: $white;
+        transition: all $t-fast $ease-standard;
+
+        &:hover {
+          border-color: $navy-400;
+          background: $navy-50;
+        }
 
         @include md {
           padding: 10px 14px;
@@ -203,7 +213,7 @@
         }
 
         .category_icon {
-          color: #004369;
+          color: $navy-600;
           font-size: 16px;
           display: flex;
           align-items: center;
@@ -222,6 +232,7 @@
         }
 
         p {
+          font-family: $font-body;
           font-size: 14px;
           white-space: nowrap;
           margin: 0;
@@ -256,10 +267,17 @@
         flex-wrap: wrap;
         gap: 5px;
         width: 345px;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
+        padding: 16px;
+        border: 1.5px solid $ink-200;
+        border-radius: $radius-md;
+        background: $white;
         cursor: pointer;
+        transition: all $t-fast $ease-standard;
+
+        &:hover {
+          border-color: $navy-400;
+          box-shadow: $shadow-xs;
+        }
 
         @include lg {
           width: 300px;
@@ -271,7 +289,7 @@
 
         @include sm {
           width: 100%;
-          padding: 8px;
+          padding: 12px;
         }
 
         .type-text {
@@ -288,7 +306,9 @@
         }
 
         h4 {
+          font-family: $font-body;
           font-size: 15px;
+          color: $ink-900;
 
           @include sm {
             font-size: 13px;
@@ -301,6 +321,7 @@
 
         p {
           font-size: 13px;
+          color: $ink-500;
 
           @include sm {
             font-size: 12px;
@@ -312,7 +333,8 @@
         }
 
         .type_icon {
-          color: #004369;
+          color: $navy-600;
+          font-size: 20px;
         }
       }
     }
@@ -333,10 +355,11 @@
     }
 
     p {
-      font-weight: 600;
+      font-family: $font-body;
+      font-weight: 700;
       font-size: 14px;
       margin-bottom: 1%;
-      color: #333;
+      color: $ink-700;
 
       @include sm {
         font-size: 12px;
@@ -369,22 +392,19 @@
         flex: 1;
 
         input {
-          width: 100%;
-          padding: 10px;
+          @include input-field;
+          padding: 12px;
           font-size: 14px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          letter-spacing: 0.5px;
-          box-sizing: border-box;
+          letter-spacing: 0.3px;
 
           @include sm {
             font-size: 12px;
-            padding: 9px;
+            padding: 10px;
           }
 
           @include xs {
             font-size: 11px;
-            padding: 7px;
+            padding: 9px;
           }
         }
       }
@@ -408,22 +428,19 @@
         }
 
         input {
-          width: 100%;
-          padding: 10px;
+          @include input-field;
+          padding: 12px;
           font-size: 14px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          letter-spacing: 0.5px;
-          box-sizing: border-box;
+          letter-spacing: 0.3px;
 
           @include sm {
             font-size: 12px;
-            padding: 9px;
+            padding: 10px;
           }
 
           @include xs {
             font-size: 11px;
-            padding: 7px;
+            padding: 9px;
           }
         }
       }
@@ -432,6 +449,7 @@
     .count-container {
       display: flex;
       margin-left: 2%;
+      margin-top: 20px;
 
       @include md {
         margin-left: 0;
@@ -468,6 +486,7 @@
           align-items: center;
 
           p {
+            font-weight: 600;
             margin: 0 10px 0 0;
 
             @include sm {
@@ -482,44 +501,50 @@
           .input-group {
             display: flex;
             align-items: center;
+            gap: 4px;
 
             button {
-              width: 30px;
-              height: 30px;
+              width: 32px;
+              height: 32px;
               display: flex;
               justify-content: center;
               align-items: center;
-              background-color: #004369;
-              color: white;
+              background: $navy-600;
+              color: $white;
               font-size: 18px;
               border: none;
-              border-radius: 4px;
+              border-radius: $radius-sm;
               cursor: pointer;
-              margin: 0 5px;
+              transition: background $t-fast $ease-standard, transform $t-fast $ease-standard;
+
+              &:hover {
+                background: $navy-800;
+                transform: translateY(-1px);
+              }
 
               @include sm {
                 font-size: 14px;
-                width: 26px;
-                height: 26px;
-                margin: 0 4px;
+                width: 27px;
+                height: 27px;
               }
 
               @include xs {
                 font-size: 12px;
-                width: 22px;
-                height: 22px;
-                margin: 0 3px;
+                width: 24px;
+                height: 24px;
               }
             }
 
             input {
-              width: 40px;
+              width: 42px;
               text-align: center;
-              padding: 6px;
+              padding: 7px;
+              font-family: $font-body;
+              font-weight: 700;
               font-size: 16px;
-              border: 1px solid #ccc;
-              border-radius: 4px;
-              margin: 0 5px;
+              color: $ink-900;
+              border: 1.5px solid $ink-200;
+              border-radius: $radius-sm;
               -moz-appearance: textfield;
               appearance: textfield;
 
@@ -533,7 +558,6 @@
                 font-size: 12px;
                 width: 30px;
                 padding: 4px;
-                margin: 0 3px;
               }
 
               &::-webkit-inner-spin-button,
@@ -587,12 +611,19 @@
         justify-content: center;
         align-items: center;
         text-align: center;
-        gap: 5px;
+        gap: 6px;
         width: 120px;
-        height: 80px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
+        height: 84px;
+        border: 1.5px solid $ink-200;
+        border-radius: $radius-md;
+        background: $white;
         cursor: pointer;
+        transition: all $t-fast $ease-standard;
+
+        &:hover {
+          border-color: $navy-400;
+          background: $navy-50;
+        }
 
         @include lg {
           width: 115px;
@@ -615,7 +646,8 @@
         }
 
         .facility_icon {
-          color: #004369;
+          color: $navy-600;
+          font-size: 20px;
 
           @include sm {
             font-size: 18px;
@@ -627,7 +659,9 @@
         }
 
         p {
+          font-family: $font-body;
           font-size: 14px;
+          color: $ink-700;
 
           @include sm {
             font-size: 12px;
@@ -688,14 +722,22 @@
           display: flex;
           justify-content: center;
           align-items: center;
-          background-color: #f0f0f0;
-          border: 2px dashed #ccc;
-          color: #888;
+          background-color: $navy-50;
+          border: 2px dashed $ink-300;
+          color: $ink-500;
+          font-family: $font-body;
           font-size: 15px;
-          border-radius: 10px;
+          border-radius: $radius-lg;
           text-align: center;
           gap: 15px;
           cursor: pointer;
+          transition: border-color $t-fast $ease-standard, background-color $t-fast $ease-standard, color $t-fast $ease-standard;
+
+          &:hover {
+            border-color: $navy-600;
+            background-color: $navy-100;
+            color: $navy-600;
+          }
 
           @include lg {
             width: 220px;
@@ -719,11 +761,11 @@
             height: 96px;
             font-size: 11px;
             gap: 8px;
-            border-radius: 7px;
+            border-radius: $radius-sm;
           }
 
           .icon {
-            color: #888;
+            color: inherit;
             font-size: 30px;
 
             @include sm {
@@ -737,8 +779,10 @@
         }
 
         .photo-preview {
-          border: 1px solid #ddd;
+          border: 1px solid $ink-100;
+          background: $white;
           overflow: hidden;
+          box-shadow: $shadow-xs;
 
           img {
             width: 100%;
@@ -748,10 +792,19 @@
 
           .trash-icon {
             position: absolute;
-            top: 5px;
-            right: 5px;
+            top: 8px;
+            right: 8px;
             cursor: pointer;
-            color: red;
+            color: $danger;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            padding: 4px;
+            transition: background $t-fast $ease-standard, transform $t-fast $ease-standard;
+
+            &:hover {
+              background: $white;
+              transform: scale(1.1);
+            }
           }
         }
       }
@@ -806,8 +859,10 @@
         }
 
         p {
+          font-family: $font-body;
           font-size: 14px;
-          font-weight: 600;
+          font-weight: 700;
+          color: $ink-700;
           word-spacing: 5px;
           width: 300px;
           min-width: 300px;
@@ -840,25 +895,20 @@
         input[type="text"],
         input[type="number"],
         textarea {
+          @include input-field;
           flex: 1;
-          width: 100%;
-          padding: 10px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
+          padding: 12px;
           font-size: 14px;
           word-spacing: 5px;
-          color: #333;
-          background-color: #f9f9f9;
-          box-sizing: border-box;
 
           @include sm {
             font-size: 12px;
-            padding: 8px;
+            padding: 10px;
           }
 
           @include xs {
             font-size: 11px;
-            padding: 7px;
+            padding: 9px;
           }
         }
 
@@ -888,10 +938,12 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: #fff;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid $ink-100;
     z-index: 1000;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
-
+    box-shadow: 0 -8px 24px rgba(15, 27, 45, 0.06);
 
     @include lg {
       padding: 14px 28px 22px;
@@ -914,51 +966,37 @@
     }
 
     button {
-      background-color: #004369;
+      @include btn-primary;
       letter-spacing: 1px;
       font-size: 15px;
-      font-weight: 600;
       text-transform: uppercase;
-      color: #fff;
-      padding: 10px 24px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      padding: 12px 26px;
       min-width: 90px;
 
       @include md {
         font-size: 14px;
-        padding: 9px 20px;
+        padding: 10px 20px;
       }
 
       @include sm {
         font-size: 13px;
-        padding: 8px 16px;
+        padding: 9px 16px;
         min-width: 78px;
         letter-spacing: 0.5px;
       }
 
       @include xs {
         font-size: 12px;
-        padding: 7px 13px;
+        padding: 8px 13px;
         min-width: 68px;
         letter-spacing: 0.3px;
-      }
-
-      &:disabled {
-        background-color: #ccc;
-        cursor: not-allowed;
-      }
-
-      &:hover:not(:disabled) {
-        box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.25);
       }
     }
   }
 
   .selected {
-    border-color: #004369 !important;
-    background-color: rgb(233, 232, 232);
+    border-color: $navy-600 !important;
+    background-color: $navy-100 !important;
+    box-shadow: $shadow-xs;
   }
 }

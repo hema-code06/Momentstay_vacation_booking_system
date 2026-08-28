@@ -1,3 +1,4 @@
+@import "./_tokens.scss";
 @import "./Responsive.scss";
 
 .category-list-container {
@@ -37,40 +38,42 @@
   align-items: center;
   cursor: pointer;
   white-space: nowrap;
-  padding: 25px;
-  transition: transform 0.2s ease-in-out, color 0.2s ease;
+  padding: 20px 25px;
+  border-bottom: 2px solid transparent;
+  transition: transform $t-base $ease-standard, color $t-base $ease-standard, border-color $t-base $ease-standard;
 
-  &:hover { transform: scale(1.1); }
+  &:hover { transform: translateY(-3px); }
 
   &.selected {
-    font-weight: bold;
-    color: #004369;
+    font-weight: 700;
+    color: $navy-600;
+    border-bottom-color: $gold-500;
 
     .category_icon {
-      color: #ffb301;
+      color: $gold-600;
       transform: scale(1.15);
     }
   }
 
   .category_icon {
-    color: #004369;
+    color: $navy-600;
     font-size: 23px;
     margin-bottom: 10px;
-    transition: transform 0.2s ease, color 0.2s ease;
+    transition: transform $t-base $ease-standard, color $t-base $ease-standard;
   }
 
-  p { font-size: 13px; }
+  p { font-family: $font-body; font-size: 13px; color: $ink-600; }
 
-  @include md { padding: 18px 16px; }
-  @include sm { padding: 14px 12px; .category_icon { font-size: 20px; } p { font-size: 12px; } }
-  @include xs { padding: 12px 10px; .category_icon { font-size: 18px; } p { font-size: 11px; } }
+  @include md { padding: 16px 16px; }
+  @include sm { padding: 12px 12px; .category_icon { font-size: 20px; } p { font-size: 12px; } }
+  @include xs { padding: 10px 10px; .category_icon { font-size: 18px; } p { font-size: 11px; } }
 }
 
 .scroll-icon {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: #004369;
+  background: $navy-600;
   border-radius: 50%;
   cursor: pointer;
   width: 40px;
@@ -81,14 +84,16 @@
   z-index: 10;
   font-size: 20px;
   font-weight: 600;
-  color: whitesmoke;
+  color: $white;
   outline: none;
   border: none;
-  transition: background-color 0.2s ease-in-out, transform 0.2s ease;
+  box-shadow: $shadow-md;
+  transition: background $t-base $ease-standard, transform $t-base $ease-standard, box-shadow $t-base $ease-standard;
 
   &:hover {
-    background-color: #002a43;
+    background: $navy-800;
     transform: translateY(-50%) scale(1.08);
+    box-shadow: $shadow-brand;
   }
 
   &.left { left: 1%; }
@@ -103,15 +108,15 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 5px;
+  gap: 28px;
   opacity: 0;
   animation: fadeUp 0.6s ease forwards;
   animation-delay: 0.3s;
 
-  @include lg { padding: 0 40px 100px; }
-  @include md { padding: 0 24px 80px; gap: 12px; }
-  @include sm { padding: 0 16px 60px; gap: 10px; }
-  @include xs { padding: 0 12px 40px; gap: 8px; }
+  @include lg { padding: 0 40px 100px; gap: 20px; }
+  @include md { padding: 0 24px 80px; gap: 16px; }
+  @include sm { padding: 0 16px 60px; gap: 14px; }
+  @include xs { padding: 0 12px 40px; gap: 10px; }
 }
 
 .listings-loader {
@@ -131,8 +136,8 @@
   justify-content: center;
   gap: 12px;
   padding: 100px 20px;
-  font-family: "DM Sans", sans-serif;
-  color: #8a9ab0;
+  font-family: $font-body;
+  color: $ink-400;
   margin-bottom: 12.5%;
   margin-top: 2%;
   opacity: 0;
@@ -141,6 +146,7 @@
   &__icon {
     font-size: 48px;
     opacity: 0.5;
+    color: $navy-400;
     animation: float 3s ease-in-out infinite;
 
     @include sm { font-size: 38px; }
