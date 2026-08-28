@@ -49,7 +49,7 @@ const ListingCard = ({
 
   const patchWishList = async () => {
     if (user?._id !== creator._id) {
-      const response = await fetch(
+      const response = await authFetch(
         `${process.env.REACT_APP_API_URL}/users/${user?._id}/${listingId}`,
         token,
         {
