@@ -1,13 +1,14 @@
 const router = require("express").Router();
 const { DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const { uploadToS3, s3 } = require("../config/s3");
+const verifyToken = require("../middleware/auth");
 
 const Listing = require("../models/Listing");
 const User = require("../models/User");
 
 const upload = uploadToS3("properties");
 
-router.post("/create", upload.array("listingPhotos"), async (req, res) => {
+router.post("/create", verifyToken, upload.array("listingPhotos"), async (req, res) => {
   try {
     const {
       creator, category, type, streetAddress, aptSuite, city, province,
@@ -57,11 +58,11 @@ router.get("/search/:search", async (req, res) => {
       search === "all"
         ? await Listing.find().populate("creator")
         : await Listing.find({
-            $or: [
-              { category: { $regex: search, $options: "i" } },
-              { title: { $regex: search, $options: "i" } },
-            ],
-          }).populate("creator");
+          $or: [
+            { category: { $regex: search, $options: "i" } },
+            { title: { $regex: search, $options: "i" } },
+          ],
+        }).populate("creator");
     res.status(200).json(listings);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetching property!!", error: err.message });
@@ -82,7 +83,7 @@ router.get("/:listingId", async (req, res) => {
   }
 });
 
-router.put("/:listingId", upload.array("listingPhotos"), async (req, res) => {
+router.put("/:listingId", verifyToken, upload.array("listingPhotos"), async (req, res) => {
   const { listingId } = req.params;
 
   console.log("PUT /properties/:listingId called");
@@ -93,6 +94,10 @@ router.put("/:listingId", upload.array("listingPhotos"), async (req, res) => {
     const listing = await Listing.findById(listingId);
     if (!listing) {
       return res.status(404).json({ message: "Properties not found!" });
+    }
+
+    if (listing.creator.toString() !== req.user.id) {
+      return res.status(403).json({ message: "You are not authorized to edit this listing." });
     }
 
     let keptPhotos = [];
@@ -155,12 +160,16 @@ router.put("/:listingId", upload.array("listingPhotos"), async (req, res) => {
   }
 });
 
-router.delete("/:listingId", async (req, res) => {
+router.delete("/:listingId", verifyToken, async (req, res) => {
   const { listingId } = req.params;
   try {
     const listing = await Listing.findById(listingId);
     if (!listing) {
       return res.status(404).json({ message: "Properties not found!" });
+    }
+
+    if (listing.creator.toString() !== req.user.id) {
+      return res.status(403).json({ message: "You are not authorized to delete this listing." });
     }
 
     if (listing.listingPhotoPaths?.length > 0) {

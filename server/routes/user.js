@@ -1,11 +1,15 @@
- const router = require("express").Router();
+const router = require("express").Router();
 const Booking = require("../models/Booking");
 const User = require("../models/User");
 const Listing = require("../models/Listing");
+const verifyToken = require("../middleware/auth");
 
-router.get("/:userId/trips", async (req, res) => {
+router.get("/:userId/trips", verifyToken, async (req, res) => {
   try {
     const { userId } = req.params;
+    if (req.user.id !== userId) {
+      return res.status(403).json({ message: "You are not authorized to view these trips." });
+    }
     const trips = await Booking.find({ customerId: userId }).populate(
       "customerId hostId listingId",
     );
@@ -18,11 +22,21 @@ router.get("/:userId/trips", async (req, res) => {
   }
 });
 
-router.patch("/:userId/:listingId", async (req, res) => {
+router.patch("/:userId/:listingId", verifyToken, async (req, res) => {
   try {
     const { userId, listingId } = req.params;
+    if (req.user.id !== userId) {
+      return res.status(403).json({ message: "You are not authorized to edit this wish list." });
+    }
     const user = await User.findById(userId);
-    const listing = await Listing.findById(listingId).populate("creator");
+    if (!user) {
+      return res.status(404).json({ message: "User not found!" });
+    }
+
+    const listing = await Listing.findById(listingId).populate("creator", "-password");
+    if (!listing) {
+      return res.status(404).json({ message: "Property not found!" });
+    }
 
     const favoriteListing = user.wishList.find(
       (item) => item._id.toString() === listingId,
@@ -51,9 +65,12 @@ router.patch("/:userId/:listingId", async (req, res) => {
   }
 });
 
-router.get("/:userId/properties", async (req, res) => {
+router.get("/:userId/properties", verifyToken, async (req, res) => {
   try {
     const { userId } = req.params;
+    if (req.user.id !== userId) {
+      return res.status(403).json({ message: "You are not authorized to view these properties." });
+    }
     const properties = await Listing.find({ creator: userId }).populate(
       "creator",
     );
@@ -66,9 +83,12 @@ router.get("/:userId/properties", async (req, res) => {
   }
 });
 
-router.get("/:userId/reservations", async (req, res) => {
+router.get("/:userId/reservations", verifyToken, async (req, res) => {
   try {
     const { userId } = req.params;
+    if (req.user.id !== userId) {
+      return res.status(403).json({ message: "You are not authorized to view these reservations." });
+    }
     const reservations = await Booking.find({
       $or: [{ hostId: userId }, { customerId: userId }],
     }).populate("customerId hostId listingId");

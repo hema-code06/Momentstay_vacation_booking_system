@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const {uploadToS3} = require('../config/s3');
+const { uploadToS3 } = require('../config/s3');
 
 const User = require("../models/User");
 
@@ -36,9 +36,12 @@ router.post("/register", upload.single("profileImage"), async (req, res) => {
 
     await newUser.save();
 
+    const userData = newUser.toObject();
+    delete userData.password;
+
     res
       .status(200)
-      .json({ message: "User registered successfully!", user: newUser });
+      .json({ message: "User registered successfully!", user: userData });
   } catch (err) {
     console.log(err);
     res
@@ -51,7 +54,7 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }).populate("wishList");
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(409).json({ message: "User doesn't exist!" });
     }
@@ -61,15 +64,15 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid Credentials!" });
     }
 
-   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
-const userData = user.toObject();
-delete userData.password;
+    const userData = user.toObject();
+    delete userData.password;
 
-res.status(200).json({
-  token,
-  user: userData,
-});
+    res.status(200).json({
+      token,
+      user: userData,
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: err.message });
