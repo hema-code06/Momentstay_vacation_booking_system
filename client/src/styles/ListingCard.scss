@@ -1,35 +1,23 @@
-@import "./_tokens.scss";
-
 .listing-card {
   position: relative;
   cursor: pointer;
-  width: 300px;
-  transition: transform $t-base $ease-standard;
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 5%;
 
   &:hover {
-    transform: translateY(-4px);
-
-    .slider-container {
-      box-shadow: $shadow-md;
-    }
-
-    .slide img {
-      transform: scale(1.04);
-    }
+    box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.2);
   }
 
   .slider-container {
-    position: relative;
-    width: 100%;
+    width: 300px;
     overflow: hidden;
-    border-radius: $radius-lg;
-    margin-bottom: 12px;
-    box-shadow: $shadow-sm;
-    transition: box-shadow $t-base $ease-standard;
+    border-radius: 10px;
+    margin-bottom: 10px;
 
     .slider {
       display: flex;
-      transition: transform 0.5s $ease-standard;
+      transition: transform 0.5s ease;
 
       .slide {
         position: relative;
@@ -38,13 +26,12 @@
         height: 270px;
         display: flex;
         align-items: center;
-        overflow: hidden;
 
         img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.5s $ease-standard;
+          filter: brightness(85%);
         }
 
         .prev-button,
@@ -52,22 +39,18 @@
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
-          width: 30px;
-          height: 30px;
+          padding: 6px;
           border-radius: 50%;
           border: none;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          background-color: rgba(255, 255, 255, 0.85);
-          box-shadow: $shadow-xs;
+          background-color: rgba(255, 255, 255, 0.7);
           z-index: 9;
-          transition: background-color $t-fast $ease-standard, transform $t-fast $ease-standard;
 
           &:hover {
-            background-color: $white;
-            transform: translateY(-50%) scale(1.08);
+            background-color: white;
           }
         }
 
@@ -85,50 +68,33 @@
   .info {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    margin: 0 2px !important;
+    margin: 0 !important;
 
     h3 {
-      font-family: $font-body;
-      color: $ink-900;
-      font-size: 16px;
-      font-weight: 700;
+      color: #004369;
+      font-size: 18px;
     }
 
     p {
-      font-size: 14px;
-      color: $ink-500;
+      font-size: 16px;
+      color: #444;
     }
 
     span {
-      font-weight: 700;
-      font-size: 16px;
-      color: $navy-600;
+      font-weight: 600;
+      font-size: 17px;
+      color: #004369;
     }
   }
 
   .favorite {
     position: absolute;
-    right: 16px;
-    top: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
+    right: 20px;
+    top: 20px;
     border: none;
-    border-radius: 50%;
-    font-size: 17px;
+    font-size: 20px;
     cursor: pointer;
     z-index: 99;
-    background: rgba(15, 27, 45, 0.35);
-    color: $white;
-    backdrop-filter: blur(4px);
-    transition: transform $t-fast $ease-spring, background $t-fast $ease-standard;
-
-    &:hover {
-      transform: scale(1.1);
-      background: rgba(15, 27, 45, 0.55);
-    }
+    background: none;
   }
 }

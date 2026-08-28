@@ -1,9 +1,9 @@
-@import "./_tokens.scss";
 @import "./Responsive.scss";
 
 .property-container {
   max-height: auto;
   overflow: hidden;
+
 
   .property-list-header {
     display: flex;
@@ -22,15 +22,14 @@
       flex-shrink: 0;
       display: flex;
       align-items: center;
-      background: $white;
-      border: 1px solid $ink-100;
+      background: #fff;
+      border: 1px solid #e2e8f0;
       padding: 10px 18px;
-      border-radius: $radius-md;
-      font-family: $font-body;
+      border-radius: 10px;
       font-size: 14px;
-      font-weight: 700;
-      color: $navy-600;
-      box-shadow: $shadow-xs;
+      font-weight: 600;
+      color: #004369;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
       white-space: nowrap;
 
       @include sm {
@@ -54,14 +53,14 @@
 
     @include sm {
       padding: 40px 16px;
-      border-radius: $radius-lg;
+      border-radius: 16px;
     }
 
     .empty-icon {
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      background: $navy-50;
+      background: #f1f5f9;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -69,21 +68,20 @@
 
       svg {
         font-size: 36px;
-        color: $navy-600;
+        color: #004369;
       }
     }
 
     h2 {
-      font-family: $font-display;
       font-size: clamp(20px, 3vw, 28px);
       font-weight: 700;
-      color: $ink-900;
+      color: #0f172a;
       margin-bottom: 12px;
     }
 
     p {
       font-size: 15px;
-      color: $ink-500;
+      color: #6b7280;
       max-width: 420px;
       line-height: 1.7;
       margin-bottom: 28px;
@@ -93,11 +91,29 @@
       }
     }
 
+
     .property-btn {
-      @include btn-primary;
+      background: #004369 !important;
+      color: #fff !important;
       padding: 12px 28px !important;
+      border-radius: 10px !important;
+      font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif !important;
       font-size: 14px !important;
-      text-transform: uppercase;
+      font-weight: 600 !important;
+      letter-spacing: 0.04em !important;
+      text-transform: uppercase !important;
+      box-shadow: 0 4px 12px rgba(0, 67, 105, 0.25) !important;
+      transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
+
+      &:hover {
+        background: #002a43 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 20px rgba(0, 67, 105, 0.35) !important;
+      }
+
+      &:active {
+        transform: translateY(0) !important;
+      }
 
       @include sm {
         width: 100%;

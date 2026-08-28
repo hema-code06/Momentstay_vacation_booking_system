@@ -1,4 +1,3 @@
-@import "./_tokens.scss";
 @import "./Responsive.scss";
 
 .update-details {
@@ -28,26 +27,25 @@
     position: fixed;
     top: 100px;
     right: 30px;
-    background: $white;
-    color: $navy-600;
+    background: #ffffff;
+    color: #004369;
     padding: 14px 20px;
-    border-radius: $radius-lg;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     gap: 12px;
-    box-shadow: $shadow-lg;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     z-index: 9999;
     animation: slideIn 0.4s ease;
 
     .toast-icon {
       font-size: 24px;
-      color: $success;
+      color: #16a34a;
     }
 
     span {
-      font-family: $font-body;
       font-size: 15px;
-      font-weight: 700;
+      font-weight: 600;
     }
 
     @include sm {
@@ -75,30 +73,31 @@
   }
 
   h1 {
-    font-family: $font-display;
-    font-size: clamp(24px, 4vw, 32px);
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif !important;
+    font-size: clamp(24px, 4vw, 30px);
     font-weight: 700;
-    color: $navy-600;
+    color: #004369;
     line-height: 1.15;
     text-transform: capitalize;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
   }
 
   .wishlist-button {
-    @include btn-danger-outline;
     flex-shrink: 0;
     padding: 10px 20px;
+    border: none;
     font-size: 14px;
-    background: $white;
-    color: $danger;
-    border-color: $danger-border;
+    font-weight: 600;
+    cursor: pointer;
+    background: #e63946;
+    color: #fff;
+    border-radius: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     white-space: nowrap;
 
     &:hover {
-      background: $danger;
-      color: $white;
-      box-shadow: 0 8px 20px rgba(224, 56, 79, 0.3);
       transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(230, 57, 70, 0.35);
     }
 
     @include sm {
@@ -111,8 +110,8 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 16px;
-    margin-bottom: 32px;
-    margin-top: 32px;
+    margin-bottom: 3%;
+    margin-top: 5%;
 
     @include md {
       grid-template-columns: repeat(2, 1fr);
@@ -124,142 +123,117 @@
 
     img {
       width: 100%;
-      height: 200px;
+      height: 100%;
+      max-width: 300px;
+      max-height: 180px;
       object-fit: cover;
       display: block;
-      border-radius: $radius-lg;
-      box-shadow: $shadow-xs;
-      transition: transform $t-base $ease-standard, box-shadow $t-base $ease-standard;
-
-      &:hover {
-        transform: scale(1.02);
-        box-shadow: $shadow-md;
-      }
+      border-radius: 10px;
     }
   }
 
   h2 {
-    font-family: $font-display;
-    font-size: 20px;
-    font-weight: 700;
-    color: $ink-900;
-
-    @include sm {
-      font-size: 18px;
+    @include xl {
+      margin-top: 2%;
+      font-size: 10px;
     }
   }
 
   p {
     margin-top: 10px;
-    font-size: 15px;
-    color: $ink-600;
+
+    @include xl {
+      margin-top: 2%;
+      margin-bottom: 2%;
+      font-size: 10px;
+    }
   }
 
   .profile {
     display: flex;
-    margin-bottom: 24px;
-    margin-top: 24px;
-    gap: 16px;
+    margin-bottom: 3%;
+    margin-top: 2%;
+    gap: 20px;
     align-items: center;
 
     h3 {
-      font-family: $font-body;
       font-size: 16px;
-      font-weight: 700;
-      color: $ink-900;
 
-      @include sm {
-        font-size: 16px;
+      @include xl {
+        font-size: 18px;
       }
     }
 
     img {
-      border-radius: 50%;
-      width: 56px;
-      height: 56px;
-      object-fit: cover;
-      border: 2px solid $navy-600;
+      border-radius: 60%;
+      width: 60px;
+      height: 60px;
       margin: 0;
     }
   }
 
   .info {
     h3 {
-      font-family: $font-display;
-      font-size: 22px;
-      font-weight: 700;
-      color: $navy-600;
-      margin-top: 8px;
-      margin-bottom: 10px;
+      color: #004369;
+      margin-top: 2%;
 
       @include sm {
-        font-size: 19px;
+        font-size: 20px;
+      }
+
+      @include xl {
+        font-size: 14px;
       }
     }
 
     p {
-      max-width: 760px;
-      font-size: 15px;
-      color: $ink-600;
-      line-height: 1.75;
+      max-width: 965px;
       margin-top: 12px;
 
-      @include xs {
-        font-size: 13px;
+      @include sm {
+        font-size: 20px;
+      }
+
+      @include xl {
+        font-size: 10px;
       }
     }
   }
 
   hr {
-    margin: 24px 0;
-    border: none;
-    border-top: 1px solid $ink-100;
+    margin: 20px 0;
   }
 
   .booking {
     display: flex;
     justify-content: space-between;
-    gap: 48px;
 
     @include lg {
       flex-direction: column;
-      gap: 40px;
+      gap: 50px;
     }
 
     .amenities {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px 60px;
-      margin: 24px 0;
+      grid-column-gap: 100px;
+      margin: 30px 0;
       max-width: 700px;
 
       @include sm {
-        gap: 12px 20px;
+        grid-column-gap: 20px;
       }
 
       .facility {
         display: flex;
         align-items: center;
-        gap: 14px;
-        font-family: $font-body;
+        gap: 20px;
         font-weight: 600;
-        color: $ink-700;
-        padding: 12px 14px;
-        border-radius: $radius-md;
-        background: $ink-50;
-        border: 1px solid $ink-100;
-        margin-bottom: 0;
-        transition: background $t-base $ease-standard, transform $t-base $ease-standard;
-
-        &:hover {
-          background: $navy-50;
-          transform: translateY(-2px);
-        }
+        margin-bottom: 15px;
 
         &_icon {
-          color: $navy-600;
+          color: #004369;
           font-size: 22px;
-          flex-shrink: 0;
         }
 
         p {
@@ -269,35 +243,33 @@
     }
 
     .date-range-calendar {
-      margin: 24px 0;
+      margin: 30px 0;
 
       h2 {
-        margin-bottom: 12px;
+        margin-bottom: 10px;
       }
 
       .update-button {
-        @include btn-primary;
-        padding: 14px;
-        font-size: 15px;
+        padding: 10px 15px;
+        border: none;
+        font-size: 20px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s ease;
+        background-color: #004369;
+        color: white;
+        border-radius: 10px;
         width: 100%;
-        margin-top: 24px;
+        margin-top: 30px;
+
+        &:hover {
+          box-shadow: 0 10px 10px 0 gray;
+        }
 
         @include lg {
-          max-width: 340px;
+          max-width: 300px;
         }
       }
     }
-  }
-}
-
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }

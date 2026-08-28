@@ -1,4 +1,3 @@
-@import "./_tokens.scss";
 @import "./Responsive.scss";
 
 .trip-list-container {
@@ -16,7 +15,7 @@
 
     @include lg {
       grid-template-columns: repeat(2, minmax(250px, 1fr));
-      gap: 16px;
+      gap: 10px;
     }
 
     @include md {
@@ -71,17 +70,16 @@
   .listing-card {
     width: 322px !important;
     max-width: 900px !important;
-    background: linear-gradient(160deg, $navy-700, $navy-800);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: $radius-lg;
+    background: #004369;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
     overflow: hidden;
     cursor: pointer;
-    box-shadow: $shadow-sm;
-    transition: transform $t-base $ease-standard, box-shadow $t-base $ease-standard;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 
     &:hover {
       transform: translateY(-4px);
-      box-shadow: $shadow-lg;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
     }
   }
 
@@ -98,7 +96,7 @@
   .slider {
     display: flex;
     height: 100%;
-    transition: transform 0.5s $ease-standard;
+    transition: transform 0.5s ease-in-out;
   }
 
   .slide {
@@ -119,22 +117,19 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 30px;
-    height: 30px;
+    padding: 6px;
     border-radius: 50%;
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(255, 255, 255, 0.9);
-    box-shadow: $shadow-xs;
+    background-color: rgba(255, 255, 255, 0.85);
     z-index: 9999;
-    transition: background $t-fast $ease-standard, transform $t-fast $ease-standard;
+    transition: background 0.2s ease;
 
     &:hover {
-      background-color: $white;
-      transform: translateY(-50%) scale(1.08);
+      background-color: #fff;
     }
   }
 
@@ -160,10 +155,10 @@
       height: 6px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.55);
-      transition: background $t-fast $ease-standard, transform $t-fast $ease-standard;
+      transition: background 0.2s ease, transform 0.2s ease;
 
       &.active {
-        background: $white;
+        background: #fff;
         transform: scale(1.3);
       }
     }
@@ -172,7 +167,7 @@
   .info {
     display: flex;
     flex-direction: column;
-    padding: 16px 18px 18px;
+    padding: 14px 16px 16px;
     gap: 10px;
 
     .status-badge {
@@ -180,13 +175,12 @@
       align-items: center;
       gap: 5px;
       align-self: flex-start;
-      background: rgba(236, 253, 245, 0.12);
-      color: #6ee7b7;
-      font-family: $font-body;
+      background: #ecfdf5;
+      color: #065f46;
       font-size: 11px;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: $radius-pill;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
       letter-spacing: 0.02em;
 
       i {
@@ -195,10 +189,9 @@
     }
 
     h3 {
-      font-family: $font-body;
-      color: $white;
+      color: #fff;
       font-size: 16px;
-      font-weight: 700;
+      font-weight: 600;
       margin: 0;
       line-height: 1.3;
     }
@@ -208,12 +201,12 @@
       align-items: center;
       gap: 5px;
       font-size: 13px;
-      color: rgba(255, 255, 255, 0.68);
+      color: #cbd4e6;
       margin: 0;
 
       i {
         font-size: 14px;
-        color: rgba(255, 255, 255, 0.5);
+        color: #9ca3af;
       }
     }
 
@@ -224,9 +217,9 @@
 
       >div {
         flex: 1;
-        background: $white;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: $radius-md;
+        background: #fff; 
+        border: 1px solid rgba(255, 255, 255, 0.15); 
+        border-radius: 10px;
         padding: 8px 10px;
         display: flex;
         flex-direction: column;
@@ -234,21 +227,21 @@
 
         .label {
           font-size: 10px;
-          color: $ink-400;
+          color: #94a3b8;
           text-transform: uppercase;
           letter-spacing: 0.05em;
         }
 
         strong {
           font-size: 13px;
-          font-weight: 700;
-          color: $navy-600;
+          font-weight: 600;
+          color: #004369;
         }
       }
 
       i.ti-arrow-right {
         font-size: 14px;
-        color: rgba(255, 255, 255, 0.5);
+        color: #9ca3af;
         flex-shrink: 0;
       }
     }
@@ -258,12 +251,12 @@
       align-items: center;
       gap: 5px;
       font-size: 13px;
-      color: rgba(255, 255, 255, 0.68);
+      color: #cbd4e6;
       margin: 0;
 
       i {
         font-size: 14px;
-        color: $gold-500 !important;
+        color: #afd518 !important;
       }
     }
 
@@ -276,14 +269,14 @@
       margin-top: 2px;
 
       span:first-child {
-        font-size: 19px;
+        font-size: 18px;
         font-weight: 700;
-        color: $white;
+        color: #fff;
       }
 
       .hint {
         font-size: 11px;
-        color: rgba(255, 255, 255, 0.68);
+        color: #cbd4e6;
         font-weight: 400;
       }
     }
@@ -301,14 +294,14 @@
 
     @include sm {
       padding: 40px 16px;
-      border-radius: $radius-lg;
+      border-radius: 16px;
     }
 
     .empty-icon {
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      background: $navy-50;
+      background: #f1f5f9;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -316,21 +309,20 @@
 
       svg {
         font-size: 36px;
-        color: $navy-600;
+        color: #004369;
       }
     }
 
     h2 {
-      font-family: $font-display;
       font-size: clamp(20px, 3vw, 28px);
       font-weight: 700;
-      color: $ink-900;
+      color: #0f172a;
       margin-bottom: 12px;
     }
 
     p {
       font-size: 15px;
-      color: $ink-500;
+      color: #6b7280;
       max-width: 620px;
       line-height: 1.7;
       margin-bottom: 28px;
@@ -341,10 +333,28 @@
     }
 
     .trip-btn {
-      @include btn-primary;
+      background: #004369 !important;
+      color: #fff !important;
       padding: 12px 28px !important;
+      border-radius: 10px !important;
+      font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif !important;
       font-size: 14px !important;
-      text-transform: uppercase;
+      font-weight: 600 !important;
+      letter-spacing: 0.04em !important;
+      text-transform: uppercase !important;
+      box-shadow: 0 4px 12px rgba(0, 67, 105, 0.25) !important;
+      transition: background 0.2s ease, transform 0.2s ease,
+        box-shadow 0.2s ease !important;
+
+      &:hover {
+        background: #002a43 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 20px rgba(0, 67, 105, 0.35) !important;
+      }
+
+      &:active {
+        transform: translateY(0) !important;
+      }
 
       @include sm {
         width: 100%;
