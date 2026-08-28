@@ -11,6 +11,7 @@ import Navbar from "./Navbar.jsx";
 import Footer from "./Footer.jsx";
 import "../styles/ListingDetails.scss";
 import { FiCheckCircle } from "react-icons/fi";
+import { authFetch } from "../utils/api";
 
 const ListingDetails = () => {
   const user = useSelector((state) => state.user);
@@ -32,6 +33,7 @@ const ListingDetails = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const customerId = useSelector((state) => state?.user?._id);
+  const token = useSelector((state) => state.token);
   const wishList = useSelector((state) => state?.user?.wishList || []);
 
   const showCustomToast = (message) => {
@@ -69,8 +71,9 @@ const ListingDetails = () => {
       return;
     }
     try {
-      const response = await fetch(
+      const response = await authFetch(
         `${process.env.REACT_APP_API_URL}/users/${user._id}/${listingId}`,
+        token,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -125,8 +128,9 @@ const ListingDetails = () => {
         totalPrice: listing.price * dayCount,
       };
 
-      const response = await fetch(
+      const response = await authFetch(
         `${process.env.REACT_APP_API_URL}/bookings/create`,
+        token,
         {
           method: "POST",
           headers: {

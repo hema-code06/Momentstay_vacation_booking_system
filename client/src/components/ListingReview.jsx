@@ -9,6 +9,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/ListingReview.scss";
 import { FiCheckCircle } from "react-icons/fi";
+import { authFetch } from "../utils/api";
 
 const ListingReview = () => {
   const { listingId } = useParams();
@@ -23,6 +24,7 @@ const ListingReview = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const token = useSelector((state) => state.token);
   const wishList = useSelector((state) => state?.user?.wishList || []);
 
   const getListingReview = useCallback(async () => {
@@ -50,8 +52,9 @@ const ListingReview = () => {
       return;
     }
     try {
-      const response = await fetch(
+      const response = await authFetch(
         `${process.env.REACT_APP_API_URL}/users/${user._id}/${listingId}`,
+        token,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },

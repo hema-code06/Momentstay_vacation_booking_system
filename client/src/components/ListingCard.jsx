@@ -8,6 +8,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setWishList } from "../redux/state";
+import { authFetch } from "../utils/api";
 
 const ListingCard = ({
   listingId,
@@ -41,6 +42,7 @@ const ListingCard = ({
   const dispatch = useDispatch();
 
   const user = useSelector((state) => state.user);
+  const token = useSelector((state) => state.token);
   const wishList = user?.wishList || [];
 
   const isLiked = wishList?.find((item) => item?._id === listingId);
@@ -49,6 +51,7 @@ const ListingCard = ({
     if (user?._id !== creator._id) {
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/users/${user?._id}/${listingId}`,
+        token,
         {
           method: "PATCH",
           headers: {

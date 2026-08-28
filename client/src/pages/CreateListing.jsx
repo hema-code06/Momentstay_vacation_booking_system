@@ -7,6 +7,7 @@ import { BiTrash } from "react-icons/bi";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { FiCheckCircle } from "react-icons/fi";
+import { authFetch } from "../utils/api";
 
 const CreateListing = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -32,6 +33,7 @@ const CreateListing = () => {
     price: 0,
   });
   const creatorId = useSelector((state) => state.user._id);
+  const token = useSelector((state) => state.token);
   const navigate = useNavigate();
   const [showToast, setShowToast] = useState(false);
   const handlePost = async (e) => {
@@ -61,7 +63,7 @@ const CreateListing = () => {
         listingForm.append("listingPhotos", photo);
       });
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/properties/create`, {
+      const response = await authFetch(`${process.env.REACT_APP_API_URL}/properties/create`, token, {
         method: "POST",
         body: listingForm,
       });
