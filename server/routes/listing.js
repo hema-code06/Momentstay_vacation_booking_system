@@ -4,7 +4,6 @@ const { uploadToS3, s3 } = require("../config/s3");
 const verifyToken = require("../middleware/auth");
 
 const Listing = require("../models/Listing");
-const User = require("../models/User");
 
 const upload = uploadToS3("properties");
 
@@ -42,8 +41,8 @@ router.get("/", async (req, res) => {
   const qCategory = req.query.category;
   try {
     const listings = qCategory
-      ? await Listing.find({ category: qCategory }).populate("creator")
-      : await Listing.find().populate("creator");
+      ? await Listing.find({ category: qCategory }).populate("creator", "-password")
+      : await Listing.find().populate("creator", "-password");
     res.status(200).json(listings);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetching property!!", error: err.message });
@@ -56,13 +55,13 @@ router.get("/search/:search", async (req, res) => {
   try {
     const listings =
       search === "all"
-        ? await Listing.find().populate("creator")
+        ? await Listing.find().populate("creator", "-password")
         : await Listing.find({
           $or: [
             { category: { $regex: search, $options: "i" } },
             { title: { $regex: search, $options: "i" } },
           ],
-        }).populate("creator");
+        }).populate("creator", "-password");
     res.status(200).json(listings);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetching property!!", error: err.message });
@@ -73,7 +72,7 @@ router.get("/search/:search", async (req, res) => {
 router.get("/:listingId", async (req, res) => {
   const { listingId } = req.params;
   try {
-    const listing = await Listing.findById(listingId).populate("creator");
+    const listing = await Listing.findById(listingId).populate("creator", "-password");
     if (!listing) {
       return res.status(404).json({ message: "Properties not found!!" });
     }
@@ -85,10 +84,6 @@ router.get("/:listingId", async (req, res) => {
 
 router.put("/:listingId", verifyToken, upload.array("listingPhotos"), async (req, res) => {
   const { listingId } = req.params;
-
-  console.log("PUT /properties/:listingId called");
-  console.log("req.files count:", req.files?.length);
-  console.log("req.body.existingPhotos:", req.body.existingPhotos);
 
   try {
     const listing = await Listing.findById(listingId);
@@ -126,17 +121,13 @@ router.put("/:listingId", verifyToken, upload.array("listingPhotos"), async (req
         );
       });
       await Promise.all(deletePromises);
-      console.log("Deleted from S3:", removedPhotos.length, "photo(s)");
     }
 
     const newPhotoPaths = req.files && req.files.length > 0
       ? req.files.map((file) => file.location)
       : [];
 
-    console.log("New photo S3 URLs:", newPhotoPaths);
-
     const updatedPhotoPaths = [...keptPhotos, ...newPhotoPaths];
-    console.log("Total photos after update:", updatedPhotoPaths.length);
 
     const {
       creator, category, type, streetAddress, aptSuite, city, province,

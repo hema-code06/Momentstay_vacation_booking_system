@@ -73,6 +73,7 @@ router.get("/:userId/properties", verifyToken, async (req, res) => {
     }
     const properties = await Listing.find({ creator: userId }).populate(
       "creator",
+      "-password",
     );
     res.status(202).json(properties);
   } catch (err) {
