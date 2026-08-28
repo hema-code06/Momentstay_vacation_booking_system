@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/UpdateProperty.scss";
 import { FiCheckCircle } from "react-icons/fi";
+import { authFetch } from "../utils/api";
 
 const UpdateProperty = () => {
   const { listingId } = useParams();
@@ -38,13 +39,14 @@ const UpdateProperty = () => {
   });
 
   const creatorId = useSelector((state) => state.user._id);
+  const token = useSelector((state) => state.token);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPropertyDetails = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/properties/${listingId}`
+          `${process.env.REACT_APP_API_URL}/properties/${listingId}`,
         );
         const data = await response.json();
         if (response.ok) {
@@ -130,8 +132,9 @@ const UpdateProperty = () => {
         listingForm.append("listingPhotos", photo);
       });
 
-      const response = await fetch(
+      const response = await authFetch(
         `${process.env.REACT_APP_API_URL}/properties/${listingId}`,
+        token,
         { method: "PUT", body: listingForm }
       );
 
@@ -157,8 +160,9 @@ const UpdateProperty = () => {
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this property?")) return;
     try {
-      const response = await fetch(
+      const response = await authFetch(
         `${process.env.REACT_APP_API_URL}/properties/${listingId}`,
+        token,
         { method: "DELETE" }
       );
       if (response.ok) {

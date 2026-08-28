@@ -11,6 +11,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/UpdateBooking.scss";
 import { FiCheckCircle } from "react-icons/fi";
+import { authFetch } from "../utils/api";
 
 const UpdateBooking = () => {
   const { bookingId } = useParams();
@@ -26,6 +27,7 @@ const UpdateBooking = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const token = useSelector((state) => state.token);
   const wishList = useSelector((state) => state?.user?.wishList || []);
 
   const isInWishlist = listing
@@ -49,8 +51,9 @@ const UpdateBooking = () => {
       return;
     }
     try {
-      const response = await fetch(
+      const response = await authFetch(
         `${process.env.REACT_APP_API_URL}/users/${user._id}/${listing._id}`,
+        token,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -68,8 +71,9 @@ const UpdateBooking = () => {
   useEffect(() => {
     const fetchBookingAndListing = async () => {
       try {
-        const bookingResponse = await fetch(
-          `${process.env.REACT_APP_API_URL}/bookings/${bookingId}`
+        const bookingResponse = await authFetch(
+          `${process.env.REACT_APP_API_URL}/bookings/${bookingId}`,
+          token
         );
         if (!bookingResponse.ok)
           throw new Error(`Booking fetch failed: ${bookingResponse.statusText}`);
@@ -104,7 +108,7 @@ const UpdateBooking = () => {
     };
 
     fetchBookingAndListing();
-  }, [bookingId]);
+  }, [bookingId, token]);
 
   const handleSelect = (ranges) => {
     const { startDate, endDate } = ranges.selection;
@@ -129,8 +133,9 @@ const UpdateBooking = () => {
     };
 
     try {
-      const response = await fetch(
+      const response = await authFetch(
         `${process.env.REACT_APP_API_URL}/bookings/update/${bookingId}`,
+        token,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -142,7 +147,7 @@ const UpdateBooking = () => {
         setShowBookingToast(true);
         setTimeout(() => {
           setShowBookingToast(false);
-          navigate("/:userId/reservations");
+          navigate(`/${user._id}/reservations`);
         }, 2500);
       } else {
         window.alert("Failed to update booking.");

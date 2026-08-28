@@ -8,10 +8,12 @@ import { ArrowBackIosNew, ArrowForwardIos } from "@mui/icons-material";
 import Button from "@mui/material/Button";
 import "../styles/TripList.scss";
 import LuggageOutlinedIcon from "@mui/icons-material/LuggageOutlined";
+import { authFetch } from "../utils/api";
 
 const TripList = () => {
   const [loading, setLoading] = useState(true);
   const userId = useSelector((state) => state.user._id);
+  const token = useSelector((state) => state.token);
   const tripList = useSelector((state) => state.user.tripList);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -20,8 +22,9 @@ const TripList = () => {
 
   const getTripList = useCallback(async () => {
     try {
-      const response = await fetch(
+      const response = await authFetch(
         `${process.env.REACT_APP_API_URL}/users/${userId}/trips`,
+        token,
         { method: "GET" }
       );
       const data = await response.json();
@@ -31,7 +34,7 @@ const TripList = () => {
       console.log("Fetching Trip journal details failed!!", err.message);
       setLoading(false);
     }
-  }, [dispatch, userId]);
+  }, [dispatch, userId, token]);
 
   useEffect(() => {
     getTripList();

@@ -8,19 +8,21 @@ import Loader from "../components/Loader";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import HomeWorkOutlinedIcon from "@mui/icons-material/HomeWorkOutlined";
-
+import { authFetch } from "../utils/api";
 
 const PropertyList = () => {
   const [loading, setLoading] = useState(true);
   const userId = useSelector((state) => state.user._id);
+  const token = useSelector((state) => state.token);
   const propertyList = useSelector((state) => state.user.propertyList);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const getPropertyList = useCallback(async () => {
     try {
-      const response = await fetch(
+      const response = await authFetch(
         `${process.env.REACT_APP_API_URL}/users/${userId}/properties`,
+        token,
         {
           method: "GET",
         },
@@ -31,7 +33,7 @@ const PropertyList = () => {
     } catch (err) {
       console.log("Fetching Properties failed", err.message);
     }
-  }, [dispatch, userId]);
+  }, [dispatch, userId, token]);
 
   useEffect(() => {
     getPropertyList();

@@ -48,7 +48,7 @@ const ListingCard = ({
   const isLiked = wishList?.find((item) => item?._id === listingId);
 
   const patchWishList = async () => {
-    if (user?._id !== creator._id) {
+    if (user?._id !== creator?._id) {
       const response = await authFetch(
         `${process.env.REACT_APP_API_URL}/users/${user?._id}/${listingId}`,
         token,

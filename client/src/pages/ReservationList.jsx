@@ -12,6 +12,7 @@ import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import NightsStayOutlinedIcon from "@mui/icons-material/NightsStayOutlined";
 import "../styles/ReservationList.scss";
+import { authFetch } from "../utils/api";
 
 const ReservationList = () => {
   const [loading, setLoading] = useState(true);
@@ -19,14 +20,16 @@ const ReservationList = () => {
   const [cancellingId, setCancellingId] = useState(null);
 
   const userId = useSelector((state) => state.user._id);
+  const token = useSelector((state) => state.token);
   const reservationList = useSelector((state) => state.user.reservationList || []);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const getReservationList = useCallback(async () => {
     try {
-      const response = await fetch(
+      const response = await authFetch(
         `${process.env.REACT_APP_API_URL}/users/${userId}/reservations`,
+        token,
         { method: "GET" }
       );
       if (!response.ok) throw new Error("Failed to fetch reservations");
@@ -37,7 +40,7 @@ const ReservationList = () => {
     } finally {
       setLoading(false);
     }
-  }, [dispatch, userId]);
+  }, [dispatch, userId, token]);
 
   useEffect(() => {
     getReservationList();
@@ -67,8 +70,9 @@ const ReservationList = () => {
   const handleCancelBooking = async (bookingId) => {
     setCancellingId(bookingId);
     try {
-      const response = await fetch(
+      const response = await authFetch(
         `${process.env.REACT_APP_API_URL}/bookings/delete/${bookingId}`,
+        token,
         { method: "DELETE" }
       );
       if (response.ok) await getReservationList();
