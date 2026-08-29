@@ -59,9 +59,9 @@ const Navbar = () => {
 
   return (
     <nav className={`navbar ${isHomePage ? "navbar--home" : "navbar--inner"}`}>
-      <a href="/" className="navbar__logo">
+      <Link to="/" className="navbar__logo">
         <img src="/assets/logo.png" alt="logo" />
-      </a>
+      </Link>
 
       {isHomePage && (
         <div className="navbar__search-wrap" ref={searchRef}>

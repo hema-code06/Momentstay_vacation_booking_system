@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { experiences } from "../data";
 import "../styles/Testimonials.scss";
@@ -15,7 +15,7 @@ const Testimonials = () => {
     return <div>Experience not found!</div>;
   }
 
-  const [ ...otherImages] = experience.image;
+  const [, ...otherImages] = experience.image;
 
   const handleImageClick = (imgSrc) => {
     setMainImage(imgSrc);

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { setLogin } from "../redux/state";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "../styles/Login.scss";
 import { FiCheckCircle } from "react-icons/fi";
 
@@ -101,7 +101,7 @@ const Login = () => {
 
         <span>
           Don't have an account?{" "}
-          <a href="/register">Register</a>{" "}
+          <Link to="/register">Register</Link>{" "}
           here
         </span>
       </div>

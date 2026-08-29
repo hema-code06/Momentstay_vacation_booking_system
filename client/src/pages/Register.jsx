@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "../styles/Register.scss";
 import { FiCheckCircle } from "react-icons/fi";
 
@@ -116,7 +116,7 @@ const Register = () => {
         </form>
 
         <span>
-          Already have an account? <a href="/login">Login</a> here
+          Already have an account? <Link to="/login">Login</Link> here
         </span>
 
         {success && <p className="success_message">{success}</p>}
