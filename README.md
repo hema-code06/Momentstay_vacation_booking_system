@@ -202,4 +202,4 @@ Open **http://localhost:3000**
 
 ---
 
-Built with ❤️ using React · Node.js · Express · MongoDB · AWS (EC2, S3, IAM)
+*Built with ❤️ using React · Node.js · Express · MongoDB · AWS (EC2, S3, IAM)*
