@@ -196,7 +196,6 @@ Open **http://localhost:3000**
 - [ ] Map integration (Google Maps / Mapbox) for stay locations
 - [ ] Real-time chat between travelers and hosts
 - [ ] Email notifications for booking confirmations
-- [ ] Advanced filters (price range, amenities, guest count)
 - [ ] Payment gateway integration (Stripe / Razorpay)
 - [ ] AI-based stay recommendations
 - [ ] Refresh-token rotation for longer, safer sessions
