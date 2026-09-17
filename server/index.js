@@ -10,6 +10,7 @@ const authRoutes = require("./routes/auth.js");
 const listingRoutes = require("./routes/listing.js");
 const bookingRoutes = require("./routes/booking.js");
 const userRoutes = require("./routes/user.js");
+const reviewRoutes = require("./routes/review.js");
 
 app.use(cors());
 app.use(express.json());
@@ -45,16 +46,7 @@ app.get("/api/test", (req, res) => {
 app.use("/api/properties", listingRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/users", userRoutes);
-
-app.post("/feedback/create", async (req, res) => {
-  try {
-    console.log(`Feedback received from ${req.ip} at ${req.url}:`, req.body);
-    res.status(200).json({ message: "Feedback received" });
-  } catch (error) {
-    console.error(`Error in feedback route (${req.method} ${req.url}):`, error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
+app.use("/api/reviews", reviewRoutes);
 
 if (process.env.NODE_ENV === "development") {
   mongoose.set("debug", true);

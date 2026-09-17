@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setWishList } from "../redux/state.js";
 import { facilities } from "../data.js";
@@ -21,9 +21,13 @@ const ListingReview = () => {
     rating: 0,
     comment: "",
   });
+  const [reviews, setReviews] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const [reviewError, setReviewError] = useState("");
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const token = useSelector((state) => state.token);
   const wishList = useSelector((state) => state?.user?.wishList || []);
 
@@ -40,9 +44,24 @@ const ListingReview = () => {
     }
   }, [listingId]);
 
+  const getReviews = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/reviews/listing/${listingId}`
+      );
+      const data = await response.json();
+      setReviews(data.reviews || []);
+      setAverageRating(data.averageRating || 0);
+      setTotalReviews(data.totalReviews || 0);
+    } catch (err) {
+      console.log(err);
+    }
+  }, [listingId]);
+
   useEffect(() => {
     getListingReview();
-  }, [getListingReview]);
+    getReviews();
+  }, [getListingReview, getReviews]);
 
   const isInWishlist = wishList.some((item) => item._id === listingId);
 
@@ -78,14 +97,23 @@ const ListingReview = () => {
   };
 
   const handleSubmitFeedback = async () => {
-    if (feedback.rating === 0 || feedback.comment.trim() === "") {
-      alert("Please provide a rating and a comment before submitting.");
+    setReviewError("");
+
+    if (!user) {
+      setReviewError("Please login to leave a review.");
       return;
     }
 
+    if (feedback.rating === 0 || feedback.comment.trim() === "") {
+      setReviewError("Please provide a rating and a comment before submitting.");
+      return;
+    }
+
+    setSubmitting(true);
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/feedback/create`,
+      const response = await authFetch(
+        `${process.env.REACT_APP_API_URL}/reviews/create`,
+        token,
         {
           method: "POST",
           headers: {
@@ -99,18 +127,24 @@ const ListingReview = () => {
         },
       );
 
+      const data = await response.json();
+
       if (response.ok) {
         setFeedback({ rating: 0, comment: "" });
-        alert("Thank you for your feedback!");
-        setTimeout(() => {
-          navigate("/");
-        }, 1000);
+        setReviews((prev) => [data, ...prev]);
+        setTotalReviews((prev) => prev + 1);
+        setAverageRating((prevAvg) => {
+          const newTotal = totalReviews + 1;
+          return Math.round(((prevAvg * totalReviews + data.rating) / newTotal) * 10) / 10;
+        });
+      } else {
+        setReviewError(data.message || "Failed to submit your review.");
       }
     } catch (err) {
-      console.log(
-        "Something went wrong with your feedback submission.",
-        err.message,
-      );
+      setReviewError("Something went wrong with your review submission.");
+      console.log(err.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -128,6 +162,15 @@ const ListingReview = () => {
       <div className="listing-reviews">
         <div className="title">
           <h1>{listing.title}</h1>
+          {totalReviews > 0 && (
+            <div className="rating-summary">
+              <FaStar className="star filled" />
+              <span>{averageRating}</span>
+              <span className="review-count">
+                ({totalReviews} {totalReviews === 1 ? "review" : "reviews"})
+              </span>
+            </div>
+          )}
           {!isInWishlist && (
             <button className="wishlist-button" onClick={handleAddToWishlist}>
               Add to Wishlist
@@ -210,9 +253,48 @@ const ListingReview = () => {
             value={feedback.comment}
             onChange={handleChange}
           />
-          <button className="button" onClick={handleSubmitFeedback}>
-            Submit Feedback
+          {reviewError && <p className="review-error">{reviewError}</p>}
+          <button
+            className="button"
+            onClick={handleSubmitFeedback}
+            disabled={submitting}
+          >
+            {submitting ? "Submitting..." : "Submit Feedback"}
           </button>
+        </div>
+
+        <div className="reviews-list">
+          <h2>
+            {totalReviews > 0
+              ? `${totalReviews} ${totalReviews === 1 ? "Review" : "Reviews"}`
+              : "No reviews yet"}
+          </h2>
+          {reviews.map((review) => (
+            <div className="review-card" key={review._id}>
+              <div className="review-header">
+                <img
+                  src={
+                    review.userId?.profileImagePath
+                      ? review.userId.profileImagePath
+                      : "/default-avatar.png"
+                  }
+                  alt={review.userId?.username || "Guest"}
+                />
+                <div>
+                  <h4>{review.userId?.username || "Guest"}</h4>
+                  <div className="review-stars">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <FaStar
+                        key={star}
+                        className={`star ${review.rating >= star ? "filled" : ""}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <p className="review-comment">{review.comment}</p>
+            </div>
+          ))}
         </div>
       </div>
       <Footer />
