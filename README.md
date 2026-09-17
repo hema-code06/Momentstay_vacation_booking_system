@@ -6,16 +6,6 @@ MomentStay lets any user switch seamlessly between two roles without switching a
 
 ---
 
-## 🌐 Live Demo
-
-| Service | URL |
-|---|---|
-| **Frontend** | [momentstay-vacation-booking-system.vercel.app](https://momentstay-vacation-booking-system.vercel.app) |
-| **Backend API** | AWS EC2 (Node.js + Express, via PM2 + Nginx) |
-| **Image Storage** | AWS S3 |
-| **Database** | MongoDB Atlas |
-
----
 
 ## 🚀 Features
 
