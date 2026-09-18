@@ -1,5 +1,5 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://momentstay-vacation-booking-system.onrender.com/api/:path*" }
+    { "source": "/api/:path*", "destination": "https://13-53-193-116.nip.io/api/:path*" }
   ]
 }
