@@ -6,7 +6,6 @@ MomentStay lets any user switch seamlessly between two roles without switching a
 
 ---
 
-
 ## 🚀 Features
 
 ### For Travelers — Search & Book
@@ -32,7 +31,8 @@ MomentStay lets any user switch seamlessly between two roles without switching a
 - Server-side ownership checks — only a listing's host or a booking's guest can edit or cancel it
 - Bcrypt password hashing
 - AWS IAM user scoped to least-privilege S3 access
-- EC2 security group restricted to required ports only
+- EC2 security group restricted to required ports only (SSH, HTTP, HTTPS)
+- HTTPS enforced end-to-end via an Nginx reverse proxy with a free Let's Encrypt SSL certificate
 
 ### General
 - Fully responsive — built for both mobile and desktop
@@ -70,55 +70,57 @@ MomentStay lets any user switch seamlessly between two roles without switching a
 | AWS EC2 | Backend server hosting |
 | AWS S3 | Stay & profile photo storage |
 | AWS IAM | Least-privilege access control |
-| PM2 | Node.js process management & auto-restart |
-| Nginx | Reverse proxy |
-| Vercel | Frontend deployment |
+| PM2 | Node.js process management, crash recovery & auto-restart on reboot |
+| Nginx | Reverse proxy in front of the Node app, terminating HTTPS |
+| Let's Encrypt (Certbot) | Free SSL certificate for the backend domain |
+| Vercel | Frontend deployment, with a `/api` rewrite proxying to the EC2 backend |
 | MongoDB Atlas | Cloud database |
 | Insomnia | API testing & endpoint verification |
 
 ---
-
 
 ## 🧭 System Architecture
 
 MomentStay follows a standard three-tier architecture, with image storage offloaded to S3 to keep the API stateless and the database lightweight.
 
 ```
-┌─────────────────────┐        HTTPS / REST         ┌──────────────────────┐
-│                      │ ───────────────────────────▶│                      │
-│   React Client       │                              │   Express API         │
-│   (Vercel)            │◀─────────────────────────── │   (AWS EC2 + PM2)      │
-│                      │        JSON responses        │                      │
-└──────────┬───────────┘                              └─────────┬────────────┘
-           │                                                     │
-           │ Redux Persist                                       │ Mongoose
-           │ (client-side cache)                                 │
-           ▼                                                     ▼
-   ┌───────────────┐                                     ┌───────────────────┐
-   │  Browser       │                                     │  MongoDB Atlas      │
-   │  localStorage  │                                     │  (Users, Listings,  │
-   └───────────────┘                                     │   Bookings)          │
-                                                            └───────────────────┘
-                                                                     ▲
-                                                                     │
-                                                            ┌───────────────────┐
-                                                            │  AWS S3              │
-                                                            │  (listing & profile  │
-                                                            │   photos)             │
-                                                            └───────────────────┘
+┌─────────────────────┐        HTTPS / REST         ┌──────────────────────────────┐
+│                      │ ───────────────────────────▶│  Nginx (reverse proxy, SSL)   │
+│   React Client       │                              │            │                  │
+│   (Vercel)            │◀─────────────────────────── │            ▼                  │
+│                      │        JSON responses        │  Express API (PM2, port 3001) │
+└──────────┬───────────┘                              │      (AWS EC2)                │
+           │                                           └─────────────┬────────────────┘
+           │ Redux Persist                                           │
+           │ (client-side cache)                                     │ Mongoose
+           ▼                                                         ▼
+   ┌───────────────┐                                         ┌───────────────────┐
+   │  Browser       │                                         │  MongoDB Atlas      │
+   │  localStorage  │                                         │  (Users, Listings,  │
+   └───────────────┘                                         │   Bookings, Reviews) │
+                                                                └───────────────────┘
+                                                                         ▲
+                                                                         │
+                                                                ┌───────────────────┐
+                                                                │  AWS S3              │
+                                                                │  (listing & profile  │
+                                                                │   photos)             │
+                                                                └───────────────────┘
 ```
 
 **Request flow, end to end:**
-1. The client sends a request to the Express API, attaching a JWT in the `Authorization` header for any action that requires login.
-2. Auth middleware verifies the token before the route handler runs; requests without a valid token are rejected before touching the database.
-3. For write actions on a listing or booking, the API checks that the token's user actually owns the resource being modified — not just that they're logged in.
-4. Photo uploads go straight from the client, through Multer-S3 on the server, into an S3 bucket; MongoDB stores only the resulting URLs, never the image data itself.
-5. The client caches the logged-in user and their token via Redux Persist, so a page refresh doesn't require logging in again.
+1. The client sends a request to `/api/...` on Vercel; Vercel's `vercel.json` rewrite forwards it over HTTPS to the EC2 backend.
+2. Nginx on EC2 terminates SSL and reverse-proxies the request to the Express app running on `localhost:3001`, managed by PM2.
+3. Auth middleware verifies the JWT (from the `Authorization` header) before the route handler runs; requests without a valid token are rejected before touching the database.
+4. For write actions on a listing, booking, or review, the API checks that the token's user actually owns the resource being modified — not just that they're logged in.
+5. Photo uploads go straight from the client, through Multer-S3 on the server, into an S3 bucket; MongoDB stores only the resulting URLs, never the image data itself.
+6. The client caches the logged-in user and their token via Redux Persist, so a page refresh doesn't require logging in again.
+7. PM2 keeps the Node process alive and automatically restarts it on crash or server reboot, so the API stays available 24/7.
 
 ### How authentication works
 - On login, the server issues a JWT (7-day expiry) signed with a server-side secret — the client never sees or stores the secret itself.
-- Every state-changing request (creating a listing, booking a stay, editing a wishlist, etc.) requires that token in an `Authorization: Bearer <token>` header.
-- Ownership is enforced server-side on every edit/delete route — a user can only modify listings and bookings that belong to them, regardless of what the client sends.
+- Every state-changing request (creating a listing, booking a stay, editing a wishlist, submitting a review, etc.) requires that token in an `Authorization: Bearer <token>` header.
+- Ownership is enforced server-side on every edit/delete route — a user can only modify listings, bookings, and reviews that belong to them, regardless of what the client sends.
 - Passwords are hashed with bcrypt before storage; the hash is never included in any API response, including the user's own.
 
 ---
@@ -128,7 +130,7 @@ MomentStay follows a standard three-tier architecture, with image storage offloa
 ### Prerequisites
 - Node.js & npm
 - MongoDB Atlas account
-- AWS account (S3 bucket + IAM user)
+- AWS account (EC2 instance + S3 bucket + IAM user)
 
 ### 1. Clone the repository
 ```bash
@@ -163,10 +165,10 @@ S3_BUCKET_NAME=
 
 **`client/.env`**
 ```
-REACT_APP_API_URL=
+REACT_APP_API_URL=/api
 ```
 
-### 5. Run the application
+### 5. Run the application locally
 ```bash
 # Terminal 1 — Backend
 cd server
@@ -181,6 +183,34 @@ Open **http://localhost:3000**
 
 ---
 
+## ☁️ Production Deployment
+
+### Backend (AWS EC2)
+1. SSH into the EC2 instance and pull the latest code (`git pull`).
+2. Install dependencies (`npm install`) inside `server/`.
+3. Start the app under **PM2** so it stays alive and restarts on crash or reboot:
+   ```bash
+   pm2 start index.js --name momentstay
+   pm2 save
+   pm2 startup
+   ```
+4. Install **Nginx** and configure it as a reverse proxy forwarding requests to `localhost:3001`.
+5. Use **Certbot** to issue a free Let's Encrypt SSL certificate for the backend's domain, so the API is served over HTTPS.
+6. Open ports 80 and 443 in the EC2 security group.
+
+### Frontend (Vercel)
+The React app is deployed on Vercel, with `client/vercel.json` proxying all `/api/*` requests to the EC2 backend:
+```json
+{
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://<your-ec2-domain>/api/:path*" }
+  ]
+}
+```
+This lets the frontend call relative `/api/...` paths (matching `REACT_APP_API_URL=/api`) without hardcoding the backend's address into client-side code.
+
+---
+
 ## 🔮 Future Improvements
 
 - [ ] Map integration (Google Maps / Mapbox) for stay locations
@@ -192,4 +222,4 @@ Open **http://localhost:3000**
 
 ---
 
-*Built with ❤️ using React · Node.js · Express · MongoDB · AWS (EC2, S3, IAM)*
+*Built with ❤️ using React · Node.js · Express · MongoDB · AWS (EC2, S3, IAM) · PM2 · Nginx · Vercel*
