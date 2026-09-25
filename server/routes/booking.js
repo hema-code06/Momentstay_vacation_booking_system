@@ -1,18 +1,27 @@
 const router = require("express").Router();
 const Booking = require("../models/Booking");
+const Listing = require("../models/Listing");
 const verifyToken = require("../middleware/auth");
 
 router.post("/create", verifyToken, async (req, res) => {
   try {
     const { customerId, hostId, listingId, startDate, endDate, totalPrice } =
       req.body;
+    const listing = await Listing.findById(listingId);
+    if (!listing) return res.status(404).json({ message: "Listing not found." });
+
+    const nights = Math.max(1, Math.round(
+      (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)
+    ));
+    const trustedTotalPrice = nights * listing.price;
+
     const newBooking = new Booking({
       customerId,
       hostId,
       listingId,
       startDate,
       endDate,
-      totalPrice,
+      totalPrice: trustedTotalPrice,
     });
     await newBooking.save();
     res.status(200).json(newBooking);

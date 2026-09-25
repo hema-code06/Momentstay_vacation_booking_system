@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ListingCard from "../components/ListingCard";
-import { removeFromWishList } from "../redux/state";
+import { setWishList } from "../redux/state";
+import { authFetch } from "../utils/api";
 import Button from "@mui/material/Button";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -17,21 +18,24 @@ const WishList = () => {
 
   const wishList = useSelector((state) => state.user.wishList);
   const userId = useSelector((state) => state.user._id);
+  const token = useSelector((state) => state.token);
 
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
-  const handleRemove = (listingId) => {
-    try {
-      dispatch(removeFromWishList(listingId));
-
-      setMessage("Property removed from wishlist");
-      setMessageType("success");
-    } catch (error) {
-      setMessage("Failed to remove property");
-      setMessageType("error");
-    }
-  };
+  const handleRemove = async (listingId) => {
+  try {
+    const response = await authFetch(
+      `${process.env.REACT_APP_API_URL}/users/${userId}/${listingId}`,
+      token,
+      { method: "PATCH", headers: { "Content-Type": "application/json" } }
+    );
+    const data = await response.json();
+    dispatch(setWishList(data.wishList));
+  } catch (err) {
+    console.log("Failed to remove from wishlist", err.message);
+  }
+};
 
   const handleStartExploring = () => {
     navigate(`/${userId}/trips`);

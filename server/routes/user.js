@@ -10,9 +10,10 @@ router.get("/:userId/trips", verifyToken, async (req, res) => {
     if (req.user.id !== userId) {
       return res.status(403).json({ message: "You are not authorized to view these trips." });
     }
-    const trips = await Booking.find({ customerId: userId }).populate(
-      "customerId hostId listingId",
-    );
+    const trips = await Booking.find({ customerId: userId })
+      .populate("customerId", "-password")
+      .populate("hostId", "-password")
+      .populate("listingId");
     res.status(202).json(trips);
   } catch (err) {
     console.log(err);
@@ -92,7 +93,10 @@ router.get("/:userId/reservations", verifyToken, async (req, res) => {
     }
     const reservations = await Booking.find({
       $or: [{ hostId: userId }, { customerId: userId }],
-    }).populate("customerId hostId listingId");
+    })
+      .populate("customerId", "-password")
+      .populate("hostId", "-password")
+      .populate("listingId")
 
     res.status(202).json(reservations);
   } catch (err) {

@@ -227,7 +227,7 @@ const UpdateProperty = () => {
             <h2><span>Step 2 :</span> Share some basics about your place</h2>
             <div className="full">
               <div className="location">
-                <p>Flat, house etc. (if applicable)</p>
+                <p>Street address</p>
                 <input
                   type="text"
                   value={formLocation.streetAddress}
@@ -239,7 +239,7 @@ const UpdateProperty = () => {
 
             <div className="half">
               <div className="location">
-                <p>Street address</p>
+                <p>Flat, house etc. (if applicable)</p>
                 <input
                   type="text"
                   value={formLocation.aptSuite}

@@ -35,12 +35,10 @@ const UpdateBooking = () => {
     : true;
 
   const calculateDayCount = (startDate, endDate) => {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const diff = end - start;
-    if (isNaN(diff) || !startDate || !endDate) return 0;
-    return Math.ceil(diff / (1000 * 3600 * 24));
-  };
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  return Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)));
+};
 
   const calculateTotalPrice = (dayCount, pricePerNight) =>
     dayCount * pricePerNight;
@@ -187,7 +185,7 @@ const UpdateBooking = () => {
 
       <div className="update-details">
         <div className="title">
-          <h1>{listing.title}</h1>
+          <h1>{listing?.title}</h1>
           {!isInWishlist && (
             <button className="wishlist-button" onClick={handleAddToWishlist}>
               Add to Wishlist
