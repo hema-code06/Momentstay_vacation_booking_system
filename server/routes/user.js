@@ -18,7 +18,7 @@ router.get("/:userId/trips", verifyToken, async (req, res) => {
     console.log(err);
     res
       .status(404)
-      .json({ message: "Can not find trips!", error: err.message });
+      .json({ message: "Can not find trip history!", error: err.message });
   }
 });
 
@@ -80,7 +80,7 @@ router.get("/:userId/properties", verifyToken, async (req, res) => {
     console.log(err);
     res
       .status(404)
-      .json({ message: "Can not find Property!", error: err.message });
+      .json({ message: "Can not find properties!", error: err.message });
   }
 });
 
@@ -99,7 +99,7 @@ router.get("/:userId/reservations", verifyToken, async (req, res) => {
     console.log(err);
     res
       .status(404)
-      .json({ message: "Can not find reservations!", error: err.message });
+      .json({ message: "Can not find reservations details!", error: err.message });
   }
 });
 

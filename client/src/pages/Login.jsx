@@ -68,7 +68,7 @@ const Login = () => {
       {showToast && (
         <div className="custom-toast">
           <FiCheckCircle className="toast-icon" />
-          <span>Login successfully</span>
+          <span>Login successful</span>
         </div>
       )}
       <div className="login_content">

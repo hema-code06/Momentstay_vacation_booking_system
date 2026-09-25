@@ -56,7 +56,7 @@ const Register = () => {
         });
 
         if (response.ok) {
-          setSuccess("Registered successfully");
+          setSuccess("Registered successfully! Redirecting to login...");
 
           setShowToast(true);
 
@@ -78,7 +78,7 @@ const Register = () => {
       {showToast && (
         <div className="custom-toast">
           <FiCheckCircle className="toast-icon" />
-          <span>Registration successfully</span>
+          <span>Registration successful</span>
         </div>
       )}
       <div className="register_content">
