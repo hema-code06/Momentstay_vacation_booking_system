@@ -38,9 +38,10 @@ const ListingReview = () => {
       );
       const data = await response.json();
       setListing(data);
-      setLoading(false);
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   }, [listingId]);
 
@@ -194,7 +195,8 @@ const ListingReview = () => {
         </h2>
         <p>
           {listing.guestCount} Guests - {listing.bedroomCount} Bedrooms -{" "}
-          {listing.bedCount} Cot - {listing.bathroomCount} Bathroom
+          {listing.bedCount} Beds - {listing.bathroomCount}{" "}
+          {listing.bathroomCount === 1 ? "Bathroom" : "Bathrooms"}
         </p>
 
         {listing?.creator && listing.creator.profileImagePath && (

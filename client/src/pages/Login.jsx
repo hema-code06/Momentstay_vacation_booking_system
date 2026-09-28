@@ -49,10 +49,11 @@ const Login = () => {
           navigate("/");
         }, 2200);
       } else {
-        if (loggedIn.message.includes("email")) {
-          setEmailError(loggedIn.message);
-        } else if (loggedIn.message.includes("password")) {
-          setPasswordError(loggedIn.message);
+        const message = (loggedIn.message || "").toLowerCase();
+        if (message.includes("exist")) {
+          setEmailError("No account found with this email.");
+        } else if (message.includes("credentials")) {
+          setPasswordError("Incorrect password. Please try again.");
         } else {
           setEmailError("Login failed. Please check your credentials.");
         }
@@ -68,7 +69,7 @@ const Login = () => {
       {showToast && (
         <div className="custom-toast">
           <FiCheckCircle className="toast-icon" />
-          <span>Login successful</span>
+          <span>Login successful!</span>
         </div>
       )}
       <div className="login_content">

@@ -77,7 +77,7 @@ const UpdateProperty = () => {
           });
         }
       } catch (err) {
-        console.error("Failed to fetch property details:", err);
+        console.error("Failed to fetch property details!", err);
       }
     };
 

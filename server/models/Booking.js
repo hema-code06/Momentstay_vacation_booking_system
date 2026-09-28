@@ -15,11 +15,11 @@ const BookingSchema = new mongoose.Schema(
       ref: "Listing",
     },
     startDate: {
-      type: String,
+      type: Date,
       required: true,
     },
     endDate: {
-      type: String,
+      type: Date,
       required: true,
     },
     totalPrice: {

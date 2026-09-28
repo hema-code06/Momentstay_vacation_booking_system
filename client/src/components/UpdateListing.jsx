@@ -17,7 +17,6 @@ const UpdateListing = ({
   province,
   country,
   category,
-  type,
   price,
   onEdit,
 }) => {

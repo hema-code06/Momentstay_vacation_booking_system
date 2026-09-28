@@ -54,9 +54,10 @@ const ListingDetails = () => {
 
       const data = await response.json();
       setListing(data);
-      setLoading(false);
     } catch (err) {
       console.log("Fetching Property Details Failed", err.message);
+    } finally {
+      setLoading(false);
     }
   }, [listingId]);
 
@@ -96,7 +97,7 @@ const ListingDetails = () => {
   const start = new Date(dateRange[0].startDate);
   const end = new Date(dateRange[0].endDate);
 
-  const dayCount = Math.round((end - start) / (1000 * 60 * 60 * 24));
+  const dayCount = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)));
 
   const handleSubmit = async () => {
     const startDate = new Date(dateRange[0].startDate);
@@ -107,9 +108,9 @@ const ListingDetails = () => {
       return;
     }
 
-    const dayCount = Math.round(
+    const dayCount = Math.max(1, Math.round(
       (endDate - startDate) / (1000 * 60 * 60 * 24),
-    );
+    ));
 
     if (dayCount < 2) {
       showCustomToast(
@@ -211,7 +212,8 @@ const ListingDetails = () => {
 
         <p>
           {listing?.guestCount} Guests - {listing?.bedroomCount} Bedrooms -{" "}
-          {listing?.bedCount} Cot - {listing?.bathroomCount} Bathrooms
+          {listing?.bedCount} Beds - {listing?.bathroomCount}{" "}
+          {listing?.bathroomCount === 1 ? "Bathroom" : "Bathrooms"}
         </p>
 
         {listing?.creator && listing.creator.profileImagePath && (

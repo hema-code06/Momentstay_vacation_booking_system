@@ -78,7 +78,7 @@ const Register = () => {
       {showToast && (
         <div className="custom-toast">
           <FiCheckCircle className="toast-icon" />
-          <span>Registration successful</span>
+          <span>Registration successful!</span>
         </div>
       )}
       <div className="register_content">

@@ -4,8 +4,8 @@ const Footer = () => {
   return (
     <div className="footer">
       <div className="footer_center">
+        <p className="footer_copyright">© {new Date().getFullYear()} MomentStay, Inc.</p>
         <ul>
-          <p>© 2024 MomentStay, Inc.</p>
           <li>Privacy</li>
           <li>Terms</li>
           <li>Company details</li>

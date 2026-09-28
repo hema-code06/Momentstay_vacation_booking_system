@@ -23,15 +23,14 @@ const PropertyList = () => {
       const response = await authFetch(
         `${process.env.REACT_APP_API_URL}/users/${userId}/properties`,
         token,
-        {
-          method: "GET",
-        },
+        { method: "GET" },
       );
       const data = await response.json();
       dispatch(setPropertyList(data));
-      setLoading(false);
     } catch (err) {
       console.log("Fetching Properties failed", err.message);
+    } finally {
+      setLoading(false);
     }
   }, [dispatch, userId, token]);
 
@@ -69,25 +68,21 @@ const PropertyList = () => {
               {propertyList.map(
                 ({
                   _id,
-                  creator,
                   listingPhotoPaths,
                   city,
                   province,
                   country,
                   category,
-                  type,
                   price,
                 }) => (
                   <div key={_id} className="property-item">
                     <UpdateListing
                       listingId={_id}
-                      creator={creator}
                       listingPhotoPaths={listingPhotoPaths}
                       city={city}
                       province={province}
                       country={country}
                       category={category}
-                      type={type}
                       price={price}
                       onEdit={handleEditProperty}
                     />

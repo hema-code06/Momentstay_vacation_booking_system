@@ -39,14 +39,14 @@ router.get("/:id", verifyToken, async (req, res) => {
       .populate("listingId")
       .exec();
     if (!booking) {
-      return res.status(404).json({ message: "Booking not found!!" });
+      return res.status(404).json({ message: "Booking not found!" });
     }
     res.status(200).json(booking);
   } catch (err) {
     console.log(err);
     res
       .status(500)
-      .json({ message: "Error retrieving booking!!!", error: err.message });
+      .json({ message: "Error retrieving booking!", error: err.message });
   }
 });
 
@@ -54,7 +54,7 @@ router.put("/update/:id", verifyToken, async (req, res) => {
   try {
     const existingBooking = await Booking.findById(req.params.id);
     if (!existingBooking) {
-      return res.status(404).json({ message: "Booking not found!!" });
+      return res.status(404).json({ message: "Booking not found!" });
     }
 
     const isOwner =
@@ -76,7 +76,7 @@ router.put("/update/:id", verifyToken, async (req, res) => {
     console.log(err);
     res
       .status(500)
-      .json({ message: "Error updating booking!!!", error: err.message });
+      .json({ message: "Error updating booking!", error: err.message });
   }
 });
 
@@ -84,7 +84,7 @@ router.delete("/delete/:id", verifyToken, async (req, res) => {
   try {
     const existingBooking = await Booking.findById(req.params.id);
     if (!existingBooking) {
-      return res.status(404).json({ message: "Booking not found!!" });
+      return res.status(404).json({ message: "Booking not found!" });
     }
 
     const isOwner =
@@ -100,7 +100,7 @@ router.delete("/delete/:id", verifyToken, async (req, res) => {
     console.log(err);
     res
       .status(500)
-      .json({ message: "Error deleting booking!!!", error: err.message });
+      .json({ message: "Error deleting booking!", error: err.message });
   }
 });
 

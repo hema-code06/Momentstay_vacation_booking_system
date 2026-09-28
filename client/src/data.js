@@ -1,4 +1,4 @@
-import { TbBeach, TbPool } from "react-icons/tb";
+import { TbBeach, TbPool, TbIroning3 } from "react-icons/tb";
 import {
   GiCampingTent,
   GiBarn,
@@ -8,6 +8,11 @@ import {
   GiForestCamp,
   GiWindmill,
   GiTreehouse,
+  GiHeatHaze,
+  GiCctvCamera,
+  GiBarbecue,
+  GiMusicSpell,
+  GiCampfire
 } from "react-icons/gi";
 import {
   FaPumpSoap,
@@ -18,8 +23,7 @@ import {
   FaTableTennis,
   FaHotTub,
 } from "react-icons/fa";
-import { FaTent, FaTableCellsColumnLock } from "react-icons/fa6";
-import { FaHouseUser, FaPeopleRoof, FaKitchenSet } from "react-icons/fa6";
+import { FaTent, FaTableCellsColumnLock, FaHouseUser, FaPeopleRoof, FaKitchenSet } from "react-icons/fa6";
 import {
   BiSolidFirstAid,
   BiWifi,
@@ -37,14 +41,6 @@ import {
   MdPets,
   MdPhoneBluetoothSpeaker,
 } from "react-icons/md";
-import { TbIroning3 } from "react-icons/tb";
-import {
-  GiHeatHaze,
-  GiCctvCamera,
-  GiBarbecue,
-  GiMusicSpell,
-  GiCampfire,
-} from "react-icons/gi";
 import { AiFillCar } from "react-icons/ai";
 
 export const categories = [
@@ -54,78 +50,63 @@ export const categories = [
   },
   {
     label: "Luxury",
-    icon: <IoDiamond />,
-    description: "This property is brand new and luxurious!",
+    icon: <IoDiamond />
   },
   {
     label: "Arctic",
-    icon: <BsSnow />,
-    description: "This property is in arctic environment!",
+    icon: <BsSnow />
   },
   {
     label: "Beachfront",
-    icon: <TbBeach />,
-    description: "This property is close to the beach!",
+    icon: <TbBeach />
   },
   {
     label: "Windmills",
-    icon: <GiWindmill />,
-    description: "This property is has windmills!",
+    icon: <GiWindmill />
   },
   {
     label: "Yurt",
-    icon: <FaTent />,
-    description: "This property is on an Yurt!",
+    icon: <FaTent />
   },
   {
     label: "Lakefront",
-    icon: <GiBoatFishing />,
-    description: "This property is near a lake!",
+    icon: <GiBoatFishing />
   },
   {
     label: "Bubble Tent",
-    icon: <GiCampingTent />,
-    description: "This property is unique!",
+    icon: <GiCampingTent />
   },
   {
     label: "Amazing Pools",
-    icon: <TbPool />,
-    description: "This is property has a beautiful pool!",
+    icon: <TbPool />
   },
   {
     label: "Boat house",
-    icon: <MdHouseboat />,
-    description: "This property boat house property!",
+    icon: <MdHouseboat />
   },
   {
     label: "Camping",
-    icon: <GiForestCamp />,
-    description: "This property offers camping activities!",
+    icon: <GiForestCamp />
   },
   {
     label: "OW Bungalow",
-    icon: <MdBungalow />,
-    description: "This property is in a Bungalow!",
+    icon: <MdBungalow />
   },
   {
     label: "Desert",
-    icon: <GiCactus />,
-    description: "This property is in the desert!",
+    icon: <GiCactus />
   },
   {
     label: "Light House",
-    icon: <GiLighthouse />,
-    description: "This property is in light house environment!",
+    icon: <GiLighthouse />
   },
   {
     label: "Barns",
-    icon: <GiBarn />,
-    description: "This property is in a barn!",
+    icon: <GiBarn />
   },
   {
     label: "Treehouse",
-    icon: <GiTreehouse />,
-    description: "This property is in a treehouse!",
+    icon: <GiTreehouse />
   },
 ];
 
@@ -295,7 +276,7 @@ export const experiences = [
         rating: 5,
         review:
           "Sophia made our stay in the Maldives truly magical. With breathtaking ocean views, private beach access, and impeccable service, every moment was a slice of paradise. Ideal for an unforgettable tropical escape.",
-        yearsOnAirbnb: "4 months ago",
+        postedAgo: "4 months ago",
       },
     ],
   },
@@ -336,7 +317,7 @@ export const experiences = [
         rating: 5,
         review:
           "The MomentStay team provided an unforgettable stay at this beautiful lakeside retreat. With stunning views, direct lake access, and exceptional service, the experience was both relaxing and luxurious. Perfect for a tranquil escape or lakeside adventure.",
-        yearsOnAirbnb: "2 weeks ago",
+        postedAgo: "2 weeks ago",
       },
     ],
   },
@@ -374,7 +355,7 @@ export const experiences = [
         rating: 5,
         review:
           "Staying at this Arctic retreat was a once-in-a-lifetime experience. Surrounded by breathtaking snow-covered landscapes and the mesmerizing Northern Lights, it was truly magical. The cozy cabin was perfect for warming up after days of snow adventures. An ideal getaway for anyone seeking serene winter wonderlands and unforgettable natural phenomena.",
-        yearsOnAirbnb: "1 month ago",
+        postedAgo: "1 month ago",
       },
     ],
   },
@@ -412,7 +393,7 @@ export const experiences = [
         rating: 5,
         review:
           "The pool facilities at this property were nothing short of spectacular. From the infinity pool with panoramic city views to the serene private pool surrounded by lush gardens, every swim was a delight. The poolside service and amenities were top-notch, making it the perfect place to relax and soak up the sun. An exceptional choice for pool lovers seeking luxury and relaxation.",
-        yearsOnAirbnb: "2 weeks ago",
+        postedAgo: "2 weeks ago",
       },
     ],
   },
@@ -450,7 +431,7 @@ export const experiences = [
         rating: 5,
         review:
           "This luxury home exceeded all expectations with its opulent design and top-of-the-line amenities. The spacious rooms, exquisite furnishings, and private spa created an atmosphere of unparalleled comfort and sophistication. The stunning views from every angle added to the sense of grandeur. A truly extraordinary stay for those seeking elegance and exclusivity in a prime location.",
-        yearsOnAirbnb: "3 weeks ago",
+        postedAgo: "3 weeks ago",
       },
     ],
   },
@@ -488,7 +469,7 @@ export const experiences = [
         rating: 5,
         review:
           "Staying in this charming windmill house was a delightful experience. The unique architecture and historical character provided an authentic Dutch experience. Inside, the cozy and thoughtfully designed interiors offered comfort and warmth, while the picturesque views of the surrounding countryside were simply enchanting. A perfect blend of tradition and comfort for a memorable getaway.",
-        yearsOnAirbnb: "1 month ago",
+        postedAgo: "1 month ago",
       },
     ],
   },
@@ -526,7 +507,7 @@ export const experiences = [
         rating: 5,
         review:
           "This traditional home offered a beautifully serene and authentic experience. The meticulous design and attention to detail, from the tatami mats to the shoji screens, created a calming and elegant atmosphere. The garden and koi pond added to the tranquil setting, making it an ideal retreat for those seeking to immerse themselves in Japanese culture and aesthetics. An exceptional stay that beautifully blends tradition with comfort.",
-        yearsOnAirbnb: "1 month ago",
+        postedAgo: "1 month ago",
       },
     ],
   },

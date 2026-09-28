@@ -2,6 +2,7 @@ const router = require("express").Router();
 const Review = require("../models/Review");
 const Listing = require("../models/Listing");
 const verifyToken = require("../middleware/auth");
+const Booking = require("../models/Booking");
 
 router.post("/create", verifyToken, async (req, res) => {
   try {
@@ -18,6 +19,16 @@ router.post("/create", verifyToken, async (req, res) => {
     }
 
     const listing = await Listing.findById(listingId);
+    const hasStayed = await Booking.exists({
+      customerId: req.user.id,
+      listingId,
+      endDate: { $lt: new Date() },
+    });
+    if (!hasStayed) {
+      return res.status(403).json({
+        message: "You can review a property only after completing a stay.",
+      });
+    }
     if (!listing) {
       return res.status(404).json({ message: "Listing not found." });
     }

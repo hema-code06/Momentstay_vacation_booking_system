@@ -113,7 +113,7 @@ const Navbar = () => {
             onClick={(e) => {
               if (!user) {
                 e.preventDefault();
-                alert("Please login or register to list your property..!!");
+                alert("Please login or register to list your property!");
               }
             }}
           >

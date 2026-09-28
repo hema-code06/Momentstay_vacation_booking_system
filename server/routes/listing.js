@@ -32,7 +32,7 @@ router.post("/create", verifyToken, upload.array("listingPhotos"), async (req, r
     await newListing.save();
     res.status(200).json(newListing);
   } catch (err) {
-    res.status(409).json({ message: "Failed to create Property!!", error: err.message });
+    res.status(409).json({ message: "Failed to create Property!", error: err.message });
     console.log(err);
   }
 });
@@ -45,7 +45,7 @@ router.get("/", async (req, res) => {
       : await Listing.find().populate("creator", "-password");
     res.status(200).json(listings);
   } catch (err) {
-    res.status(500).json({ message: "Failed to fetching property!!", error: err.message });
+    res.status(500).json({ message: "Failed to fetch property!", error: err.message });
     console.error(err);
   }
 });
@@ -64,7 +64,7 @@ router.get("/search/:search", async (req, res) => {
         }).populate("creator", "-password");
     res.status(200).json(listings);
   } catch (err) {
-    res.status(500).json({ message: "Failed to fetching property!!", error: err.message });
+    res.status(500).json({ message: "Failed to fetch property!", error: err.message });
     console.error(err);
   }
 });
@@ -74,11 +74,11 @@ router.get("/:listingId", async (req, res) => {
   try {
     const listing = await Listing.findById(listingId).populate("creator", "-password");
     if (!listing) {
-      return res.status(404).json({ message: "Properties not found!!" });
+      return res.status(404).json({ message: "Property not found!" });
     }
     res.status(200).json(listing);
   } catch (err) {
-    res.status(500).json({ message: "Failed to fetching property details!!", error: err.message });
+    res.status(500).json({ message: "Failed to fetch property details!", error: err.message });
   }
 });
 
@@ -88,7 +88,7 @@ router.put("/:listingId", verifyToken, upload.array("listingPhotos"), async (req
   try {
     const listing = await Listing.findById(listingId);
     if (!listing) {
-      return res.status(404).json({ message: "Properties not found!" });
+      return res.status(404).json({ message: "Property not found!" });
     }
 
     if (listing.creator.toString() !== req.user.id) {
@@ -147,7 +147,7 @@ router.put("/:listingId", verifyToken, upload.array("listingPhotos"), async (req
     res.status(200).json({ message: "Listing updated successfully", listing });
   } catch (err) {
     console.error("PUT error:", err);
-    res.status(500).json({ message: "Failed to update property details!!", error: err.message });
+    res.status(500).json({ message: "Failed to update property details!", error: err.message });
   }
 });
 
@@ -156,7 +156,7 @@ router.delete("/:listingId", verifyToken, async (req, res) => {
   try {
     const listing = await Listing.findById(listingId);
     if (!listing) {
-      return res.status(404).json({ message: "Properties not found!" });
+      return res.status(404).json({ message: "Property not found!" });
     }
 
     if (listing.creator.toString() !== req.user.id) {
@@ -181,7 +181,7 @@ router.delete("/:listingId", verifyToken, async (req, res) => {
     await Listing.findByIdAndDelete(listingId);
     res.status(200).json({ message: "Listing deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Failed to delete property!!", error: err.message });
+    res.status(500).json({ message: "Failed to delete property!", error: err.message });
   }
 });
 

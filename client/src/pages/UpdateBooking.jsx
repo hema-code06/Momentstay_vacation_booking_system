@@ -35,10 +35,10 @@ const UpdateBooking = () => {
     : true;
 
   const calculateDayCount = (startDate, endDate) => {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  return Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)));
-};
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    return Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)));
+  };
 
   const calculateTotalPrice = (dayCount, pricePerNight) =>
     dayCount * pricePerNight;
@@ -215,7 +215,8 @@ const UpdateBooking = () => {
             </h2>
             <p>
               {listing.guestCount} Guests - {listing.bedroomCount} Bedrooms -{" "}
-              {listing.bedCount} Cot - {listing.bathroomCount} Bathrooms
+              {listing.bedCount} Beds - {listing.bathroomCount}{" "}
+              {listing.bathroomCount === 1 ? "Bathroom" : "Bathrooms"}
             </p>
 
             <div className="profile">

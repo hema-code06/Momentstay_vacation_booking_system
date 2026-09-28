@@ -102,7 +102,7 @@ const Testimonials = () => {
                 )}
               </div>
               <p className="testimonial-review">{review.review}</p>
-              <p className="testimonial-date">{review.yearsOnAirbnb}</p>
+              <p className="testimonial-date">{review.postedAgo}</p>
             </div>
           ))}
         </div>
