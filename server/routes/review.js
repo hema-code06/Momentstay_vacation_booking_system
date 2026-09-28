@@ -19,6 +19,10 @@ router.post("/create", verifyToken, async (req, res) => {
     }
 
     const listing = await Listing.findById(listingId);
+    if (!listing) {
+      return res.status(404).json({ message: "Listing not found." });
+    }
+
     const hasStayed = await Booking.exists({
       customerId: req.user.id,
       listingId,
@@ -28,9 +32,6 @@ router.post("/create", verifyToken, async (req, res) => {
       return res.status(403).json({
         message: "You can review a property only after completing a stay.",
       });
-    }
-    if (!listing) {
-      return res.status(404).json({ message: "Listing not found." });
     }
 
     const existingReview = await Review.findOne({

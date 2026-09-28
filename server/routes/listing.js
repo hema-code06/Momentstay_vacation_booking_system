@@ -10,10 +10,12 @@ const upload = uploadToS3("properties");
 router.post("/create", verifyToken, upload.array("listingPhotos"), async (req, res) => {
   try {
     const {
-      creator, category, type, streetAddress, aptSuite, city, province,
+      category, type, streetAddress, aptSuite, city, province,
       country, guestCount, bedroomCount, bedCount, bathroomCount,
       amenities, title, description, highlight, price,
     } = req.body;
+
+    const amenityList = [].concat(amenities || []);
 
     const listingPhotos = req.files;
 
@@ -24,9 +26,9 @@ router.post("/create", verifyToken, upload.array("listingPhotos"), async (req, r
     const listingPhotoPaths = listingPhotos.map((file) => file.location);
 
     const newListing = new Listing({
-      creator, category, type, streetAddress, aptSuite, city, province,
+      creator: req.user.id, category, type, streetAddress, aptSuite, city, province,
       country, guestCount, bedroomCount, bedCount, bathroomCount,
-      amenities, listingPhotoPaths, title, description, highlight, price,
+      amenities: amenityList, listingPhotoPaths, title, description, highlight, price,
     });
 
     await newListing.save();
@@ -130,15 +132,15 @@ router.put("/:listingId", verifyToken, upload.array("listingPhotos"), async (req
     const updatedPhotoPaths = [...keptPhotos, ...newPhotoPaths];
 
     const {
-      creator, category, type, streetAddress, aptSuite, city, province,
+      category, type, streetAddress, aptSuite, city, province,
       country, guestCount, bedroomCount, bedCount, bathroomCount,
       amenities, title, description, highlight, price,
     } = req.body;
-
+    const amenityList = [].concat(amenities || []);
     Object.assign(listing, {
-      creator, category, type, streetAddress, aptSuite, city, province,
+      category, type, streetAddress, aptSuite, city, province,
       country, guestCount, bedroomCount, bedCount, bathroomCount,
-      amenities, title, description, highlight, price,
+      amenities: amenityList, title, description, highlight, price,
       listingPhotoPaths: updatedPhotoPaths,
     });
 

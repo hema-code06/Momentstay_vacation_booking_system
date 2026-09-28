@@ -114,19 +114,16 @@ const ListingDetails = () => {
 
     if (dayCount < 2) {
       showCustomToast(
-        "Please select a start and end date for reservation.",
+        "Please select at least 2 nights for your reservation.",
       );
       return;
     }
 
     try {
       const bookingForm = {
-        customerId,
         listingId,
-        hostId: listing?.creator?._id,
         startDate: startDate.toDateString(),
-        endDate: endDate.toDateString(),
-        totalPrice: listing.price * dayCount,
+        endDate: endDate.toDateString()
       };
 
       const response = await authFetch(
@@ -160,9 +157,21 @@ const ListingDetails = () => {
     }
   };
 
-  return loading ? (
-    <Loader />
-  ) : (
+  if (loading) return <Loader />;
+
+  if (!listing?._id) {
+    return (
+      <>
+        <Navbar />
+        <p style={{ textAlign: "center", padding: "80px 20px" }}>
+          Property not found.
+        </p>
+        <Footer />
+      </>
+    );
+  }
+
+  return (
     <>
       <Navbar />
 
@@ -250,7 +259,7 @@ const ListingDetails = () => {
             <h2>What this place offers?</h2>
 
             <div className="amenities">
-              {[...new Set((listing?.amenities?.[0] || "").split(",").filter(Boolean))].map(
+              {[...new Set((listing?.amenities || []).flatMap((a) => a.split(",")).filter(Boolean))].map(
                 (item, index) => (
                   <div className="facility" key={index}>
                     <div className="facility_icon">

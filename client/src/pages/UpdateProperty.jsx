@@ -121,7 +121,7 @@ const UpdateProperty = () => {
       listingForm.append("bedroomCount", bedroomCount);
       listingForm.append("bedCount", bedCount);
       listingForm.append("bathroomCount", bathroomCount);
-      listingForm.append("amenities", amenities);
+      amenities.forEach((item) => listingForm.append("amenities", item));
       listingForm.append("title", formDescription.title);
       listingForm.append("description", formDescription.description);
       listingForm.append("highlight", formDescription.highlight);

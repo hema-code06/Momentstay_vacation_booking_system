@@ -53,7 +53,7 @@ const CreateListing = () => {
       listingForm.append("bedroomCount", bedroomCount);
       listingForm.append("bedCount", bedCount);
       listingForm.append("bathroomCount", bathroomCount);
-      listingForm.append("amenities", amenities);
+      amenities.forEach((item) => listingForm.append("amenities", item));
       listingForm.append("title", formDescription.title);
       listingForm.append("description", formDescription.description);
       listingForm.append("highlight", formDescription.highlight);
@@ -161,7 +161,7 @@ const CreateListing = () => {
               </h2>
               <div className="full">
                 <div className="location">
-                 <p>Street address</p>
+                  <p>Street address</p>
                   <input
                     type="text"
                     name="streetAddress"
@@ -179,7 +179,7 @@ const CreateListing = () => {
 
               <div className="half">
                 <div className="location">
-                 <p>Flat, house etc. (if applicable)</p>
+                  <p>Flat, house etc. (if applicable)</p>
                   <input
                     type="text"
                     name="aptSuite"

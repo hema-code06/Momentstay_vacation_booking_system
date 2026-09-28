@@ -5,8 +5,7 @@ const verifyToken = require("../middleware/auth");
 
 router.post("/create", verifyToken, async (req, res) => {
   try {
-    const { customerId, hostId, listingId, startDate, endDate, totalPrice } =
-      req.body;
+    const { listingId, startDate, endDate } = req.body;
     const listing = await Listing.findById(listingId);
     if (!listing) return res.status(404).json({ message: "Listing not found." });
 
@@ -16,8 +15,8 @@ router.post("/create", verifyToken, async (req, res) => {
     const trustedTotalPrice = nights * listing.price;
 
     const newBooking = new Booking({
-      customerId,
-      hostId,
+      customerId: req.user.id,
+      hostId: listing.creator,
       listingId,
       startDate,
       endDate,
@@ -64,13 +63,20 @@ router.put("/update/:id", verifyToken, async (req, res) => {
       return res.status(403).json({ message: "You are not authorized to update this booking." });
     }
 
-    const { startDate, endDate, totalPrice } = req.body;
+    const { startDate, endDate } = req.body;
+    const listing = await Listing.findById(existingBooking.listingId);
+    if (!listing) {
+      return res.status(404).json({ message: "Property not found!" });
+    }
+
+    const nights = Math.max(1, Math.round(
+      (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)
+    ));
     const updatedBooking = await Booking.findByIdAndUpdate(
       req.params.id,
-      { startDate, endDate, totalPrice },
+      { startDate, endDate, totalPrice: nights * listing.price },
       { new: true },
     );
-
     res.status(200).json(updatedBooking);
   } catch (err) {
     console.log(err);

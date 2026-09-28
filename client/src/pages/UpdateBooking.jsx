@@ -244,7 +244,7 @@ const UpdateBooking = () => {
               <div>
                 <h2>What this place offers?</h2>
                 <div className="amenities">
-                  {[...new Set((listing?.amenities?.[0] || "").split(",").filter(Boolean))].map(
+                  {[...new Set((listing?.amenities || []).flatMap((a) => a.split(",")).filter(Boolean))].map(
                     (item, index) => (
                       <div className="facility" key={index}>
                         <div className="facility_icon">

@@ -14,7 +14,7 @@ const PropertyList = () => {
   const [loading, setLoading] = useState(true);
   const userId = useSelector((state) => state.user._id);
   const token = useSelector((state) => state.token);
-  const propertyList = useSelector((state) => state.user.propertyList);
+  const propertyList = useSelector((state) => state.user.propertyList || []);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
