@@ -40,9 +40,6 @@ app.get("/", (req, res) => {
     message: "Server is running 🚀",
   });
 });
-app.get("/api/test", (req, res) => {
-  res.json({ message: "API working" });
-});
 app.use("/api/properties", listingRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/users", userRoutes);

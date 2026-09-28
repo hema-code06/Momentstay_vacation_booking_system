@@ -27,7 +27,7 @@ const Search = () => {
       dispatch(setListings({ listings: data }));
       setLoading(false);
     } catch (err) {
-      console.log("Fetching Search Details failed!!", err.message);
+      console.log("Fetching search results failed!", err.message);
     }
   }, [search, dispatch]);
 

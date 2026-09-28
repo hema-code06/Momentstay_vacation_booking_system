@@ -8,6 +8,10 @@ import { ArrowBackIosNew, ArrowForwardIos } from "@mui/icons-material";
 import Button from "@mui/material/Button";
 import "../styles/TripList.scss";
 import LuggageOutlinedIcon from "@mui/icons-material/LuggageOutlined";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import NightsStayOutlinedIcon from "@mui/icons-material/NightsStayOutlined";
 import { authFetch } from "../utils/api";
 
 const TripList = () => {
@@ -31,7 +35,7 @@ const TripList = () => {
       dispatch(setTripList(data));
       setLoading(false);
     } catch (err) {
-      console.log("Fetching Trip journal details failed!!", err.message);
+      console.log("Fetching trip details failed!", err.message);
       setLoading(false);
     }
   }, [dispatch, userId, token]);
@@ -76,8 +80,7 @@ const TripList = () => {
     });
 
   const calcNights = (start, end) =>
-    Math.round((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24));
-
+    Math.max(1, Math.round((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24)));
   const handleStartSearching = () => navigate("/");
   const handleCardClick = (listingId) => navigate(`/feedback/${listingId}`);
 
@@ -96,8 +99,8 @@ const TripList = () => {
               const currentIndex = currentIndexes[listingId._id] || 0;
               const nights = calcNights(startDate, endDate);
               const photos = listingId?.listingPhotoPaths || [];
-              const location = listingId?.address          
-                || listingId?.location                     
+              const location = listingId?.address
+                || listingId?.location
                 || [listingId?.city, listingId?.state, listingId?.country].filter(Boolean).join(", ");
 
               return (
@@ -163,7 +166,7 @@ const TripList = () => {
                     <div className="info">
 
                       <span className="status-badge">
-                        <i className="ti ti-circle-check" aria-hidden="true" />
+                        <CheckCircleOutlineIcon fontSize="small" />
                         Confirmed
                       </span>
 
@@ -171,7 +174,7 @@ const TripList = () => {
 
                       {location && (
                         <p className="location">
-                          <i className="ti ti-map-pin" aria-hidden="true" />
+                          <LocationOnOutlinedIcon fontSize="small" />
                           {location}
                         </p>
                       )}
@@ -181,7 +184,7 @@ const TripList = () => {
                           <span className="label">Check-in</span>
                           <strong>{formatDate(startDate)}</strong>
                         </div>
-                        <i className="ti ti-arrow-right arrow-icon" aria-hidden="true" />
+                        <ArrowForwardIcon className="arrow-icon" fontSize="small" />
                         <div>
                           <span className="label">Check-out</span>
                           <strong>{formatDate(endDate)}</strong>
@@ -189,7 +192,7 @@ const TripList = () => {
                       </div>
 
                       <p className="duration">
-                        <i className="ti ti-moon" aria-hidden="true" />
+                        <NightsStayOutlinedIcon fontSize="small" />
                         {nights} {nights === 1 ? "night" : "nights"}
                       </p>
 

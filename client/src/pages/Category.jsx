@@ -39,7 +39,7 @@ const Category = () => {
       <Navbar />
       <div className="list" style={{ minHeight: "100vh" }}>
         {listings.length === 0 ? (
-          <h2 className="no-listings"> Properties not found!!</h2>
+          <h2 className="no-listings"> No properties found in this category.</h2>
         ) : (
           listings.map(
             ({

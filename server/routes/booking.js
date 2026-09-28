@@ -8,7 +8,20 @@ router.post("/create", verifyToken, async (req, res) => {
     const { listingId, startDate, endDate } = req.body;
     const listing = await Listing.findById(listingId);
     if (!listing) return res.status(404).json({ message: "Listing not found." });
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    if (isNaN(start) || isNaN(end) || end <= start) {
+      return res.status(400).json({ message: "Please provide a valid date range." });
+    }
 
+    const overlap = await Booking.exists({
+      listingId,
+      startDate: { $lt: end },
+      endDate: { $gt: start },
+    });
+    if (overlap) {
+      return res.status(409).json({ message: "These dates are already booked." });
+    }
     const nights = Math.max(1, Math.round(
       (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)
     ));
@@ -39,6 +52,12 @@ router.get("/:id", verifyToken, async (req, res) => {
       .exec();
     if (!booking) {
       return res.status(404).json({ message: "Booking not found!" });
+    }
+    if (
+      booking.customerId.toString() !== req.user.id &&
+      booking.hostId.toString() !== req.user.id
+    ) {
+      return res.status(403).json({ message: "You are not authorized to view this booking." });
     }
     res.status(200).json(booking);
   } catch (err) {

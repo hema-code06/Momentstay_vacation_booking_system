@@ -14,11 +14,11 @@ router.get("/:userId/trips", verifyToken, async (req, res) => {
       .populate("customerId", "-password")
       .populate("hostId", "-password")
       .populate("listingId");
-    res.status(202).json(trips);
+    res.status(200).json(trips);
   } catch (err) {
     console.log(err);
     res
-      .status(404)
+      .status(500)
       .json({ message: "Cannot find trip history!", error: err.message });
   }
 });
@@ -62,7 +62,7 @@ router.patch("/:userId/:listingId", verifyToken, async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    res.status(404).json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -76,11 +76,11 @@ router.get("/:userId/properties", verifyToken, async (req, res) => {
       "creator",
       "-password",
     );
-    res.status(202).json(properties);
+    res.status(200).json(properties);
   } catch (err) {
     console.log(err);
     res
-      .status(404)
+      .status(500)
       .json({ message: "Cannot find properties!", error: err.message });
   }
 });
@@ -96,13 +96,13 @@ router.get("/:userId/reservations", verifyToken, async (req, res) => {
     })
       .populate("customerId", "-password")
       .populate("hostId", "-password")
-      .populate("listingId")
+      .populate("listingId");
 
-    res.status(202).json(reservations);
+    res.status(200).json(reservations);
   } catch (err) {
     console.log(err);
     res
-      .status(404)
+      .status(500)
       .json({ message: "Cannot find reservations details!", error: err.message });
   }
 });
