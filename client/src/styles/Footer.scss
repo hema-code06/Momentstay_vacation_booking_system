@@ -24,20 +24,17 @@
     gap: 12px;
   }
 
-  .footer_center ul {
+  .footer_center {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    list-style: none;
     gap: 6px 4px;
-    margin: 0;
-    padding: 0;
 
     @include sm {
       justify-content: center;
     }
 
-    p {
+    .footer_copyright {
       font-size: 14px;
       font-weight: 600;
       color: #004369;
@@ -52,17 +49,31 @@
       }
     }
 
-    li {
-      font-size: 13px;
-      color: #5a6a7a;
-      cursor: pointer;
-      padding: 2px 10px;
-      border-radius: 4px;
-      transition: color 0.2s ease, background 0.2s ease;
+    ul {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      list-style: none;
+      gap: 6px 4px;
+      margin: 0;
+      padding: 0;
 
-      &:hover {
-        color: #004369;
-        background: #f0f5fa;
+      @include sm {
+        justify-content: center;
+      }
+
+      li {
+        font-size: 13px;
+        color: #5a6a7a;
+        cursor: pointer;
+        padding: 2px 10px;
+        border-radius: 4px;
+        transition: color 0.2s ease, background 0.2s ease;
+
+        &:hover {
+          color: #004369;
+          background: #f0f5fa;
+        }
       }
     }
   }

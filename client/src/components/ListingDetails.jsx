@@ -145,8 +145,9 @@ const ListingDetails = () => {
           navigate(`/${customerId}/reservations`);
         }, 2000);
       } else {
+        const data = await response.json().catch(() => ({}));
         showCustomToast(
-          "There was a problem with your reservation.",
+          data.message || "There was a problem with your reservation.",
         );
       }
     } catch (err) {

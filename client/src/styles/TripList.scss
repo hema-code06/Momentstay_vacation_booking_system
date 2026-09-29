@@ -183,7 +183,7 @@
       border-radius: 20px;
       letter-spacing: 0.02em;
 
-      i {
+      svg {
         font-size: 13px;
       }
     }
@@ -204,7 +204,7 @@
       color: #cbd4e6;
       margin: 0;
 
-      i {
+      svg {
         font-size: 14px;
         color: #9ca3af;
       }
@@ -239,7 +239,7 @@
         }
       }
 
-      i.ti-arrow-right {
+      svg.arrow-icon {
         font-size: 14px;
         color: #9ca3af;
         flex-shrink: 0;
@@ -254,7 +254,7 @@
       color: #cbd4e6;
       margin: 0;
 
-      i {
+      svg {
         font-size: 14px;
         color: #afd518 !important;
       }

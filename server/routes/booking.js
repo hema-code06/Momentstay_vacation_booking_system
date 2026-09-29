@@ -87,7 +87,21 @@ router.put("/update/:id", verifyToken, async (req, res) => {
     if (!listing) {
       return res.status(404).json({ message: "Property not found!" });
     }
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    if (isNaN(start) || isNaN(end) || end <= start) {
+      return res.status(400).json({ message: "Please provide a valid date range." });
+    }
 
+    const overlap = await Booking.exists({
+      _id: { $ne: existingBooking._id },
+      listingId: existingBooking.listingId,
+      startDate: { $lt: end },
+      endDate: { $gt: start },
+    });
+    if (overlap) {
+      return res.status(409).json({ message: "These dates are already booked." });
+    }
     const nights = Math.max(1, Math.round(
       (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)
     ));

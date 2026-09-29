@@ -93,18 +93,15 @@ const TripList = () => {
 
         {filteredTripList.length > 0 ? (
           <div className="list">
-            {filteredTripList.map(({ listingId, startDate, endDate, totalPrice }) => {
+            {filteredTripList.map(({ _id: bookingId, listingId, startDate, endDate, totalPrice }) => {
               if (!listingId || !listingId._id) return null;
 
               const currentIndex = currentIndexes[listingId._id] || 0;
               const nights = calcNights(startDate, endDate);
               const photos = listingId?.listingPhotoPaths || [];
-              const location = listingId?.address
-                || listingId?.location
-                || [listingId?.city, listingId?.state, listingId?.country].filter(Boolean).join(", ");
-
+              const location = [listingId?.city, listingId?.province, listingId?.country].filter(Boolean).join(", ");
               return (
-                <div key={listingId._id} className="trip-card-wrapper">
+                <div key={bookingId} className="trip-card-wrapper">
                   <div
                     className="listing-card"
                     onClick={() => handleCardClick(listingId._id)}

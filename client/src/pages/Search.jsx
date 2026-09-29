@@ -25,9 +25,10 @@ const Search = () => {
 
       const data = await response.json();
       dispatch(setListings({ listings: data }));
-      setLoading(false);
     } catch (err) {
       console.log("Fetching search results failed!", err.message);
+    } finally {
+      setLoading(false);
     }
   }, [search, dispatch]);
 

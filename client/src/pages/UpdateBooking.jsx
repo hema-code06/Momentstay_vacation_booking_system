@@ -148,7 +148,8 @@ const UpdateBooking = () => {
           navigate(`/${user._id}/reservations`);
         }, 2500);
       } else {
-        window.alert("Failed to update booking.");
+        const data = await response.json().catch(() => ({}));
+        window.alert(data.message || "Failed to update booking.");
       }
     } catch (err) {
       console.error("Update booking failed", err.message);

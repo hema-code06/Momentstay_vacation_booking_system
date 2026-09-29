@@ -22,9 +22,10 @@ const Category = () => {
 
       const data = await response.json();
       dispatch(setListings({ listings: data }));
-      setLoading(false);
     } catch (err) {
       console.log("Fetching Properties Failed", err.message);
+    } finally {
+      setLoading(false);
     }
   }, [category, dispatch]);
 
@@ -39,7 +40,7 @@ const Category = () => {
       <Navbar />
       <div className="list" style={{ minHeight: "100vh" }}>
         {listings.length === 0 ? (
-          <h2 className="no-listings"> No properties found in this category.</h2>
+          <h2 className="no-listings">No properties found in this category.</h2>
         ) : (
           listings.map(
             ({
