@@ -9,14 +9,16 @@ MomentStay lets any user switch seamlessly between two roles without switching a
 ## 🚀 Features
 
 ### For Travelers — Search & Book
-- Browse stays across 16+ categories — Beachfront, Luxury, Treehouse, Lakefront, Arctic, Desert, Camping, Boat House, and more
+- Browse stays across 15 categories — Beachfront, Luxury, Treehouse, Lakefront, Arctic, Desert, Camping, Boat House, and more
 - Category-based search
-- Interactive date-range calendar for availability and pricing
+- Curated "Best Picks" category shortcuts on the home page
+- Date-range calendar with instant price calculation; overlapping bookings are rejected
 - Instant booking with automatic total-price calculation
 - Update or cancel a booking anytime
 - Save stays to a personal wishlist
-- Leave a rating and review after a stay
+- Leave a rating and review, allowed only after a completed stay
 - View complete booking history in one place
+- Past Experiences gallery with guest testimonials and photo galleries
 
 ### For Hosts — List & Manage
 - List a stay for free — no separate host account required
@@ -28,7 +30,10 @@ MomentStay lets any user switch seamlessly between two roles without switching a
 
 ### Security
 - JWT-based authentication on every protected route
-- Server-side ownership checks — only a listing's host or a booking's guest can edit or cancel it
+- Server-side ownership checks — only a listing's host or a booking's guest can edit or cancel it (reviews have no edit/delete route)
+- Booking price is calculated server-side from the listing's nightly rate and stay length, so a client cannot set its own price
+- Booking guest/host and listing owner are taken from the login token, never from the request body
+- Overlapping bookings on the same listing are rejected at the database level
 - Bcrypt password hashing
 - AWS IAM user scoped to least-privilege S3 access
 - EC2 security group restricted to required ports only (SSH, HTTP, HTTPS)
@@ -112,15 +117,17 @@ MomentStay follows a standard three-tier architecture, with image storage offloa
 1. The client sends a request to `/api/...` on Vercel; Vercel's `vercel.json` rewrite forwards it over HTTPS to the EC2 backend.
 2. Nginx on EC2 terminates SSL and reverse-proxies the request to the Express app running on `localhost:3001`, managed by PM2.
 3. Auth middleware verifies the JWT (from the `Authorization` header) before the route handler runs; requests without a valid token are rejected before touching the database.
-4. For write actions on a listing, booking, or review, the API checks that the token's user actually owns the resource being modified — not just that they're logged in.
-5. Photo uploads go straight from the client, through Multer-S3 on the server, into an S3 bucket; MongoDB stores only the resulting URLs, never the image data itself.
-6. The client caches the logged-in user and their token via Redux Persist, so a page refresh doesn't require logging in again.
-7. PM2 keeps the Node process alive and automatically restarts it on crash or server reboot, so the API stays available 24/7.
+4. For write actions on a listing or booking, the API checks that the token's user actually owns the resource being modified — not just that they're logged in. Creating a review additionally requires proof of a completed stay, and a user may leave only one review per listing.
+5. Booking creation and updates recompute the total price server-side from the listing's stored nightly rate and the requested stay length, and reject date ranges that overlap an existing booking on the same listing.
+6. Photo uploads go straight from the client, through Multer-S3 on the server, into an S3 bucket; MongoDB stores only the resulting URLs, never the image data itself.
+7. The client caches the logged-in user and their token via Redux Persist, so a page refresh doesn't require logging in again.
+8. PM2 keeps the Node process alive and automatically restarts it on crash or server reboot, so the API stays available 24/7.
 
 ### How authentication works
 - On login, the server issues a JWT (7-day expiry) signed with a server-side secret — the client never sees or stores the secret itself.
 - Every state-changing request (creating a listing, booking a stay, editing a wishlist, submitting a review, etc.) requires that token in an `Authorization: Bearer <token>` header.
-- Ownership is enforced server-side on every edit/delete route — a user can only modify listings, bookings, and reviews that belong to them, regardless of what the client sends.
+- Ownership is enforced server-side on every edit/delete route — a user can only modify listings and bookings that belong to them, regardless of what the client sends.
+- The booking's guest and host, and a listing's owner, are always derived from the authenticated user's token, not from client-supplied fields.
 - Passwords are hashed with bcrypt before storage; the hash is never included in any API response, including the user's own.
 
 ---
@@ -175,7 +182,7 @@ cd server
 npm run dev
 
 # Terminal 2 — Frontend
-cd client
+cd ../client
 npm start
 ```
 
@@ -219,7 +226,9 @@ This lets the frontend call relative `/api/...` paths (matching `REACT_APP_API_U
 - [ ] Payment gateway integration (Stripe / Razorpay)
 - [ ] AI-based stay recommendations
 - [ ] Refresh-token rotation for longer, safer sessions
+- [ ] Edit/delete support for submitted reviews
 
 ---
 
 *Built with ❤️ using React · Node.js · Express · MongoDB · AWS (EC2, S3, IAM) · PM2 · Nginx · Vercel*
+
