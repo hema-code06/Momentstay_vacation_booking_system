@@ -22,7 +22,5 @@ dist/
 *.swp
 *.sublime-workspace
 *.sublime-project
-
-# Editor directories
 .vscode/
 .idea/
