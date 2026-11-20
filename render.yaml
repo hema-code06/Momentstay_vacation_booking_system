@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: momentstay-api
+    name: momentstay-vacation-booking-system
     runtime: node
     rootDir: server
     buildCommand: npm install

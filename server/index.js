@@ -4,75 +4,60 @@ require("dotenv").config();
 const cors = require("cors");
 const compression = require("compression");
 
-const app = express();
-
 const authRoutes = require("./routes/auth.js");
 const listingRoutes = require("./routes/listing.js");
 const bookingRoutes = require("./routes/booking.js");
 const userRoutes = require("./routes/user.js");
 const reviewRoutes = require("./routes/review.js");
 
-const allowedOrigins = process.env.CLIENT_ORIGIN
-  ? process.env.CLIENT_ORIGIN.split(",").map((o) => o.trim())
-  : ["http://localhost:3000"];
+const app = express();
 
+// ─── CORS ───────────────────────────────────────────────────────────────────
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS blocked: ${origin}`));
-      }
-    },
+    origin: true,
     credentials: true,
   })
 );
+
 app.use(express.json());
 app.use(compression());
-app.use(
-  express.static("public", {
-    maxAge: "1d",
-    etag: false,
-  })
-);
+app.use(express.static("public", { maxAge: "1d", etag: false }));
 
+// ─── REQUEST LOGGER ─────────────────────────────────────────────────────────
 app.use((req, res, next) => {
   const start = Date.now();
-  res.on("finish", () => {
-    const time = Date.now() - start;
-    console.log(`${req.method} ${req.originalUrl} ${res.statusCode} - ${time}ms`);
-  });
+  res.on("finish", () =>
+    console.log(`${req.method} ${req.originalUrl} ${res.statusCode} - ${Date.now() - start}ms`)
+  );
   next();
 });
 
-app.get("/", (req, res) => {
-  res.status(200).json({
-    status: "success",
-    message: "Server is running 🚀",
-  });
-});
+// ─── ROUTES ─────────────────────────────────────────────────────────────────
+app.get("/", (req, res) =>
+  res.status(200).json({ status: "success", message: "Server is running 🚀" })
+);
 app.use("/api/auth", authRoutes);
 app.use("/api/properties", listingRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/reviews", reviewRoutes);
 
-// 404 handler for unknown routes
+// ─── 404 HANDLER ────────────────────────────────────────────────────────────
 app.use((req, res) => {
-  res.status(404).json({ message: "Route not found" });
+  res.status(404).json({ message: `Route not found: ${req.method} ${req.originalUrl}` });
 });
 
-// Global error handler
+// ─── GLOBAL ERROR HANDLER ────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
   console.error("Global Error:", err);
   res.status(500).json({ message: "Something went wrong", error: err.message });
 });
 
+// ─── MONGOOSE CONFIG & SERVER START ──────────────────────────────────────────
 if (process.env.NODE_ENV === "development") {
   mongoose.set("debug", true);
 }
-
 mongoose.set("strictQuery", true);
 
 const PORT = process.env.PORT || 3001;
@@ -99,3 +84,5 @@ mongoose
     console.error(`❌ Error connecting to MongoDB: ${err.message}`);
     process.exit(1);
   });
+
+module.exports = app;
