@@ -294,7 +294,7 @@ const ListingDetails = () => {
                   e.preventDefault();
 
                   if (!user) {
-                    showCustomToast(
+                    toast.info(
                       "Please login to make a reservation.",
                     );
                     return;
