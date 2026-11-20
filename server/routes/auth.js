@@ -11,15 +11,20 @@ router.post("/register", upload.single("profileImage"), async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: "Username, email, and password are required." });
+    }
+
     const profileImage = req.file;
 
     if (!profileImage) {
-      return res.status(400).send("No file uploaded");
+      return res.status(400).json({ message: "No file uploaded" });
     }
 
     const profileImagePath = profileImage.location;
+    const normalizedEmail = email.toLowerCase().trim();
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       return res.status(409).json({ message: "User already exists!" });
     }
@@ -28,8 +33,8 @@ router.post("/register", upload.single("profileImage"), async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = new User({
-      username,
-      email,
+      username: username.trim(),
+      email: normalizedEmail,
       password: hashedPassword,
       profileImagePath,
     });
@@ -54,7 +59,12 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required." });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+    const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
       return res.status(409).json({ message: "User doesn't exist!" });
     }

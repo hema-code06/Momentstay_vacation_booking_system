@@ -19,13 +19,20 @@ const ReservationList = () => {
   const [slideIndexMap, setSlideIndexMap] = useState({});
   const [cancellingId, setCancellingId] = useState(null);
 
-  const userId = useSelector((state) => state.user._id);
-  const token = useSelector((state) => state.token);
-  const reservationList = useSelector((state) => state.user.reservationList || []);
+  const user = useSelector((state) => state?.user);
+  const userId = user?._id;
+  const token = useSelector((state) => state?.token);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!token || !user) {
+      navigate("/login");
+    }
+  }, [token, user, navigate]);
+
   const getReservationList = useCallback(async () => {
+    if (!userId || !token) return;
     try {
       const response = await authFetch(
         `${process.env.REACT_APP_API_URL}/users/${userId}/reservations`,
@@ -47,8 +54,8 @@ const ReservationList = () => {
   }, [getReservationList]);
 
   const filteredReservationList = useMemo(
-    () => reservationList.filter((b) => b.listingId && b.listingId._id),
-    [reservationList]
+    () => (user?.reservationList || []).filter((b) => b.listingId && b.listingId._id),
+    [user?.reservationList]
   );
 
   const goToPrevSlide = (bookingId, totalSlides) => {

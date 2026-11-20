@@ -20,7 +20,7 @@ router.post("/create", verifyToken, upload.array("listingPhotos"), async (req, r
     const listingPhotos = req.files;
 
     if (!listingPhotos || listingPhotos.length === 0) {
-      return res.status(400).send("No file uploaded.");
+      return res.status(400).json({ message: "No file uploaded." });
     }
 
     const listingPhotoPaths = listingPhotos.map((file) => file.location);
@@ -55,15 +55,24 @@ router.get("/", async (req, res) => {
 router.get("/search/:search", async (req, res) => {
   const { search } = req.params;
   try {
-    const listings =
-      search === "all"
-        ? await Listing.find().populate("creator", "-password")
-        : await Listing.find({
-          $or: [
-            { category: { $regex: search, $options: "i" } },
-            { title: { $regex: search, $options: "i" } },
-          ],
-        }).populate("creator", "-password");
+    if (search === "all") {
+      const listings = await Listing.find().populate("creator", "-password");
+      return res.status(200).json(listings);
+    }
+
+    const safeSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = { $regex: safeSearch, $options: "i" };
+
+    const listings = await Listing.find({
+      $or: [
+        { category: regex },
+        { title: regex },
+        { city: regex },
+        { province: regex },
+        { country: regex },
+      ],
+    }).populate("creator", "-password");
+
     res.status(200).json(listings);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch property!", error: err.message });
@@ -93,14 +102,16 @@ router.put("/:listingId", verifyToken, upload.array("listingPhotos"), async (req
       return res.status(404).json({ message: "Property not found!" });
     }
 
-    if (listing.creator.toString() !== req.user.id) {
+    if (listing.creator?.toString() !== req.user.id) {
       return res.status(403).json({ message: "You are not authorized to edit this listing." });
     }
 
     let keptPhotos = [];
     if (req.body.existingPhotos) {
       try {
-        keptPhotos = JSON.parse(req.body.existingPhotos);
+        keptPhotos = Array.isArray(req.body.existingPhotos)
+          ? req.body.existingPhotos
+          : JSON.parse(req.body.existingPhotos);
       } catch {
         keptPhotos = [];
       }
@@ -110,11 +121,14 @@ router.put("/:listingId", verifyToken, upload.array("listingPhotos"), async (req
       (url) => !keptPhotos.includes(url)
     );
 
-    if (removedPhotos.length > 0) {
-      const deletePromises = removedPhotos.map((photoUrl) => {
-        const key = photoUrl.includes(".amazonaws.com/")
-          ? photoUrl.split(".amazonaws.com/")[1]
-          : photoUrl;
+    if (process.env.S3_BUCKET_NAME && removedPhotos.length > 0) {
+      const s3Photos = removedPhotos.filter(
+        (url) => typeof url === "string" && url.includes(".amazonaws.com/")
+      );
+      const deletePromises = s3Photos.map((photoUrl) => {
+        const rawKey = photoUrl.split(".amazonaws.com/")[1]?.split("?")[0];
+        const key = rawKey ? decodeURIComponent(rawKey) : null;
+        if (!key) return Promise.resolve();
         return s3.send(
           new DeleteObjectCommand({
             Bucket: process.env.S3_BUCKET_NAME,
@@ -122,7 +136,9 @@ router.put("/:listingId", verifyToken, upload.array("listingPhotos"), async (req
           })
         );
       });
-      await Promise.all(deletePromises);
+      await Promise.allSettled(deletePromises).catch((err) =>
+        console.error("S3 deletion warning:", err)
+      );
     }
 
     const newPhotoPaths = req.files && req.files.length > 0
@@ -130,6 +146,10 @@ router.put("/:listingId", verifyToken, upload.array("listingPhotos"), async (req
       : [];
 
     const updatedPhotoPaths = [...keptPhotos, ...newPhotoPaths];
+
+    if (updatedPhotoPaths.length === 0) {
+      return res.status(400).json({ message: "At least one photo is required." });
+    }
 
     const {
       category, type, streetAddress, aptSuite, city, province,
@@ -161,15 +181,18 @@ router.delete("/:listingId", verifyToken, async (req, res) => {
       return res.status(404).json({ message: "Property not found!" });
     }
 
-    if (listing.creator.toString() !== req.user.id) {
+    if (listing.creator?.toString() !== req.user.id) {
       return res.status(403).json({ message: "You are not authorized to delete this listing." });
     }
 
-    if (listing.listingPhotoPaths?.length > 0) {
-      const deletePromises = listing.listingPhotoPaths.map((photoUrl) => {
-        const key = photoUrl.includes(".amazonaws.com/")
-          ? photoUrl.split(".amazonaws.com/")[1]
-          : photoUrl;
+    if (process.env.S3_BUCKET_NAME && listing.listingPhotoPaths?.length > 0) {
+      const s3Photos = listing.listingPhotoPaths.filter(
+        (url) => typeof url === "string" && url.includes(".amazonaws.com/")
+      );
+      const deletePromises = s3Photos.map((photoUrl) => {
+        const rawKey = photoUrl.split(".amazonaws.com/")[1]?.split("?")[0];
+        const key = rawKey ? decodeURIComponent(rawKey) : null;
+        if (!key) return Promise.resolve();
         return s3.send(
           new DeleteObjectCommand({
             Bucket: process.env.S3_BUCKET_NAME,
@@ -177,7 +200,9 @@ router.delete("/:listingId", verifyToken, async (req, res) => {
           })
         );
       });
-      await Promise.all(deletePromises);
+      await Promise.allSettled(deletePromises).catch((err) =>
+        console.error("S3 deletion warning:", err)
+      );
     }
 
     await Listing.findByIdAndDelete(listingId);

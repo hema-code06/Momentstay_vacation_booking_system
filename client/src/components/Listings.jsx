@@ -15,7 +15,7 @@ const Listings = () => {
   const [canScrollRight, setCanScrollRight] = useState(true);
   const categoryListRef = useRef(null);
 
-  const listings = useSelector((state) => state.listings);
+  const listings = useSelector((state) => state.listings || []);
 
   const getFeedListings = useCallback(async () => {
     try {

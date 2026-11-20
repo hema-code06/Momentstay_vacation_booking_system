@@ -2,7 +2,7 @@ import "../styles/CreateListing.scss";
 import Navbar from "../components/Navbar";
 import { categories, types, facilities } from "../data";
 import { IoIosImages } from "react-icons/io";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BiTrash } from "react-icons/bi";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -32,9 +32,16 @@ const CreateListing = () => {
     highlight: "",
     price: 0,
   });
-  const creatorId = useSelector((state) => state.user._id);
-  const token = useSelector((state) => state.token);
+  const user = useSelector((state) => state?.user);
+  const creatorId = user?._id;
+  const token = useSelector((state) => state?.token);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token || !user) {
+      navigate("/login");
+    }
+  }, [token, user, navigate]);
   const [showToast, setShowToast] = useState(false);
   const handlePost = async (e) => {
     e.preventDefault();

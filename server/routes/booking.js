@@ -8,6 +8,11 @@ router.post("/create", verifyToken, async (req, res) => {
     const { listingId, startDate, endDate } = req.body;
     const listing = await Listing.findById(listingId);
     if (!listing) return res.status(404).json({ message: "Listing not found." });
+
+    if (listing.creator && listing.creator.toString() === req.user.id) {
+      return res.status(400).json({ message: "Hosts cannot book their own property." });
+    }
+
     const start = new Date(startDate);
     const end = new Date(endDate);
     if (isNaN(start) || isNaN(end) || end <= start) {
@@ -54,8 +59,8 @@ router.get("/:id", verifyToken, async (req, res) => {
       return res.status(404).json({ message: "Booking not found!" });
     }
     if (
-      booking.customerId.toString() !== req.user.id &&
-      booking.hostId.toString() !== req.user.id
+      booking.customerId?.toString() !== req.user.id &&
+      booking.hostId?.toString() !== req.user.id
     ) {
       return res.status(403).json({ message: "You are not authorized to view this booking." });
     }
@@ -76,8 +81,8 @@ router.put("/update/:id", verifyToken, async (req, res) => {
     }
 
     const isOwner =
-      existingBooking.customerId.toString() === req.user.id ||
-      existingBooking.hostId.toString() === req.user.id;
+      existingBooking.customerId?.toString() === req.user.id ||
+      existingBooking.hostId?.toString() === req.user.id;
     if (!isOwner) {
       return res.status(403).json({ message: "You are not authorized to update this booking." });
     }
@@ -127,8 +132,8 @@ router.delete("/delete/:id", verifyToken, async (req, res) => {
     }
 
     const isOwner =
-      existingBooking.customerId.toString() === req.user.id ||
-      existingBooking.hostId.toString() === req.user.id;
+      existingBooking.customerId?.toString() === req.user.id ||
+      existingBooking.hostId?.toString() === req.user.id;
     if (!isOwner) {
       return res.status(403).json({ message: "You are not authorized to delete this booking." });
     }

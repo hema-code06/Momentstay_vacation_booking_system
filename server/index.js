@@ -21,6 +21,13 @@ app.use(
     etag: false,
   }),
 );
+app.use(
+  "/api",
+  express.static("public", {
+    maxAge: "1d",
+    etag: false,
+  }),
+);
 
 app.use((req, res, next) => {
   const start = Date.now();

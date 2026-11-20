@@ -39,13 +39,16 @@ router.patch("/:userId/:listingId", verifyToken, async (req, res) => {
       return res.status(404).json({ message: "Property not found!" });
     }
 
+    const getItemId = (item) =>
+      item?._id ? item._id.toString() : item?.toString?.() || "";
+
     const favoriteListing = user.wishList.find(
-      (item) => item._id.toString() === listingId,
+      (item) => getItemId(item) === listingId,
     );
 
     if (favoriteListing) {
       user.wishList = user.wishList.filter(
-        (item) => item._id.toString() !== listingId,
+        (item) => getItemId(item) !== listingId,
       );
       await user.save();
       res.status(200).json({

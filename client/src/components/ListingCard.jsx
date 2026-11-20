@@ -26,16 +26,21 @@ const ListingCard = ({
   booking,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const totalPhotos = listingPhotoPaths?.length || 0;
 
-  const goToPrevSlide = () => {
+  const goToPrevSlide = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (totalPhotos <= 1) return;
     setCurrentIndex(
       (prevIndex) =>
-        (prevIndex - 1 + listingPhotoPaths.length) % listingPhotoPaths.length,
+        (prevIndex - 1 + totalPhotos) % totalPhotos,
     );
   };
 
-  const goToNextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % listingPhotoPaths.length);
+  const goToNextSlide = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (totalPhotos <= 1) return;
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % totalPhotos);
   };
 
   const navigate = useNavigate();
@@ -48,9 +53,16 @@ const ListingCard = ({
   const isLiked = wishList?.find((item) => item?._id === listingId);
 
   const patchWishList = async () => {
-    if (user?._id !== creator?._id) {
+    if (!user || !token) {
+      navigate("/login");
+      return;
+    }
+    if (creator?._id && user._id === creator._id) {
+      return;
+    }
+    try {
       const response = await authFetch(
-        `${process.env.REACT_APP_API_URL}/users/${user?._id}/${listingId}`,
+        `${process.env.REACT_APP_API_URL}/users/${user._id}/${listingId}`,
         token,
         {
           method: "PATCH",
@@ -59,10 +71,12 @@ const ListingCard = ({
           },
         },
       );
-      const data = await response.json();
-      dispatch(setWishList(data.wishList));
-    } else {
-      return;
+      if (response.ok) {
+        const data = await response.json();
+        dispatch(setWishList(data.wishList));
+      }
+    } catch (err) {
+      console.log("Failed to patch wishlist", err);
     }
   };
 

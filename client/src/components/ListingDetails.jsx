@@ -100,6 +100,11 @@ const ListingDetails = () => {
   const dayCount = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)));
 
   const handleSubmit = async () => {
+    if (!customerId || !token) {
+      showCustomToast("Please login to make a reservation.");
+      return;
+    }
+
     const startDate = new Date(dateRange[0].startDate);
     const endDate = new Date(dateRange[0].endDate);
 

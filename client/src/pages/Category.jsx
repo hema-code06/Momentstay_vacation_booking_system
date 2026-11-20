@@ -12,7 +12,7 @@ const Category = () => {
   const { category } = useParams();
 
   const dispatch = useDispatch();
-  const listings = useSelector((state) => state.listings);
+  const listings = useSelector((state) => state.listings || []);
 
   const getFeedListings = useCallback(async () => {
     try {
