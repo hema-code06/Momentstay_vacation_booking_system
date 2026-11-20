@@ -25,6 +25,7 @@ const ListingCard = ({
   totalPrice,
   booking,
 }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
   const totalPhotos = listingPhotoPaths?.length || 0;
 
   const goToPrevSlide = (e) => {
