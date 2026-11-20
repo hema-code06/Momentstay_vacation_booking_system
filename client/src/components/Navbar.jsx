@@ -53,9 +53,11 @@ const Navbar = () => {
     }
   };
 
-  const profileSrc = user?.profileImagePath?.startsWith("http")
-    ? user.profileImagePath
-    : `${process.env.REACT_APP_API_URL}/${user?.profileImagePath?.replace("public", "")}`;
+  const profileSrc = user?.profileImagePath
+    ? user.profileImagePath.startsWith("http")
+      ? user.profileImagePath
+      : `${process.env.REACT_APP_API_URL}/${user.profileImagePath.replace("public", "")}`
+    : "/assets/person.png";
 
   return (
     <nav className={`navbar ${isHomePage ? "navbar--home" : "navbar--inner"}`}>
