@@ -13,6 +13,7 @@ import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import NightsStayOutlinedIcon from "@mui/icons-material/NightsStayOutlined";
 import "../styles/ReservationList.scss";
 import { authFetch } from "../utils/api";
+import { getImageUrl, handleImageError, getListingFallback } from "../utils/imageHelper";
 
 const ReservationList = () => {
   const [loading, setLoading] = useState(true);
@@ -139,12 +140,9 @@ const ReservationList = () => {
                       {photos.map((photo, i) => (
                         <div className="slide" key={i}>
                           <img
-                            src={
-                              photo?.startsWith("http")
-                                ? photo
-                                : `${process.env.REACT_APP_API_URL}/${photo?.replace("public", "")}`
-                            }
+                            src={getImageUrl(photo, getListingFallback(i))}
                             alt={`${listingId.title} - ${i + 1}`}
+                            onError={(e) => handleImageError(e, getListingFallback(i))}
                           />
                         </div>
                       ))}

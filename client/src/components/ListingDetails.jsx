@@ -12,6 +12,7 @@ import Footer from "./Footer.jsx";
 import "../styles/ListingDetails.scss";
 import { FiCheckCircle } from "react-icons/fi";
 import { authFetch } from "../utils/api";
+import { getImageUrl, handleImageError, getListingFallback, HOST_FALLBACK } from "../utils/imageHelper";
 
 const ListingDetails = () => {
   const user = useSelector((state) => state.user);
@@ -203,20 +204,13 @@ const ListingDetails = () => {
         </div>
 
         <div className="photos">
-          {[
-            ...new Set(
-              listing?.listingPhotoPaths?.map(
-                (item) =>
-                  item?.startsWith("http")
-                    ? item
-                    : `${process.env.REACT_APP_API_URL}/${item?.replace(
-                      "public",
-                      "",
-                    )}`,
-              ),
-            ),
-          ].map((uniqueItem, index) => (
-            <img key={index} src={uniqueItem} alt={"listing"} />
+          {[...new Set(listing?.listingPhotoPaths || [])].map((photo, index) => (
+            <img
+              key={index}
+              src={getImageUrl(photo, getListingFallback(index))}
+              alt="listing"
+              onError={(e) => handleImageError(e, getListingFallback(index))}
+            />
           ))}
         </div>
 
@@ -231,18 +225,12 @@ const ListingDetails = () => {
           {listing?.bathroomCount === 1 ? "Bathroom" : "Bathrooms"}
         </p>
 
-        {listing?.creator && listing.creator.profileImagePath && (
+        {listing?.creator && (
           <div className="profile">
             <img
-              src={
-                listing.creator.profileImagePath?.startsWith("http")
-                  ? listing.creator.profileImagePath
-                  : `${process.env.REACT_APP_API_URL}/${listing.creator.profileImagePath?.replace(
-                    "public",
-                    "",
-                  )}`
-              }
+              src={getImageUrl(listing.creator.profileImagePath, HOST_FALLBACK)}
               alt="host"
+              onError={(e) => handleImageError(e, HOST_FALLBACK)}
             />
             <h3>Hosted by {listing.creator.username}</h3>
           </div>

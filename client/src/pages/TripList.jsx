@@ -13,6 +13,7 @@ import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import NightsStayOutlinedIcon from "@mui/icons-material/NightsStayOutlined";
 import { authFetch } from "../utils/api";
+import { getImageUrl, handleImageError, getListingFallback } from "../utils/imageHelper";
 
 const TripList = () => {
   const [loading, setLoading] = useState(true);
@@ -125,12 +126,9 @@ const TripList = () => {
                           {photos.map((photo, index) => (
                             <div key={index} className="slide">
                               <img
-                                src={
-                                  photo?.startsWith("http")
-                                    ? photo
-                                    : `${process.env.REACT_APP_API_URL}/${photo?.replace("public", "")}`
-                                }
+                                src={getImageUrl(photo, getListingFallback(index))}
                                 alt={`${index + 1}`}
+                                onError={(e) => handleImageError(e, getListingFallback(index))}
                               />
                             </div>
                           ))}

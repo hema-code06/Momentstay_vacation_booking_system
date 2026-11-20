@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setWishList } from "../redux/state";
 import { authFetch } from "../utils/api";
+import { getImageUrl, handleImageError, getListingFallback } from "../utils/imageHelper";
 
 const ListingCard = ({
   listingId,
@@ -95,8 +96,9 @@ const ListingCard = ({
           {listingPhotoPaths?.map((photo, index) => (
             <div key={index} className="slide">
               <img
-                src={photo?.startsWith("http") ? photo : `${process.env.REACT_APP_API_URL}/${photo?.replace("public", "")}`}
+                src={getImageUrl(photo, getListingFallback(index))}
                 alt={` ${index + 1}`}
+                onError={(e) => handleImageError(e, getListingFallback(index))}
               />
               <div
                 className="prev-button"

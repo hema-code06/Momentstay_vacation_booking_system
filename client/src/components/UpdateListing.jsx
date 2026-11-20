@@ -9,6 +9,7 @@ import {
 } from "@mui/icons-material";
 
 import "../styles/UpdateListing.scss";
+import { getImageUrl, handleImageError, getListingFallback } from "../utils/imageHelper";
 
 const UpdateListing = ({
   listingId,
@@ -52,15 +53,9 @@ const UpdateListing = ({
           {listingPhotoPaths.map((photo, index) => (
             <div className="slide" key={index}>
               <img
-                src={
-                  photo?.startsWith("http")
-                    ? photo
-                    : `${process.env.REACT_APP_API_URL}/${photo?.replace(
-                      "public",
-                      ""
-                    )}`
-                }
+                src={getImageUrl(photo, getListingFallback(index))}
                 alt={`listing-${index}`}
+                onError={(e) => handleImageError(e, getListingFallback(index))}
               />
             </div>
           ))}

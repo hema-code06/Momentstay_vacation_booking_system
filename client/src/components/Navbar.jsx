@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../styles/Navbar.scss";
 import { setLogout } from "../redux/state";
+import { getImageUrl, handleImageError, AVATAR_FALLBACK } from "../utils/imageHelper";
 
 const Navbar = () => {
   const [dropdownMenu, setDropdownMenu] = useState(false);
@@ -53,11 +54,7 @@ const Navbar = () => {
     }
   };
 
-  const profileSrc = user?.profileImagePath
-    ? user.profileImagePath.startsWith("http")
-      ? user.profileImagePath
-      : `${process.env.REACT_APP_API_URL}/${user.profileImagePath.replace("public", "")}`
-    : "/assets/person.png";
+  const profileSrc = getImageUrl(user?.profileImagePath, AVATAR_FALLBACK);
 
   return (
     <nav className={`navbar ${isHomePage ? "navbar--home" : "navbar--inner"}`}>
@@ -133,7 +130,12 @@ const Navbar = () => {
             {!user ? (
               <Person fontSize="small" />
             ) : (
-              <img src={profileSrc} alt="profile" className="navbar__avatar" />
+              <img
+                src={profileSrc}
+                alt="profile"
+                className="navbar__avatar"
+                onError={(e) => handleImageError(e, AVATAR_FALLBACK)}
+              />
             )}
           </button>
 

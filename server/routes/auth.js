@@ -21,7 +21,7 @@ router.post("/register", upload.single("profileImage"), async (req, res) => {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    const profileImagePath = profileImage.location;
+    const profileImagePath = profileImage.location || `/uploads/${profileImage.filename}`;
     const normalizedEmail = email.toLowerCase().trim();
 
     const existingUser = await User.findOne({ email: normalizedEmail });

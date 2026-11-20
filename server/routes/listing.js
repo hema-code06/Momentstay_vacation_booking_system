@@ -23,7 +23,9 @@ router.post("/create", verifyToken, upload.array("listingPhotos"), async (req, r
       return res.status(400).json({ message: "No file uploaded." });
     }
 
-    const listingPhotoPaths = listingPhotos.map((file) => file.location);
+    const listingPhotoPaths = listingPhotos.map(
+      (file) => file.location || `/uploads/${file.filename}`
+    );
 
     const newListing = new Listing({
       creator: req.user.id, category, type, streetAddress, aptSuite, city, province,
@@ -141,9 +143,10 @@ router.put("/:listingId", verifyToken, upload.array("listingPhotos"), async (req
       );
     }
 
-    const newPhotoPaths = req.files && req.files.length > 0
-      ? req.files.map((file) => file.location)
-      : [];
+    const newPhotoPaths =
+      req.files && req.files.length > 0
+        ? req.files.map((file) => file.location || `/uploads/${file.filename}`)
+        : [];
 
     const updatedPhotoPaths = [...keptPhotos, ...newPhotoPaths];
 

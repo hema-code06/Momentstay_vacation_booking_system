@@ -10,6 +10,7 @@ import Footer from "../components/Footer";
 import "../styles/ListingReview.scss";
 import { FiCheckCircle } from "react-icons/fi";
 import { authFetch } from "../utils/api";
+import { getImageUrl, handleImageError, getListingFallback, HOST_FALLBACK, AVATAR_FALLBACK } from "../utils/imageHelper";
 
 const ListingReview = () => {
   const { listingId } = useParams();
@@ -192,11 +193,12 @@ const ListingReview = () => {
         </div>
 
         <div className="photos">
-          {listing.listingPhotoPaths?.map((item) => (
+          {listing.listingPhotoPaths?.map((item, index) => (
             <img
-              src={item?.startsWith("http") ? item : `${process.env.REACT_APP_API_URL}/${item?.replace("public", "")}`}
+              src={getImageUrl(item, getListingFallback(index))}
               alt="listing"
-              key={item}
+              key={index}
+              onError={(e) => handleImageError(e, getListingFallback(index))}
             />
           ))}
         </div>
@@ -211,11 +213,12 @@ const ListingReview = () => {
           {listing.bathroomCount === 1 ? "Bathroom" : "Bathrooms"}
         </p>
 
-        {listing?.creator && listing.creator.profileImagePath && (
+        {listing?.creator && (
           <div className="profile">
             <img
-              src={listing.creator.profileImagePath?.startsWith("http") ? listing.creator.profileImagePath : `${process.env.REACT_APP_API_URL}/${listing.creator.profileImagePath?.replace("public", "")}`}
+              src={getImageUrl(listing.creator.profileImagePath, HOST_FALLBACK)}
               alt="host"
+              onError={(e) => handleImageError(e, HOST_FALLBACK)}
             />
             <h3>Hosted by {listing.creator.username}</h3>
           </div>
@@ -287,12 +290,9 @@ const ListingReview = () => {
             <div className="review-card" key={review._id}>
               <div className="review-header">
                 <img
-                  src={
-                    review.userId?.profileImagePath
-                      ? review.userId.profileImagePath
-                      : "/default-avatar.png"
-                  }
+                  src={getImageUrl(review.userId?.profileImagePath, AVATAR_FALLBACK)}
                   alt={review.userId?.username || "Guest"}
+                  onError={(e) => handleImageError(e, AVATAR_FALLBACK)}
                 />
                 <div>
                   <h4>{review.userId?.username || "Guest"}</h4>

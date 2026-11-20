@@ -8,6 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "../styles/UpdateProperty.scss";
 import { FiCheckCircle } from "react-icons/fi";
 import { authFetch } from "../utils/api";
+import { getImageUrl, handleImageError, getListingFallback } from "../utils/imageHelper";
 
 const UpdateProperty = () => {
   const { listingId } = useParams();
@@ -355,7 +356,11 @@ const UpdateProperty = () => {
               <div className="photos-preview">
                 {existingPhotos.map((url, index) => (
                   <div key={`existing-${index}`} className="photo-preview">
-                    <img src={url} alt={`existing-${index}`} />
+                    <img
+                      src={getImageUrl(url, getListingFallback(index))}
+                      alt={`existing-${index}`}
+                      onError={(e) => handleImageError(e, getListingFallback(index))}
+                    />
                     <span className="photo-label">Saved</span>
                     <BiTrash
                       className="trash-icon"

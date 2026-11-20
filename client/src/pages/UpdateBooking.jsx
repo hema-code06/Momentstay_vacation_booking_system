@@ -12,6 +12,7 @@ import Footer from "../components/Footer";
 import "../styles/UpdateBooking.scss";
 import { FiCheckCircle } from "react-icons/fi";
 import { authFetch } from "../utils/api";
+import { getImageUrl, handleImageError, getListingFallback, HOST_FALLBACK } from "../utils/imageHelper";
 
 const UpdateBooking = () => {
   const { bookingId } = useParams();
@@ -200,12 +201,9 @@ const UpdateBooking = () => {
               {listing.listingPhotoPaths?.map((photo, index) => (
                 <img
                   key={index}
-                  src={
-                    photo?.startsWith("http")
-                      ? photo
-                      : `${process.env.REACT_APP_API_URL}/${photo?.replace("public", "")}`
-                  }
+                  src={getImageUrl(photo, getListingFallback(index))}
                   alt={`slide ${index + 1}`}
+                  onError={(e) => handleImageError(e, getListingFallback(index))}
                 />
               ))}
             </div>
@@ -222,14 +220,11 @@ const UpdateBooking = () => {
 
             <div className="profile">
               <img
-                src={
-                  listing.creator.profileImagePath?.startsWith("http")
-                    ? listing.creator.profileImagePath
-                    : `${process.env.REACT_APP_API_URL}/${listing.creator.profileImagePath?.replace("public", "")}`
-                }
+                src={getImageUrl(listing.creator?.profileImagePath, HOST_FALLBACK)}
                 alt="host"
+                onError={(e) => handleImageError(e, HOST_FALLBACK)}
               />
-              <h3>Hosted by {listing.creator.username}</h3>
+              <h3>Hosted by {listing.creator?.username}</h3>
             </div>
 
             <div className="info">
