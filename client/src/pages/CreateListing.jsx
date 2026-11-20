@@ -417,10 +417,14 @@ const CreateListing = () => {
                   id="image-upload"
                   type="file"
                   multiple
+                  accept="image/*"
                   style={{ display: "none" }}
-                  onChange={(e) =>
-                    setPhotos([...photos, ...Array.from(e.target.files)])
-                  }
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      setPhotos([...photos, ...Array.from(e.target.files)]);
+                    }
+                    e.target.value = null;
+                  }}
                 />
                 <div className="photos-preview">
                   {photos.map((photo, index) => (

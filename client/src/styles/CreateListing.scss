@@ -1,27 +1,28 @@
 @import "./Responsive.scss";
 
 .create-listing {
-  padding: 0 40px;
-  overflow: hidden;
+  padding: 24px 40px 140px;
+  min-height: 100vh;
+  box-sizing: border-box;
 
   @include xl {
-    padding: 0 30px;
+    padding: 20px 30px 140px;
   }
 
   @include lg {
-    padding: 0 24px;
+    padding: 16px 24px 130px;
   }
 
   @include md {
-    padding: 0 18px;
+    padding: 16px 18px 120px;
   }
 
   @include sm {
-    padding: 0 12px;
+    padding: 12px 12px 110px;
   }
 
   @include xs {
-    padding: 0 8px;
+    padding: 10px 8px 100px;
   }
 }
 

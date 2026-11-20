@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const mongoose = require("mongoose");
 const { DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const { uploadToS3, s3 } = require("../config/s3");
 const verifyToken = require("../middleware/auth");
@@ -85,12 +86,18 @@ router.get("/search/:search", async (req, res) => {
 router.get("/:listingId", async (req, res) => {
   const { listingId } = req.params;
   try {
+    if (!mongoose.Types.ObjectId.isValid(listingId)) {
+      return res.status(404).json({ message: "Property not found!" });
+    }
     const listing = await Listing.findById(listingId).populate("creator", "-password");
     if (!listing) {
       return res.status(404).json({ message: "Property not found!" });
     }
     res.status(200).json(listing);
   } catch (err) {
+    if (err.name === "CastError") {
+      return res.status(404).json({ message: "Property not found!" });
+    }
     res.status(500).json({ message: "Failed to fetch property details!", error: err.message });
   }
 });

@@ -6,38 +6,31 @@ const verifyToken = require("../middleware/auth");
 router.post("/create", verifyToken, async (req, res) => {
   try {
     const { listingId, startDate, endDate } = req.body;
+    if (!listingId) {
+      return res.status(400).json({ message: "Listing ID is required." });
+    }
+
     const listing = await Listing.findById(listingId);
     if (!listing) return res.status(404).json({ message: "Listing not found." });
 
-    if (listing.creator && listing.creator.toString() === req.user.id) {
-      return res.status(400).json({ message: "Hosts cannot book their own property." });
-    }
-
     const start = new Date(startDate);
     const end = new Date(endDate);
-    if (isNaN(start) || isNaN(end) || end <= start) {
+    if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) {
       return res.status(400).json({ message: "Please provide a valid date range." });
     }
 
-    const overlap = await Booking.exists({
-      listingId,
-      startDate: { $lt: end },
-      endDate: { $gt: start },
-    });
-    if (overlap) {
-      return res.status(409).json({ message: "These dates are already booked." });
-    }
     const nights = Math.max(1, Math.round(
-      (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)
+      (end - start) / (1000 * 60 * 60 * 24)
     ));
-    const trustedTotalPrice = nights * listing.price;
+    const pricePerNight = Number(listing.price) || 0;
+    const trustedTotalPrice = nights * pricePerNight;
 
     const newBooking = new Booking({
       customerId: req.user.id,
-      hostId: listing.creator,
+      hostId: listing.creator || req.user.id,
       listingId,
-      startDate,
-      endDate,
+      startDate: start,
+      endDate: end,
       totalPrice: trustedTotalPrice,
     });
     await newBooking.save();

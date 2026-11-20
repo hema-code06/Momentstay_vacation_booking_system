@@ -1,5 +1,8 @@
 export const getImageUrl = (path, fallback = "/assets/Home.jpg") => {
   if (!path || typeof path !== "string") return fallback;
+  if (path.includes("momentstay-images.s3.amazonaws.com")) {
+    return fallback;
+  }
   if (path.startsWith("/assets") || path.startsWith("assets")) {
     return path.startsWith("/") ? path : `/${path}`;
   }
@@ -12,8 +15,10 @@ export const getImageUrl = (path, fallback = "/assets/Home.jpg") => {
 };
 
 export const handleImageError = (e, fallback = "/assets/Home.jpg") => {
-  e.currentTarget.onerror = null;
-  e.currentTarget.src = fallback;
+  if (e && e.currentTarget) {
+    e.currentTarget.onerror = null;
+    e.currentTarget.src = fallback;
+  }
 };
 
 export const getListingFallback = (index = 0) => {

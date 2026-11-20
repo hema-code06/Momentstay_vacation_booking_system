@@ -14,7 +14,8 @@ router.post("/create", verifyToken, async (req, res) => {
         .json({ message: "listingId, rating, and comment are required." });
     }
 
-    if (rating < 1 || rating > 5) {
+    const numRating = Number(rating);
+    if (isNaN(numRating) || numRating < 1 || numRating > 5) {
       return res.status(400).json({ message: "Rating must be between 1 and 5." });
     }
 
@@ -23,38 +24,28 @@ router.post("/create", verifyToken, async (req, res) => {
       return res.status(404).json({ message: "Listing not found." });
     }
 
-    const hasStayed = await Booking.exists({
-      customerId: req.user.id,
+    let review = await Review.findOne({
       listingId,
-      endDate: { $lt: new Date() },
+      userId: req.user.id,
     });
-    if (!hasStayed) {
-      return res.status(403).json({
-        message: "You can review a property only after completing a stay.",
+
+    if (review) {
+      review.rating = numRating;
+      review.comment = comment.trim();
+      await review.save();
+    } else {
+      review = new Review({
+        listingId,
+        userId: req.user.id,
+        rating: numRating,
+        comment: comment.trim(),
       });
+      await review.save();
     }
 
-    const existingReview = await Review.findOne({
-      listingId,
-      userId: req.user.id,
-    });
-    if (existingReview) {
-      return res
-        .status(409)
-        .json({ message: "You have already reviewed this listing." });
-    }
+    await review.populate("userId", "username profileImagePath");
 
-    const newReview = new Review({
-      listingId,
-      userId: req.user.id,
-      rating,
-      comment: comment.trim(),
-    });
-
-    await newReview.save();
-    await newReview.populate("userId", "username profileImagePath");
-
-    res.status(201).json(newReview);
+    res.status(201).json(review);
   } catch (err) {
     console.log(err);
     res

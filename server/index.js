@@ -11,6 +11,7 @@ const userRoutes = require("./routes/user.js");
 const reviewRoutes = require("./routes/review.js");
 
 const app = express();
+const path = require("path");
 
 // ─── CORS ───────────────────────────────────────────────────────────────────
 app.use(
@@ -23,6 +24,8 @@ app.use(
 app.use(express.json());
 app.use(compression());
 app.use(express.static("public", { maxAge: "1d", etag: false }));
+app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
+app.use("/api/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 // ─── REQUEST LOGGER ─────────────────────────────────────────────────────────
 app.use((req, res, next) => {
