@@ -16,29 +16,39 @@ const WishList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const wishList = useSelector((state) => state.user.wishList);
-  const userId = useSelector((state) => state.user._id);
-  const token = useSelector((state) => state.token);
+  const user = useSelector((state) => state?.user);
+  const wishList = user?.wishList || [];
+  const userId = user?._id;
+  const token = useSelector((state) => state?.token);
 
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
+  useEffect(() => {
+    if (!token || !user) {
+      navigate("/login");
+    }
+  }, [token, user, navigate]);
+
   const handleRemove = async (listingId) => {
-  try {
-    const response = await authFetch(
-      `${process.env.REACT_APP_API_URL}/users/${userId}/${listingId}`,
-      token,
-      { method: "PATCH", headers: { "Content-Type": "application/json" } }
-    );
-    const data = await response.json();
-    dispatch(setWishList(data.wishList));
-  } catch (err) {
-    console.log("Failed to remove from wishlist", err.message);
-  }
-};
+    if (!userId || !token) return;
+    try {
+      const response = await authFetch(
+        `${process.env.REACT_APP_API_URL}/users/${userId}/${listingId}`,
+        token,
+        { method: "PATCH", headers: { "Content-Type": "application/json" } }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        dispatch(setWishList(data.wishList));
+      }
+    } catch (err) {
+      console.log("Failed to remove from wishlist", err.message);
+    }
+  };
 
   const handleStartExploring = () => {
-    navigate(`/${userId}/trips`);
+    navigate("/");
   };
 
   useEffect(() => {

@@ -12,21 +12,31 @@ import { authFetch } from "../utils/api";
 
 const PropertyList = () => {
   const [loading, setLoading] = useState(true);
-  const userId = useSelector((state) => state.user._id);
-  const token = useSelector((state) => state.token);
-  const propertyList = useSelector((state) => state.user.propertyList || []);
+  const user = useSelector((state) => state?.user);
+  const userId = user?._id;
+  const token = useSelector((state) => state?.token);
+  const propertyList = user?.propertyList || [];
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!token || !user) {
+      navigate("/login");
+    }
+  }, [token, user, navigate]);
+
   const getPropertyList = useCallback(async () => {
+    if (!userId || !token) return;
     try {
       const response = await authFetch(
         `${process.env.REACT_APP_API_URL}/users/${userId}/properties`,
         token,
         { method: "GET" },
       );
-      const data = await response.json();
-      dispatch(setPropertyList(data));
+      if (response.ok) {
+        const data = await response.json();
+        dispatch(setPropertyList(data));
+      }
     } catch (err) {
       console.log("Fetching Properties failed", err.message);
     } finally {

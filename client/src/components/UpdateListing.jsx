@@ -26,6 +26,7 @@ const UpdateListing = ({
 
   const goToPrevSlide = (e) => {
     e.stopPropagation();
+    if (totalSlides <= 1) return;
     setCurrentIndex(
       (prev) => (prev - 1 + totalSlides) % totalSlides
     );
@@ -33,6 +34,7 @@ const UpdateListing = ({
 
   const goToNextSlide = (e) => {
     e.stopPropagation();
+    if (totalSlides <= 1) return;
     setCurrentIndex(
       (prev) => (prev + 1) % totalSlides
     );

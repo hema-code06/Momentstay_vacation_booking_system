@@ -16,23 +16,33 @@ import { authFetch } from "../utils/api";
 
 const TripList = () => {
   const [loading, setLoading] = useState(true);
-  const userId = useSelector((state) => state.user._id);
-  const token = useSelector((state) => state.token);
-  const tripList = useSelector((state) => state.user.tripList);
+  const user = useSelector((state) => state?.user);
+  const userId = user?._id;
+  const token = useSelector((state) => state?.token);
+  const tripList = user?.tripList || [];
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token || !user) {
+      navigate("/login");
+    }
+  }, [token, user, navigate]);
 
   const [currentIndexes, setCurrentIndexes] = useState({});
 
   const getTripList = useCallback(async () => {
+    if (!userId || !token) return;
     try {
       const response = await authFetch(
         `${process.env.REACT_APP_API_URL}/users/${userId}/trips`,
         token,
         { method: "GET" }
       );
-      const data = await response.json();
-      dispatch(setTripList(data));
+      if (response.ok) {
+        const data = await response.json();
+        dispatch(setTripList(data));
+      }
       setLoading(false);
     } catch (err) {
       console.log("Fetching trip details failed!", err.message);

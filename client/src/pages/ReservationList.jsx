@@ -19,13 +19,21 @@ const ReservationList = () => {
   const [slideIndexMap, setSlideIndexMap] = useState({});
   const [cancellingId, setCancellingId] = useState(null);
 
-  const userId = useSelector((state) => state.user._id);
-  const token = useSelector((state) => state.token);
-  const reservationList = useSelector((state) => state.user.reservationList || []);
+  const user = useSelector((state) => state?.user);
+  const userId = user?._id;
+  const token = useSelector((state) => state?.token);
+  const reservationList = user?.reservationList || [];
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!token || !user) {
+      navigate("/login");
+    }
+  }, [token, user, navigate]);
+
   const getReservationList = useCallback(async () => {
+    if (!userId || !token) return;
     try {
       const response = await authFetch(
         `${process.env.REACT_APP_API_URL}/users/${userId}/reservations`,

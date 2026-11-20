@@ -32,9 +32,16 @@ const CreateListing = () => {
     highlight: "",
     price: 0,
   });
-  const creatorId = useSelector((state) => state.user._id);
-  const token = useSelector((state) => state.token);
+  const user = useSelector((state) => state?.user);
+  const creatorId = user?._id;
+  const token = useSelector((state) => state?.token);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token || !user) {
+      navigate("/login");
+    }
+  }, [token, user, navigate]);
   const [showToast, setShowToast] = useState(false);
   const handlePost = async (e) => {
     e.preventDefault();
