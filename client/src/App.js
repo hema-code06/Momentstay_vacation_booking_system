@@ -16,42 +16,41 @@ import Pastexperience from "./components/Pastexperience";
 import Testimonials from "./components/Testimonials";
 import UpdateBooking from "./pages/UpdateBooking";
 import UpdateProperty from "./pages/UpdateProperty";
-
+import { ToastProvider } from "./context/ToastContext";
 
 function App() {
-
   return (
-    <div>
+    <ToastProvider>
       <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/create-listing" element={<CreateListing />} />
-            <Route path="/properties/:listingId" element={<ListingDetails />} />
-            <Route path="/feedback/:listingId" element={<ListingReview />} />
-            <Route path="/pastexperience" element={<Pastexperience />} />
-            <Route path="/testimonials/:id" element={<Testimonials />} />
-            <Route
-              path="/properties/category/:category"
-              element={<Category />}
-            />
-            <Route path="/properties/search/:search" element={<Search />} />
-            <Route path="/:userId/trips" element={<TripList />} />
-            <Route path="/:userId/wishList" element={<WishList />} />
-            <Route path="/:userId/properties" element={<PropertyList />} />
-            <Route path="/:userId/reservations" element={<ReservationList />} />
-            <Route
-              path="/bookings/update/:bookingId"
-              element={<UpdateBooking />}
-            />
-            <Route
-              path="/update-listing/:listingId"
-              element={<UpdateProperty />}
-            />
-          </Routes>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/create-listing" element={<CreateListing />} />
+          <Route path="/properties/:listingId" element={<ListingDetails />} />
+          <Route path="/feedback/:listingId" element={<ListingReview />} />
+          <Route path="/pastexperience" element={<Pastexperience />} />
+          <Route path="/testimonials/:id" element={<Testimonials />} />
+          <Route
+            path="/properties/category/:category"
+            element={<Category />}
+          />
+          <Route path="/properties/search/:search" element={<Search />} />
+          <Route path="/:userId/trips" element={<TripList />} />
+          <Route path="/:userId/wishList" element={<WishList />} />
+          <Route path="/:userId/properties" element={<PropertyList />} />
+          <Route path="/:userId/reservations" element={<ReservationList />} />
+          <Route
+            path="/bookings/update/:bookingId"
+            element={<UpdateBooking />}
+          />
+          <Route
+            path="/update-listing/:listingId"
+            element={<UpdateProperty />}
+          />
+        </Routes>
       </BrowserRouter>
-    </div>
+    </ToastProvider>
   );
 }
 

@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { BiTrash } from "react-icons/bi";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { FiCheckCircle } from "react-icons/fi";
+import { useToast } from "../context/ToastContext";
 import { authFetch } from "../utils/api";
 
 const CreateListing = () => {
@@ -36,6 +36,7 @@ const CreateListing = () => {
   const creatorId = user?._id;
   const token = useSelector((state) => state?.token);
   const navigate = useNavigate();
+  const toast = useToast();
 
   useEffect(() => {
     if (!token || !user) {
@@ -43,7 +44,7 @@ const CreateListing = () => {
     }
   }, [token, user, navigate]);
   const [showToast, setShowToast] = useState(false);
-  const handlePost = async (e) => {
+  const handlePost = async (e) => { {
     e.preventDefault();
 
     try {

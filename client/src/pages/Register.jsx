@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/Register.scss";
-import { FiCheckCircle } from "react-icons/fi";
+import { useToast } from "../context/ToastContext";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -11,15 +11,14 @@ const Register = () => {
     password: "",
     confirmPassword: "",
   });
-  const [showToast, setShowToast] = useState(false);
   const [passwordMatch, setPasswordMatch] = useState(true);
-  const [success, setSuccess] = useState(null);
   const [error, setError] = useState({
     username: "", email: "", password: "",
     confirmPassword: "", profileImage: "", general: "",
   });
 
   const navigate = useNavigate();
+  const toast = useToast();
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -56,31 +55,28 @@ const Register = () => {
         });
 
         if (response.ok) {
-          setSuccess("Registered successfully! Redirecting to login...");
-
-          setShowToast(true);
-
-          setTimeout(() => {
-            navigate("/login");
-          }, 2200);
+          toast.success("Account created successfully! Redirecting…", 2500);
+          setTimeout(() => navigate("/login"), 2200);
         } else {
           const result = await response.json();
-          setError({ ...errors, general: result.message || "Registration Failed!" });
+          const msg = result.message || "Registration Failed!";
+          setError({ ...errors, general: msg });
+          toast.error(msg);
         }
       } catch (err) {
-        setError({ ...errors, general: "Registration Failed! " + err.message });
+        const msg = "Registration Failed! " + err.message;
+        setError({ ...errors, general: msg });
+        toast.error(msg);
       }
+    } else {
+      // show first field error as toast
+      const firstErr = Object.values(errors).find((v) => v);
+      if (firstErr) toast.error(firstErr);
     }
   };
 
   return (
     <div className="register">
-      {showToast && (
-        <div className="custom-toast">
-          <FiCheckCircle className="toast-icon" />
-          <span>Registration successful!</span>
-        </div>
-      )}
       <div className="register_content">
         <h1>Create account</h1>
 
@@ -119,7 +115,6 @@ const Register = () => {
           Already have an account? <Link to="/login">Login</Link> here
         </span>
 
-        {success && <p className="success_message">{success}</p>}
         {error.general && <p className="error_message">{error.general}</p>}
       </div>
     </div>
