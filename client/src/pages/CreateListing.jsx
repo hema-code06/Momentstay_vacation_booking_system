@@ -43,8 +43,7 @@ const CreateListing = () => {
       navigate("/login");
     }
   }, [token, user, navigate]);
-  const [showToast, setShowToast] = useState(false);
-  const handlePost = async (e) => { {
+  const handlePost = async (e) => {
     e.preventDefault();
 
     try {
@@ -77,15 +76,17 @@ const CreateListing = () => {
       });
 
       if (response.ok) {
-        setShowToast(true);
-
+        toast.success("Property Created Successfully!");
         setTimeout(() => {
-          setShowToast(false);
           navigate("/");
-        }, 2500);
+        }, 2000);
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        toast.error(errorData.message || "Failed to publish property. Please try again.");
       }
     } catch (err) {
       console.log("Publish Properties failed", err.message);
+      toast.error("An error occurred while publishing the property.");
     }
   };
 
@@ -112,12 +113,6 @@ const CreateListing = () => {
   return (
     <>
       <Navbar />
-      {showToast && (
-        <div className="custom-toast">
-          <FiCheckCircle className="toast-icon" />
-          <span>Property Created Successfully!</span>
-        </div>
-      )}
       <div className="create-listing">
         <form onSubmit={handlePost}>
           {currentStep === 1 && (

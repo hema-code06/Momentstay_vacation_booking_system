@@ -10,7 +10,7 @@ import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/UpdateBooking.scss";
-import { FiCheckCircle } from "react-icons/fi";
+import { useToast } from "../context/ToastContext";
 import { authFetch } from "../utils/api";
 import { getImageUrl, handleImageError, getListingFallback, HOST_FALLBACK } from "../utils/imageHelper";
 
@@ -20,8 +20,7 @@ const UpdateBooking = () => {
   const user = useSelector((state) => state?.user);
   const [booking, setBooking] = useState(null);
   const [listing, setListing] = useState(null);
-  const [showWishlistToast, setShowWishlistToast] = useState(false);
-  const [showBookingToast, setShowBookingToast] = useState(false);
+  const toast = useToast();
   const [dateRange, setDateRange] = useState([
     { startDate: new Date(), endDate: new Date(), key: "selection" },
   ]);
@@ -46,7 +45,7 @@ const UpdateBooking = () => {
 
   const handleAddToWishlist = async () => {
     if (!user) {
-      alert("Please login to add to wishlist.");
+      toast.info("Please login to add to wishlist.");
       return;
     }
     try {
@@ -60,10 +59,11 @@ const UpdateBooking = () => {
       );
       const data = await response.json();
       dispatch(setWishList(data.wishList));
-      setShowWishlistToast(true);
-      setTimeout(() => setShowWishlistToast(false), 2500);
+      toast.success(
+        isInWishlist ? "Removed from wishlist!" : "Added to wishlist!"
+      );
     } catch (error) {
-      alert("Something went wrong. Please try again.");
+      toast.error("Failed to update wishlist. Please try again.");
     }
   };
 
@@ -143,18 +143,17 @@ const UpdateBooking = () => {
       );
 
       if (response.ok) {
-        setShowBookingToast(true);
+        toast.success("Booking updated successfully! 📅");
         setTimeout(() => {
-          setShowBookingToast(false);
           navigate(`/${user._id}/reservations`);
-        }, 2500);
+        }, 2000);
       } else {
         const data = await response.json().catch(() => ({}));
-        window.alert(data.message || "Failed to update booking.");
+        toast.error(data.message || "Failed to update booking.");
       }
     } catch (err) {
       console.error("Update booking failed", err.message);
-      window.alert("An error occurred while updating the booking.");
+      toast.error("An error occurred while updating the booking.");
     }
   };
 
@@ -172,18 +171,6 @@ const UpdateBooking = () => {
   return (
     <>
       <Navbar />
-      {showWishlistToast && (
-        <div className="custom-toast">
-          <FiCheckCircle className="toast-icon" />
-          <span>Added to wishlist successfully!</span>
-        </div>
-      )}
-      {showBookingToast && (
-        <div className="custom-toast">
-          <FiCheckCircle className="toast-icon" />
-          <span>Booking updated successfully!</span>
-        </div>
-      )}
 
       <div className="update-details">
         <div className="title">

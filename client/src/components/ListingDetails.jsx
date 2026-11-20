@@ -10,7 +10,7 @@ import Loader from "./Loader.jsx";
 import Navbar from "./Navbar.jsx";
 import Footer from "./Footer.jsx";
 import "../styles/ListingDetails.scss";
-import { FiCheckCircle } from "react-icons/fi";
+import { useToast } from "../context/ToastContext";
 import { authFetch } from "../utils/api";
 import { getImageUrl, handleImageError, getListingFallback, HOST_FALLBACK } from "../utils/imageHelper";
 
@@ -19,9 +19,6 @@ const ListingDetails = () => {
   const { listingId } = useParams();
   const [loading, setLoading] = useState(true);
   const [listing, setListing] = useState(null);
-
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
 
   const [dateRange, setDateRange] = useState([
     {
@@ -33,18 +30,10 @@ const ListingDetails = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const toast = useToast();
   const customerId = useSelector((state) => state?.user?._id);
   const token = useSelector((state) => state.token);
   const wishList = useSelector((state) => state?.user?.wishList || []);
-
-  const showCustomToast = (message) => {
-    setToastMessage(message);
-    setShowToast(true);
-
-    setTimeout(() => {
-      setShowToast(false);
-    }, 2500);
-  };
 
   const getListingDetails = useCallback(async () => {
     try {
@@ -69,7 +58,7 @@ const ListingDetails = () => {
   const isInWishlist = wishList.some((item) => item._id === listingId);
   const handleAddToWishlist = async () => {
     if (!user) {
-      showCustomToast("Please login to add to wishlist.");
+      toast.info("Please login to add to wishlist.");
       return;
     }
     try {
@@ -83,11 +72,11 @@ const ListingDetails = () => {
       );
       const data = await response.json();
       dispatch(setWishList(data.wishList));
-      showCustomToast(
+      toast.success(
         isInWishlist ? "Removed from wishlist!" : "Added to wishlist!"
       );
     } catch (error) {
-      showCustomToast("Failed to update wishlist.");
+      toast.error("Failed to update wishlist.");
     }
   };
 
@@ -102,7 +91,7 @@ const ListingDetails = () => {
 
   const handleSubmit = async () => {
     if (!customerId || !token) {
-      showCustomToast("Please login to make a reservation.");
+      toast.info("Please login to make a reservation.");
       return;
     }
 
@@ -110,7 +99,7 @@ const ListingDetails = () => {
     const endDate = new Date(dateRange[0].endDate);
 
     if (!startDate || !endDate) {
-      showCustomToast("Please select dates for reservation.");
+      toast.info("Please select dates for reservation.");
       return;
     }
 
@@ -119,7 +108,7 @@ const ListingDetails = () => {
     ));
 
     if (dayCount < 2) {
-      showCustomToast(
+      toast.error(
         "Please select at least 2 nights for your reservation.",
       );
       return;
@@ -145,19 +134,19 @@ const ListingDetails = () => {
       );
 
       if (response.ok) {
-        showCustomToast("Your reservation is confirmed!");
+        toast.success("Your reservation is confirmed! 🎉");
 
         setTimeout(() => {
           navigate(`/${customerId}/reservations`);
         }, 2000);
       } else {
         const data = await response.json().catch(() => ({}));
-        showCustomToast(
+        toast.error(
           data.message || "There was a problem with your reservation.",
         );
       }
     } catch (err) {
-      showCustomToast(
+      toast.error(
         "An error occurred while submitting your reservation.",
       );
       console.log("Failed to submit reservation.", err.message);
@@ -181,13 +170,6 @@ const ListingDetails = () => {
   return (
     <>
       <Navbar />
-
-      {showToast && (
-        <div className="custom-toast">
-          <FiCheckCircle className="toast-icon" />
-          <span>{toastMessage}</span>
-        </div>
-      )}
 
       <div className="listing-details">
         <div className="title">

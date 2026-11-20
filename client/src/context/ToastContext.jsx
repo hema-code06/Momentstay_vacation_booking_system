@@ -57,7 +57,7 @@ const SuccessIcon = () => (
 );
 
 const ErrorIcon = () => (
-  <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" style={{ animation: "errorShake 0.4s ease 0.1s" }}>
     <circle cx="11" cy="11" r="10" stroke="currentColor" strokeWidth="1.8" />
     <path d="M7.5 7.5l7 7M14.5 7.5l-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
   </svg>
@@ -86,6 +86,12 @@ const ToastContainer = ({ toasts }) => {
     <>
       <style>{`
         @keyframes checkDraw { to { stroke-dashoffset: 0; } }
+        @keyframes errorShake {
+          0%, 100% { transform: scale(1) translateX(0); }
+          25% { transform: scale(1.08) translateX(-3px); }
+          50% { transform: scale(1.08) translateX(3px); }
+          75% { transform: scale(1.04) translateX(-1px); }
+        }
         @keyframes ms-toast-in {
           from { opacity:0; transform:translateX(-50%) translateY(-24px) scale(0.92); }
           to   { opacity:1; transform:translateX(-50%) translateY(0)      scale(1);    }

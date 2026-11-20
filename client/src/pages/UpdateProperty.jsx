@@ -6,7 +6,7 @@ import { BiTrash } from "react-icons/bi";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/UpdateProperty.scss";
-import { FiCheckCircle } from "react-icons/fi";
+import { useToast } from "../context/ToastContext";
 import { authFetch } from "../utils/api";
 import { getImageUrl, handleImageError, getListingFallback } from "../utils/imageHelper";
 
@@ -14,7 +14,7 @@ const UpdateProperty = () => {
   const { listingId } = useParams();
   const [category, setCategory] = useState("");
   const [type, setType] = useState("");
-  const [showToast, setShowToast] = useState(false);
+  const toast = useToast();
   const [formLocation, setFormLocation] = useState({
     streetAddress: "",
     aptSuite: "",
@@ -150,18 +150,18 @@ const UpdateProperty = () => {
         const data = await response.json();
         setExistingPhotos(data.listing.listingPhotoPaths || []);
         setNewPhotos([]);
-        setShowToast(true);
+        toast.success("Property updated successfully! 🏡");
 
         setTimeout(() => {
-          setShowToast(false);
           navigate("/");
-        }, 2500);
+        }, 2000);
       } else {
         const err = await response.json();
-        alert("Update failed: " + (err.message || "Unknown error"));
+        toast.error("Update failed: " + (err.message || "Unknown error"));
       }
     } catch (err) {
       console.error("Updating property failed:", err.message);
+      toast.error("Updating property failed: " + err.message);
     }
   };
 
@@ -174,12 +174,14 @@ const UpdateProperty = () => {
         { method: "DELETE" }
       );
       if (response.ok) {
+        toast.success("Property deleted.");
         navigate("/");
       } else {
-        alert("Failed to delete the property.");
+        toast.error("Failed to delete the property.");
       }
     } catch (err) {
       console.error("Deleting property failed:", err);
+      toast.error("Deleting property failed.");
     }
   };
 
@@ -188,12 +190,6 @@ const UpdateProperty = () => {
   return (
     <>
       <Navbar />
-      {showToast && (
-        <div className="custom-toast">
-          <FiCheckCircle className="toast-icon" />
-          <span>Property updated</span>
-        </div>
-      )}
       <div className="update-listing">
         <form onSubmit={handleUpdate}>
 

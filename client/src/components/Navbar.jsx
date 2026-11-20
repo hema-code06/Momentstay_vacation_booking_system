@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../styles/Navbar.scss";
 import { setLogout } from "../redux/state";
+import { useToast } from "../context/ToastContext";
 import { getImageUrl, handleImageError, AVATAR_FALLBACK } from "../utils/imageHelper";
 
 const Navbar = () => {
@@ -11,6 +12,7 @@ const Navbar = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const toast = useToast();
 
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
@@ -112,7 +114,7 @@ const Navbar = () => {
             onClick={(e) => {
               if (!user) {
                 e.preventDefault();
-                alert("Please login or register to list your property!");
+                toast.info("Please login or register to list your property!");
               }
             }}
           >
