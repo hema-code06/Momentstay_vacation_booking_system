@@ -22,7 +22,6 @@ const ReservationList = () => {
   const user = useSelector((state) => state?.user);
   const userId = user?._id;
   const token = useSelector((state) => state?.token);
-  const reservationList = user?.reservationList || [];
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -55,8 +54,8 @@ const ReservationList = () => {
   }, [getReservationList]);
 
   const filteredReservationList = useMemo(
-    () => reservationList.filter((b) => b.listingId && b.listingId._id),
-    [reservationList]
+    () => (user?.reservationList || []).filter((b) => b.listingId && b.listingId._id),
+    [user?.reservationList]
   );
 
   const goToPrevSlide = (bookingId, totalSlides) => {
