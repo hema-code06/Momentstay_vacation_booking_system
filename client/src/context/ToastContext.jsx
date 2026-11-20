@@ -93,28 +93,73 @@ const ToastContainer = ({ toasts }) => {
           75% { transform: scale(1.04) translateX(-1px); }
         }
         @keyframes ms-toast-in {
-          from { opacity:0; transform:translateX(-50%) translateY(-24px) scale(0.92); }
-          to   { opacity:1; transform:translateX(-50%) translateY(0)      scale(1);    }
+          from { opacity: 0; transform: translateY(-28px) scale(0.92); }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes ms-toast-out {
-          from { opacity:1; transform:translateX(-50%) translateY(0)       scale(1);    }
-          to   { opacity:0; transform:translateX(-50%) translateY(-18px) scale(0.94); }
+          from { opacity: 1; transform: translateY(0) scale(1); }
+          to   { opacity: 0; transform: translateY(-20px) scale(0.94); }
         }
-        .ms-toast-stack { position:fixed; top:24px; left:50%; transform:translateX(-50%); z-index:99999; display:flex; flex-direction:column; gap:10px; align-items:center; pointer-events:none; }
+        .ms-toast-stack {
+          position: fixed;
+          top: 28px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 999999;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+          width: max-content;
+          max-width: 90vw;
+        }
         .ms-toast {
-          pointer-events:all;
-          display:flex; align-items:center; gap:12px;
-          padding:13px 22px; border-radius:14px;
-          font-size:14.5px; font-weight:600; letter-spacing:0.3px;
-          color:#fff; white-space:nowrap;
-          box-shadow:0 10px 30px var(--toast-glow,rgba(0,0,0,.2));
-          animation:ms-toast-in 0.42s cubic-bezier(0.22,1,0.36,1) forwards;
-          border:1px solid rgba(255,255,255,0.18);
-          backdrop-filter:blur(4px);
+          pointer-events: all;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          padding: 14px 26px;
+          border-radius: 16px;
+          font-size: 15px;
+          font-weight: 600;
+          letter-spacing: 0.3px;
+          color: #fff;
+          white-space: nowrap;
+          box-shadow: 0 12px 36px var(--toast-glow, rgba(0,0,0,.25));
+          animation: ms-toast-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+          border: 1px solid rgba(255, 255, 255, 0.22);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          margin: 0 auto;
         }
-        .ms-toast.exiting { animation:ms-toast-out 0.38s ease forwards; }
-        .ms-toast-icon { flex-shrink:0; display:flex; align-items:center; }
-        @media(max-width:480px){ .ms-toast{ font-size:13px; padding:11px 16px; border-radius:12px; gap:9px; } }
+        .ms-toast.exiting {
+          animation: ms-toast-out 0.35s ease forwards;
+        }
+        .ms-toast-icon {
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        @media (max-width: 480px) {
+          .ms-toast-stack {
+            top: 20px;
+            width: calc(100% - 32px);
+            max-width: calc(100% - 32px);
+          }
+          .ms-toast {
+            font-size: 13.5px;
+            padding: 12px 18px;
+            border-radius: 14px;
+            gap: 10px;
+            white-space: normal;
+            text-align: center;
+            width: 100%;
+          }
+        }
       `}</style>
       <div className="ms-toast-stack">
         {toasts.map((t) => {
