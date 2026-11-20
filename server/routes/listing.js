@@ -89,7 +89,12 @@ router.get("/:listingId", async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(listingId)) {
       return res.status(404).json({ message: "Property not found!" });
     }
-    const listing = await Listing.findById(listingId).populate("creator", "-password");
+    let listing;
+    try {
+      listing = await Listing.findById(listingId).populate("creator", "-password");
+    } catch {
+      listing = await Listing.findById(listingId);
+    }
     if (!listing) {
       return res.status(404).json({ message: "Property not found!" });
     }
@@ -130,20 +135,24 @@ router.put("/:listingId", verifyToken, upload.array("listingPhotos"), async (req
       (url) => !keptPhotos.includes(url)
     );
 
-    if (process.env.S3_BUCKET_NAME && removedPhotos.length > 0) {
+    if (s3 && process.env.S3_BUCKET_NAME && removedPhotos.length > 0) {
       const s3Photos = removedPhotos.filter(
         (url) => typeof url === "string" && url.includes(".amazonaws.com/")
       );
       const deletePromises = s3Photos.map((photoUrl) => {
-        const rawKey = photoUrl.split(".amazonaws.com/")[1]?.split("?")[0];
-        const key = rawKey ? decodeURIComponent(rawKey) : null;
-        if (!key) return Promise.resolve();
-        return s3.send(
-          new DeleteObjectCommand({
-            Bucket: process.env.S3_BUCKET_NAME,
-            Key: key,
-          })
-        );
+        try {
+          const rawKey = photoUrl.split(".amazonaws.com/")[1]?.split("?")[0];
+          const key = rawKey ? decodeURIComponent(rawKey) : null;
+          if (!key) return Promise.resolve();
+          return s3.send(
+            new DeleteObjectCommand({
+              Bucket: process.env.S3_BUCKET_NAME,
+              Key: key,
+            })
+          ).catch((e) => console.log("S3 delete ignored:", e.message));
+        } catch {
+          return Promise.resolve();
+        }
       });
       await Promise.allSettled(deletePromises).catch((err) =>
         console.error("S3 deletion warning:", err)
@@ -195,20 +204,24 @@ router.delete("/:listingId", verifyToken, async (req, res) => {
       return res.status(403).json({ message: "You are not authorized to delete this listing." });
     }
 
-    if (process.env.S3_BUCKET_NAME && listing.listingPhotoPaths?.length > 0) {
+    if (s3 && process.env.S3_BUCKET_NAME && listing.listingPhotoPaths?.length > 0) {
       const s3Photos = listing.listingPhotoPaths.filter(
         (url) => typeof url === "string" && url.includes(".amazonaws.com/")
       );
       const deletePromises = s3Photos.map((photoUrl) => {
-        const rawKey = photoUrl.split(".amazonaws.com/")[1]?.split("?")[0];
-        const key = rawKey ? decodeURIComponent(rawKey) : null;
-        if (!key) return Promise.resolve();
-        return s3.send(
-          new DeleteObjectCommand({
-            Bucket: process.env.S3_BUCKET_NAME,
-            Key: key,
-          })
-        );
+        try {
+          const rawKey = photoUrl.split(".amazonaws.com/")[1]?.split("?")[0];
+          const key = rawKey ? decodeURIComponent(rawKey) : null;
+          if (!key) return Promise.resolve();
+          return s3.send(
+            new DeleteObjectCommand({
+              Bucket: process.env.S3_BUCKET_NAME,
+              Key: key,
+            })
+          ).catch((e) => console.log("S3 delete ignored:", e.message));
+        } catch {
+          return Promise.resolve();
+        }
       });
       await Promise.allSettled(deletePromises).catch((err) =>
         console.error("S3 deletion warning:", err)

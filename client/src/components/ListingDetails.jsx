@@ -35,16 +35,27 @@ const ListingDetails = () => {
   const token = useSelector((state) => state.token);
   const wishList = useSelector((state) => state?.user?.wishList || []);
 
-  const getListingDetails = useCallback(async () => {
+  const getListingDetails = useCallback(async (retryCount = 0) => {
     try {
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/properties/${listingId}`,
         { method: "GET" },
       );
 
-      const data = await response.json();
-      setListing(data);
+      if (!response.ok && retryCount < 2) {
+        await new Promise((r) => setTimeout(r, 1200));
+        return getListingDetails(retryCount + 1);
+      }
+
+      if (response.ok) {
+        const data = await response.json();
+        setListing(data);
+      }
     } catch (err) {
+      if (retryCount < 2) {
+        await new Promise((r) => setTimeout(r, 1200));
+        return getListingDetails(retryCount + 1);
+      }
       console.log("Fetching Property Details Failed", err.message);
     } finally {
       setLoading(false);
