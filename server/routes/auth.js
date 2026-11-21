@@ -1,17 +1,17 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { uploadToS3, deleteS3Photos } = require("../config/s3");
+const { uploadImages, deleteImages } = require("../config/storage");
 const User = require("../models/User");
 
-const upload = uploadToS3("profiles");
+const upload = uploadImages("profiles");
 
 const uploadProfile = (req, res, next) =>
   upload.single("profileImage")(req, res, (err) => {
     if (!err) return next();
     console.error("Upload error:", err);
     res.status(400).json({
-      message: err.code === "LIMIT_FILE_SIZE" ? "Image must be under 10 MB." : err.message,
+      message: err.code === "LIMIT_FILE_SIZE" ? "Image must be under 5 MB." : err.message,
     });
   });
 
@@ -28,15 +28,15 @@ const publicUser = async (user) => {
 router.post("/register", uploadProfile, async (req, res) => {
   const { username, email, password } = req.body;
   const profileImage = req.file;
-  const profileImagePath = profileImage && (profileImage.location || `/uploads/${profileImage.filename}`);
+  const profileImagePath = profileImage?.location;
 
   try {
     if (!username || !email || !password) {
-      await deleteS3Photos([profileImagePath]);
+      await deleteImages([profileImagePath]);
       return res.status(400).json({ message: "Username, email, and password are required." });
     }
     if (password.length < 6) {
-      await deleteS3Photos([profileImagePath]);
+      await deleteImages([profileImagePath]);
       return res.status(400).json({ message: "Password must be at least 6 characters." });
     }
     if (!profileImage) {
@@ -45,7 +45,7 @@ router.post("/register", uploadProfile, async (req, res) => {
 
     const normalizedEmail = email.toLowerCase().trim();
     if (await User.exists({ email: normalizedEmail })) {
-      await deleteS3Photos([profileImagePath]);
+      await deleteImages([profileImagePath]);
       return res.status(409).json({ message: "User already exists!" });
     }
 
@@ -59,7 +59,7 @@ router.post("/register", uploadProfile, async (req, res) => {
     res.status(201).json({ message: "User registered successfully!", user: await publicUser(user) });
   } catch (err) {
     console.error("Register error:", err);
-    await deleteS3Photos([profileImagePath]);
+    await deleteImages([profileImagePath]);
     res.status(500).json({ message: "Registration failed!" });
   }
 });
