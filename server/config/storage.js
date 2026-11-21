@@ -101,3 +101,4 @@ const uploadImages = (folder) => ({
 });
 
 module.exports = { uploadImages, deleteImages };
+
