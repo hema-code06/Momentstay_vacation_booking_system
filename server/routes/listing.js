@@ -1,57 +1,65 @@
 const router = require("express").Router();
 const mongoose = require("mongoose");
-const { DeleteObjectCommand } = require("@aws-sdk/client-s3");
-const { uploadToS3, s3 } = require("../config/s3");
+const { uploadToS3, deleteS3Photos } = require("../config/s3");
 const verifyToken = require("../middleware/auth");
-
 const Listing = require("../models/Listing");
 
 const upload = uploadToS3("properties");
+const MAX_PHOTOS = 15;
+const FIELDS = [
+  "category", "type", "streetAddress", "aptSuite", "city", "province", "country",
+  "guestCount", "bedroomCount", "bedCount", "bathroomCount",
+  "title", "description", "highlight", "price",
+];
 
-router.post("/create", verifyToken, upload.array("listingPhotos"), async (req, res) => {
+const uploadPhotos = (req, res, next) =>
+  upload.array("listingPhotos", MAX_PHOTOS)(req, res, (err) => {
+    if (!err) return next();
+    console.error("Upload error:", err);
+    const known = {
+      LIMIT_FILE_SIZE: "Each photo must be under 10 MB.",
+      LIMIT_UNEXPECTED_FILE: `You can upload up to ${MAX_PHOTOS} photos.`,
+    };
+    res.status(400).json({ message: known[err.code] || err.message || "Photo upload failed." });
+  });
+
+const photoPath = (file) => file.location || `/uploads/${file.filename}`;
+const toArray = (v) => [].concat(v || []);
+const pickFields = (body) =>
+  Object.fromEntries(FIELDS.filter((k) => body[k] !== undefined).map((k) => [k, body[k]]));
+const errorStatus = (err) => (["ValidationError", "CastError"].includes(err.name) ? 400 : 500);
+
+router.post("/create", verifyToken, uploadPhotos, async (req, res) => {
+  const newPaths = (req.files || []).map(photoPath);
   try {
-    const {
-      category, type, streetAddress, aptSuite, city, province,
-      country, guestCount, bedroomCount, bedCount, bathroomCount,
-      amenities, title, description, highlight, price,
-    } = req.body;
-
-    const amenityList = [].concat(amenities || []);
-
-    const listingPhotos = req.files;
-
-    if (!listingPhotos || listingPhotos.length === 0) {
-      return res.status(400).json({ message: "No file uploaded." });
+    if (newPaths.length === 0) {
+      return res.status(400).json({ message: "Please upload at least one photo." });
     }
-
-    const listingPhotoPaths = listingPhotos.map(
-      (file) => file.location || `/uploads/${file.filename}`
-    );
-
-    const newListing = new Listing({
-      creator: req.user.id, category, type, streetAddress, aptSuite, city, province,
-      country, guestCount, bedroomCount, bedCount, bathroomCount,
-      amenities: amenityList, listingPhotoPaths, title, description, highlight, price,
+    const listing = await Listing.create({
+      ...pickFields(req.body),
+      creator: req.user.id,
+      amenities: toArray(req.body.amenities),
+      listingPhotoPaths: newPaths,
     });
-
-    await newListing.save();
-    res.status(200).json(newListing);
+    res.status(201).json(listing);
   } catch (err) {
-    res.status(409).json({ message: "Failed to create Property!", error: err.message });
-    console.log(err);
+    console.error("Create error:", err);
+    await deleteS3Photos(newPaths);
+    const status = errorStatus(err);
+    res.status(status).json({
+      message: status === 400 ? err.message : "Failed to create property!",
+    });
   }
 });
 
 router.get("/", async (req, res) => {
-  const qCategory = req.query.category;
   try {
-    const listings = qCategory
-      ? await Listing.find({ category: qCategory }).populate("creator", "-password")
-      : await Listing.find().populate("creator", "-password");
+    const filter = req.query.category ? { category: req.query.category } : {};
+    const listings = await Listing.find(filter).populate("creator", "-password");
     res.status(200).json(listings);
   } catch (err) {
-    res.status(500).json({ message: "Failed to fetch property!", error: err.message });
     console.error(err);
+    res.status(500).json({ message: "Failed to fetch properties!" });
   }
 });
 
@@ -59,179 +67,104 @@ router.get("/search/:search", async (req, res) => {
   const { search } = req.params;
   try {
     if (search === "all") {
-      const listings = await Listing.find().populate("creator", "-password");
-      return res.status(200).json(listings);
+      return res.status(200).json(await Listing.find().populate("creator", "-password"));
     }
-
-    const safeSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const regex = { $regex: safeSearch, $options: "i" };
-
+    const regex = { $regex: search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" };
     const listings = await Listing.find({
-      $or: [
-        { category: regex },
-        { title: regex },
-        { city: regex },
-        { province: regex },
-        { country: regex },
-      ],
+      $or: [{ category: regex }, { title: regex }, { city: regex }, { province: regex }, { country: regex }],
     }).populate("creator", "-password");
-
     res.status(200).json(listings);
   } catch (err) {
-    res.status(500).json({ message: "Failed to fetch property!", error: err.message });
     console.error(err);
+    res.status(500).json({ message: "Failed to fetch properties!" });
   }
 });
 
 router.get("/:listingId", async (req, res) => {
-  const { listingId } = req.params;
   try {
-    if (!mongoose.Types.ObjectId.isValid(listingId)) {
+    const { listingId } = req.params;
+    if (!mongoose.isValidObjectId(listingId)) {
       return res.status(404).json({ message: "Property not found!" });
     }
-    let listing;
-    try {
-      listing = await Listing.findById(listingId).populate("creator", "-password");
-    } catch {
-      listing = await Listing.findById(listingId);
-    }
-    if (!listing) {
-      return res.status(404).json({ message: "Property not found!" });
-    }
+    const listing = await Listing.findById(listingId).populate("creator", "-password");
+    if (!listing) return res.status(404).json({ message: "Property not found!" });
     res.status(200).json(listing);
   } catch (err) {
-    if (err.name === "CastError") {
-      return res.status(404).json({ message: "Property not found!" });
-    }
-    res.status(500).json({ message: "Failed to fetch property details!", error: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch property details!" });
   }
 });
 
-router.put("/:listingId", verifyToken, upload.array("listingPhotos"), async (req, res) => {
-  const { listingId } = req.params;
-
+router.put("/:listingId", verifyToken, uploadPhotos, async (req, res) => {
+  const newPaths = (req.files || []).map(photoPath);
   try {
-    const listing = await Listing.findById(listingId);
-    if (!listing) {
+    const { listingId } = req.params;
+    if (!mongoose.isValidObjectId(listingId)) {
+      await deleteS3Photos(newPaths);
       return res.status(404).json({ message: "Property not found!" });
     }
-
+    const listing = await Listing.findById(listingId);
+    if (!listing) {
+      await deleteS3Photos(newPaths);
+      return res.status(404).json({ message: "Property not found!" });
+    }
     if (listing.creator?.toString() !== req.user.id) {
+      await deleteS3Photos(newPaths);
       return res.status(403).json({ message: "You are not authorized to edit this listing." });
     }
 
-    let keptPhotos = [];
-    if (req.body.existingPhotos) {
-      try {
-        keptPhotos = Array.isArray(req.body.existingPhotos)
-          ? req.body.existingPhotos
-          : JSON.parse(req.body.existingPhotos);
-      } catch {
-        keptPhotos = [];
-      }
+    let requested = [];
+    try {
+      requested = JSON.parse(req.body.existingPhotos || "[]");
+    } catch {
+      requested = [];
     }
 
-    const removedPhotos = listing.listingPhotoPaths.filter(
-      (url) => !keptPhotos.includes(url)
+    const keptPhotos = (Array.isArray(requested) ? requested : []).filter((p) =>
+      listing.listingPhotoPaths.includes(p)
     );
+    const removedPhotos = listing.listingPhotoPaths.filter((p) => !keptPhotos.includes(p));
+    const photos = [...keptPhotos, ...newPaths];
 
-    if (s3 && process.env.S3_BUCKET_NAME && removedPhotos.length > 0) {
-      const s3Photos = removedPhotos.filter(
-        (url) => typeof url === "string" && url.includes(".amazonaws.com/")
-      );
-      const deletePromises = s3Photos.map((photoUrl) => {
-        try {
-          const rawKey = photoUrl.split(".amazonaws.com/")[1]?.split("?")[0];
-          const key = rawKey ? decodeURIComponent(rawKey) : null;
-          if (!key) return Promise.resolve();
-          return s3.send(
-            new DeleteObjectCommand({
-              Bucket: process.env.S3_BUCKET_NAME,
-              Key: key,
-            })
-          ).catch((e) => console.log("S3 delete ignored:", e.message));
-        } catch {
-          return Promise.resolve();
-        }
-      });
-      await Promise.allSettled(deletePromises).catch((err) =>
-        console.error("S3 deletion warning:", err)
-      );
-    }
-
-    const newPhotoPaths =
-      req.files && req.files.length > 0
-        ? req.files.map((file) => file.location || `/uploads/${file.filename}`)
-        : [];
-
-    const updatedPhotoPaths = [...keptPhotos, ...newPhotoPaths];
-
-    if (updatedPhotoPaths.length === 0) {
+    if (photos.length === 0) {
       return res.status(400).json({ message: "At least one photo is required." });
     }
 
-    const {
-      category, type, streetAddress, aptSuite, city, province,
-      country, guestCount, bedroomCount, bedCount, bathroomCount,
-      amenities, title, description, highlight, price,
-    } = req.body;
-    const amenityList = [].concat(amenities || []);
-    Object.assign(listing, {
-      category, type, streetAddress, aptSuite, city, province,
-      country, guestCount, bedroomCount, bedCount, bathroomCount,
-      amenities: amenityList, title, description, highlight, price,
-      listingPhotoPaths: updatedPhotoPaths,
+    Object.assign(listing, pickFields(req.body), {
+      amenities: toArray(req.body.amenities),
+      listingPhotoPaths: photos,
     });
-
     await listing.save();
+    await deleteS3Photos(removedPhotos); // only after the DB save succeeded
 
     res.status(200).json({ message: "Listing updated successfully", listing });
   } catch (err) {
     console.error("PUT error:", err);
-    res.status(500).json({ message: "Failed to update property details!", error: err.message });
+    await deleteS3Photos(newPaths);
+    const status = errorStatus(err);
+    res.status(status).json({
+      message: status === 400 ? err.message : "Failed to update property details!",
+    });
   }
 });
 
 router.delete("/:listingId", verifyToken, async (req, res) => {
-  const { listingId } = req.params;
   try {
-    const listing = await Listing.findById(listingId);
-    if (!listing) {
+    const { listingId } = req.params;
+    if (!mongoose.isValidObjectId(listingId)) {
       return res.status(404).json({ message: "Property not found!" });
     }
-
+    const listing = await Listing.findById(listingId);
+    if (!listing) return res.status(404).json({ message: "Property not found!" });
     if (listing.creator?.toString() !== req.user.id) {
       return res.status(403).json({ message: "You are not authorized to delete this listing." });
     }
-
-    if (s3 && process.env.S3_BUCKET_NAME && listing.listingPhotoPaths?.length > 0) {
-      const s3Photos = listing.listingPhotoPaths.filter(
-        (url) => typeof url === "string" && url.includes(".amazonaws.com/")
-      );
-      const deletePromises = s3Photos.map((photoUrl) => {
-        try {
-          const rawKey = photoUrl.split(".amazonaws.com/")[1]?.split("?")[0];
-          const key = rawKey ? decodeURIComponent(rawKey) : null;
-          if (!key) return Promise.resolve();
-          return s3.send(
-            new DeleteObjectCommand({
-              Bucket: process.env.S3_BUCKET_NAME,
-              Key: key,
-            })
-          ).catch((e) => console.log("S3 delete ignored:", e.message));
-        } catch {
-          return Promise.resolve();
-        }
-      });
-      await Promise.allSettled(deletePromises).catch((err) =>
-        console.error("S3 deletion warning:", err)
-      );
-    }
-
     await Listing.findByIdAndDelete(listingId);
+    await deleteS3Photos(listing.listingPhotoPaths);
     res.status(200).json({ message: "Listing deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Failed to delete property!", error: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Failed to delete property!" });
   }
 });
 

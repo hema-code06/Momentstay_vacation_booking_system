@@ -20,7 +20,8 @@ const ListingSchema = new mongoose.Schema(
     },
     aptSuite: {
       type: String,
-      required: true,
+      default: "",
+      trim: true
     },
     city: {
       type: String,
@@ -51,10 +52,10 @@ const ListingSchema = new mongoose.Schema(
       required: true,
     },
     amenities: {
-      type: Array,
-      default:[]
+      type: [String],
+      default: []
     },
-    listingPhotoPaths: [{ type: String }], 
+    listingPhotoPaths: [{ type: String }],
     title: {
       type: String,
       required: true
@@ -72,8 +73,8 @@ const ListingSchema = new mongoose.Schema(
       required: true,
     }
   },
-  { timestamps: true}
+  { timestamps: true }
 )
 
-const Listing = mongoose.model("Listing", ListingSchema )
+const Listing = mongoose.model("Listing", ListingSchema)
 module.exports = Listing

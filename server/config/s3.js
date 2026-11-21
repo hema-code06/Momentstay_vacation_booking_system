@@ -1,75 +1,68 @@
-const { S3Client } = require("@aws-sdk/client-s3");
+const { S3Client, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const multerS3 = require("multer-s3");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-const uploadsDir = path.join(__dirname, "../public/uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+const BUCKET = process.env.S3_BUCKET_NAME;
+
+const useS3 =
+  process.env.USE_S3 !== "false" &&
+  Boolean(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY && BUCKET);
+
+if (process.env.NODE_ENV === "production" && !useS3) {
+  throw new Error(
+    "S3 is not configured. Set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION and S3_BUCKET_NAME on Render."
+  );
 }
 
-// Only use S3 if explicitly enabled and valid keys exist
-const useS3 =
-  process.env.USE_S3 === "true" &&
-  Boolean(process.env.AWS_ACCESS_KEY_ID) &&
-  Boolean(process.env.AWS_SECRET_ACCESS_KEY);
+const uploadsDir = path.join(__dirname, "../public/uploads");
+if (!useS3) fs.mkdirSync(uploadsDir, { recursive: true });
 
-let s3 = null;
-if (useS3) {
-  s3 = new S3Client({
-    region: process.env.AWS_REGION || "us-east-1",
+const s3 = useS3
+  ? new S3Client({
+    region: process.env.AWS_REGION || "ap-south-1",
     credentials: {
       accessKeyId: process.env.AWS_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     },
-  });
-}
+  })
+  : null;
 
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype && file.mimetype.startsWith("image/")) {
-    cb(null, true);
-  } else {
-    cb(new Error("Only image files are allowed!"), false);
-  }
-};
+const fileFilter = (req, file, cb) =>
+  file.mimetype?.startsWith("image/")
+    ? cb(null, true)
+    : cb(new Error("Only image files are allowed!"), false);
 
-const uploadToS3 = (folder) => {
-  if (useS3 && s3) {
-    return multer({
-      limits: { fileSize: 10 * 1024 * 1024 },
-      fileFilter,
-      storage: multerS3({
-        s3,
-        bucket: process.env.S3_BUCKET_NAME || "",
-        key: function (req, file, cb) {
-          const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-          const ext = file.originalname.includes(".")
-            ? file.originalname.split(".").pop().toLowerCase()
-            : "jpg";
-          cb(null, `${folder}/${uniqueSuffix}.${ext}`);
-        },
-      }),
-    });
-  }
+const uniqueName = (originalname) =>
+  `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(originalname).toLowerCase() || ".jpg"}`;
 
-  // Local disk storage fallback (reliable, no AWS IAM dependencies)
-  const diskStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, uploadsDir);
-    },
-    filename: function (req, file, cb) {
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-      const ext = path.extname(file.originalname) || ".jpg";
-      cb(null, `${uniqueSuffix}${ext}`);
-    },
-  });
-
-  return multer({
+const uploadToS3 = (folder) =>
+  multer({
     limits: { fileSize: 10 * 1024 * 1024 },
     fileFilter,
-    storage: diskStorage,
+    storage: useS3
+      ? multerS3({
+        s3,
+        bucket: BUCKET,
+        contentType: multerS3.AUTO_CONTENT_TYPE,
+        cacheControl: "public, max-age=31536000",
+        key: (req, file, cb) => cb(null, `${folder}/${uniqueName(file.originalname)}`),
+      })
+      : multer.diskStorage({
+        destination: (req, file, cb) => cb(null, uploadsDir),
+        filename: (req, file, cb) => cb(null, uniqueName(file.originalname)),
+      }),
   });
+
+const deleteS3Photos = async (urls = []) => {
+  if (!s3) return;
+  const keys = urls
+    .filter((u) => typeof u === "string" && u.includes(`${BUCKET}.s3`) && u.includes(".amazonaws.com/"))
+    .map((u) => decodeURIComponent(u.split(".amazonaws.com/")[1].split("?")[0]));
+  await Promise.allSettled(
+    keys.map((Key) => s3.send(new DeleteObjectCommand({ Bucket: BUCKET, Key })))
+  );
 };
 
-module.exports = { s3, uploadToS3 };
+module.exports = { uploadToS3, deleteS3Photos };

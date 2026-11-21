@@ -15,7 +15,7 @@ services:
       - key: JWT_SECRET
         sync: false
       - key: AWS_REGION
-        sync: false
+        value: ap-south-1
       - key: AWS_ACCESS_KEY_ID
         sync: false
       - key: AWS_SECRET_ACCESS_KEY

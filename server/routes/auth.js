@@ -1,13 +1,21 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { uploadToS3 } = require('../config/s3');
+const { uploadToS3, deleteS3Photos } = require('../config/s3');
 
 const User = require("../models/User");
 
 const upload = uploadToS3("profiles");
+const uploadProfile = (req, res, next) =>
+  upload.single("profileImage")(req, res, (err) => {
+    if (!err) return next();
+    console.error("Upload error:", err);
+    res.status(400).json({
+      message: err.code === "LIMIT_FILE_SIZE" ? "Image must be under 10 MB." : err.message,
+    });
+  });
 
-router.post("/register", upload.single("profileImage"), async (req, res) => {
+router.post("/register", uploadProfile, async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
@@ -26,6 +34,7 @@ router.post("/register", upload.single("profileImage"), async (req, res) => {
 
     const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
+      await deleteS3Photos([profileImagePath]);
       return res.status(409).json({ message: "User already exists!" });
     }
 
@@ -62,7 +71,6 @@ router.post("/login", async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password are required." });
     }
-
     const normalizedEmail = email.toLowerCase().trim();
     const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
@@ -73,7 +81,9 @@ router.post("/login", async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid Credentials!" });
     }
-
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters." });
+    }
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
     const userData = user.toObject();

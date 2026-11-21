@@ -2,7 +2,6 @@ const router = require("express").Router();
 const Review = require("../models/Review");
 const Listing = require("../models/Listing");
 const verifyToken = require("../middleware/auth");
-const Booking = require("../models/Booking");
 
 router.post("/create", verifyToken, async (req, res) => {
   try {

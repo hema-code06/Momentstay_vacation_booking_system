@@ -1,33 +1,18 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-require("dotenv").config();
 const cors = require("cors");
 const compression = require("compression");
-
-const authRoutes = require("./routes/auth.js");
-const listingRoutes = require("./routes/listing.js");
-const bookingRoutes = require("./routes/booking.js");
-const userRoutes = require("./routes/user.js");
-const reviewRoutes = require("./routes/review.js");
-
-const app = express();
 const path = require("path");
 
-// ─── CORS ───────────────────────────────────────────────────────────────────
-app.use(
-  cors({
-    origin: true,
-    credentials: true,
-  })
-);
+const app = express();
 
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(compression());
-app.use(express.static("public", { maxAge: "1d", etag: false }));
-app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
-app.use("/api/uploads", express.static(path.join(__dirname, "public/uploads")));
+// Only serves local-dev uploads; in production images come from S3
+app.use("/api/uploads", express.static(path.join(__dirname, "public/uploads"), { maxAge: "1d" }));
 
-// ─── REQUEST LOGGER ─────────────────────────────────────────────────────────
 app.use((req, res, next) => {
   const start = Date.now();
   res.on("finish", () =>
@@ -36,39 +21,33 @@ app.use((req, res, next) => {
   next();
 });
 
-// ─── ROUTES ─────────────────────────────────────────────────────────────────
-app.get("/", (req, res) =>
-  res.status(200).json({ status: "success", message: "Server is running 🚀" })
+app.get("/", (req, res) => res.status(200).json({ status: "success", message: "Server is running 🚀" }));
+app.get("/api/health", (req, res) => res.status(200).json({ status: "ok" }));
+app.use("/api/auth", require("./routes/auth.js"));
+app.use("/api/properties", require("./routes/listing.js"));
+app.use("/api/bookings", require("./routes/booking.js"));
+app.use("/api/users", require("./routes/user.js"));
+app.use("/api/reviews", require("./routes/review.js"));
+
+app.use((req, res) =>
+  res.status(404).json({ message: `Route not found: ${req.method} ${req.originalUrl}` })
 );
-app.use("/api/auth", authRoutes);
-app.use("/api/properties", listingRoutes);
-app.use("/api/bookings", bookingRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/reviews", reviewRoutes);
 
-// ─── 404 HANDLER ────────────────────────────────────────────────────────────
-app.use((req, res) => {
-  res.status(404).json({ message: `Route not found: ${req.method} ${req.originalUrl}` });
-});
-
-// ─── GLOBAL ERROR HANDLER ────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
   console.error("Global Error:", err);
-  res.status(500).json({ message: "Something went wrong", error: err.message });
+  res.status(err.status || 500).json({ message: err.message || "Something went wrong" });
 });
 
-// ─── MONGOOSE CONFIG & SERVER START ──────────────────────────────────────────
-if (process.env.NODE_ENV === "development") {
-  mongoose.set("debug", true);
+if (!process.env.MONGO_URL) {
+  console.error("❌ MONGO_URL is not set.");
+  process.exit(1);
 }
+
 mongoose.set("strictQuery", true);
 
 const PORT = process.env.PORT || 3001;
-
-if (!process.env.MONGO_URL) {
-  console.error("❌ MONGO_URL is not set. Check your .env file.");
-  process.exit(1);
-}
+// Listen first so Render sees the port immediately; Mongoose buffers queries until connected
+app.listen(PORT, "0.0.0.0", () => console.log(`🚀 Server running on port: ${PORT}`));
 
 mongoose
   .connect(process.env.MONGO_URL, {
@@ -77,15 +56,8 @@ mongoose
     serverSelectionTimeoutMS: 10000,
     socketTimeoutMS: 45000,
   })
-  .then(() => {
-    console.log("✅ Connected to MongoDB");
-    app.listen(PORT, "0.0.0.0", () =>
-      console.log(`🚀 Server running on port: ${PORT}`)
-    );
-  })
+  .then(() => console.log("✅ Connected to MongoDB"))
   .catch((err) => {
-    console.error(`❌ Error connecting to MongoDB: ${err.message}`);
+    console.error(`❌ MongoDB connection failed: ${err.message}`);
     process.exit(1);
   });
-
-module.exports = app;

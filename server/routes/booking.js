@@ -24,7 +24,14 @@ router.post("/create", verifyToken, async (req, res) => {
     ));
     const pricePerNight = Number(listing.price) || 0;
     const trustedTotalPrice = nights * pricePerNight;
-
+    const overlap = await Booking.exists({
+      listingId,
+      startDate: { $lt: end },
+      endDate: { $gt: start },
+    });
+    if (overlap) {
+      return res.status(409).json({ message: "These dates are already booked." });
+    }
     const newBooking = new Booking({
       customerId: req.user.id,
       hostId: listing.creator || req.user.id,
@@ -73,11 +80,8 @@ router.put("/update/:id", verifyToken, async (req, res) => {
       return res.status(404).json({ message: "Booking not found!" });
     }
 
-    const isOwner =
-      existingBooking.customerId?.toString() === req.user.id ||
-      existingBooking.hostId?.toString() === req.user.id;
-    if (!isOwner) {
-      return res.status(403).json({ message: "You are not authorized to update this booking." });
+    if (existingBooking.customerId?.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Only the guest who made this booking can reschedule it." });
     }
 
     const { startDate, endDate } = req.body;
@@ -100,12 +104,10 @@ router.put("/update/:id", verifyToken, async (req, res) => {
     if (overlap) {
       return res.status(409).json({ message: "These dates are already booked." });
     }
-    const nights = Math.max(1, Math.round(
-      (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)
-    ));
+    const nights = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)));
     const updatedBooking = await Booking.findByIdAndUpdate(
       req.params.id,
-      { startDate, endDate, totalPrice: nights * listing.price },
+      { startDate: start, endDate: end, totalPrice: nights * Number(listing.price) },
       { new: true },
     );
     res.status(200).json(updatedBooking);
