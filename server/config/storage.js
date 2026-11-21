@@ -91,7 +91,7 @@ const handleUpload = (parse, folder) => (req, res, next) =>
             next();
         } catch (uploadError) {
             console.error("Image upload failed:", uploadError);
-            next(new Error("Image upload failed. Please try again."));
+            next(new Error(`Image upload failed: ${uploadError.message || "unknown error"}`));
         }
     });
 
