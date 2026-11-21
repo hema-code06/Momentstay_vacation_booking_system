@@ -5,6 +5,8 @@ import { setWishList } from "../redux/state";
 import { authFetch } from "../utils/api";
 import { useToast } from "../context/ToastContext";
 
+const NO_ITEMS = [];
+
 const useWishList = () => {
   const user = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
@@ -13,7 +15,7 @@ const useWishList = () => {
   const location = useLocation();
   const toast = useToast();
 
-  const wishList = user?.wishList || [];
+  const wishList = useSelector((state) => state.user?.wishList ?? NO_ITEMS);
 
   const isSaved = useCallback(
     (listingId) => wishList.some((item) => item._id === listingId),
