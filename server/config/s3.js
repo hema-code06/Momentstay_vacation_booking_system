@@ -5,19 +5,14 @@ const path = require("path");
 const fs = require("fs");
 
 const BUCKET = process.env.S3_BUCKET_NAME;
+const isProduction = process.env.NODE_ENV === "production";
 
 const useS3 =
   process.env.USE_S3 !== "false" &&
   Boolean(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY && BUCKET);
 
-if (process.env.NODE_ENV === "production" && !useS3) {
-  throw new Error(
-    "S3 is not configured. Set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION and S3_BUCKET_NAME on Render."
-  );
-}
-
 const uploadsDir = path.join(__dirname, "../public/uploads");
-if (!useS3) fs.mkdirSync(uploadsDir, { recursive: true });
+if (!useS3 && !isProduction) fs.mkdirSync(uploadsDir, { recursive: true });
 
 const s3 = useS3
   ? new S3Client({
@@ -37,8 +32,16 @@ const fileFilter = (req, file, cb) =>
 const uniqueName = (originalname) =>
   `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(originalname).toLowerCase() || ".jpg"}`;
 
-const uploadToS3 = (folder) =>
-  multer({
+const storageMissing = () => (req, res, cb) =>
+  cb(new Error("Image storage is not configured on the server."));
+
+const uploadToS3 = (folder) => {
+  if (!useS3 && isProduction) {
+    console.error("S3 is not configured. Image uploads are disabled.");
+    return { single: storageMissing, array: storageMissing };
+  }
+
+  return multer({
     limits: { fileSize: 10 * 1024 * 1024 },
     fileFilter,
     storage: useS3
@@ -54,6 +57,7 @@ const uploadToS3 = (folder) =>
         filename: (req, file, cb) => cb(null, uniqueName(file.originalname)),
       }),
   });
+};
 
 const deleteS3Photos = async (urls = []) => {
   if (!s3) return;

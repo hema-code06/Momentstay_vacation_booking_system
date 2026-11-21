@@ -1,117 +1,64 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { categories } from "../data";
 import "../styles/Listings.scss";
 import ListingCard from "./ListingCard";
 import Loader from "./Loader";
-import { useDispatch, useSelector } from "react-redux";
-import { setListings } from "../redux/state";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import useListings from "../hooks/useListings";
+
+const SCROLL_STEP = 200;
 
 const Listings = () => {
-  const dispatch = useDispatch();
-  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const categoryListRef = useRef(null);
 
-  const listings = useSelector((state) => state.listings || []);
+  const path =
+    selectedCategory === "All"
+      ? "/properties"
+      : `/properties?category=${encodeURIComponent(selectedCategory)}`;
+  const { listings, loading } = useListings(path);
 
-  const getFeedListings = useCallback(async () => {
-    try {
-      const response = await fetch(
-        selectedCategory !== "All"
-          ? `${process.env.REACT_APP_API_URL}/properties?category=${selectedCategory}`
-          : `${process.env.REACT_APP_API_URL}/properties`,
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      let data;
-
-      try {
-        data = await response.json();
-      } catch (err) {
-        throw new Error("Server returned invalid JSON");
-      }
-
-      dispatch(setListings({ listings: data }));
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedCategory, dispatch]);
-
-  useEffect(() => {
-    getFeedListings();
-  }, [getFeedListings]);
-
-  const handleScroll = (direction) => {
-    if (categoryListRef.current) {
-      const scrollAmount = 200;
-      const newScrollPosition =
-        direction === "left"
-          ? categoryListRef.current.scrollLeft - scrollAmount
-          : categoryListRef.current.scrollLeft + scrollAmount;
-
-      categoryListRef.current.scrollTo({
-        left: newScrollPosition,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  const handleScrollCheck = () => {
-    if (categoryListRef.current) {
-      setCanScrollLeft(categoryListRef.current.scrollLeft > 0);
-      setCanScrollRight(
-        categoryListRef.current.scrollWidth >
-        categoryListRef.current.clientWidth +
-        categoryListRef.current.scrollLeft,
-      );
-    }
-  };
-
-  useEffect(() => {
-    handleScrollCheck();
+  const updateScrollButtons = useCallback(() => {
+    const list = categoryListRef.current;
+    if (!list) return;
+    setCanScrollLeft(list.scrollLeft > 0);
+    setCanScrollRight(list.scrollWidth > list.clientWidth + list.scrollLeft);
   }, []);
+
+  useEffect(() => {
+    updateScrollButtons();
+  }, [updateScrollButtons]);
+
+  const scrollCategories = (direction) => {
+    const list = categoryListRef.current;
+    if (!list) return;
+    list.scrollTo({ left: list.scrollLeft + direction * SCROLL_STEP, behavior: "smooth" });
+  };
 
   return (
     <>
       <div className="category-list-container">
         {canScrollLeft && (
-          <div
-            className="scroll-icon left"
-            onClick={() => handleScroll("left")}
-          >
+          <div className="scroll-icon left" onClick={() => scrollCategories(-1)}>
             <IoIosArrowBack />
           </div>
         )}
-        <div
-          className="category-list"
-          ref={categoryListRef}
-          onScroll={handleScrollCheck}
-        >
-          {categories?.map((category, index) => (
+        <div className="category-list" ref={categoryListRef} onScroll={updateScrollButtons}>
+          {categories.map(({ label, icon }) => (
             <div
-              className={`category ${category.label === selectedCategory ? "selected" : ""
-                }`}
-              key={index}
-              onClick={() => setSelectedCategory(category.label)}
+              className={`category ${label === selectedCategory ? "selected" : ""}`}
+              key={label}
+              onClick={() => setSelectedCategory(label)}
             >
-              <div className="category_icon">{category.icon}</div>
-              <p>{category.label}</p>
+              <div className="category_icon">{icon}</div>
+              <p>{label}</p>
             </div>
           ))}
         </div>
         {canScrollRight && (
-          <div
-            className="scroll-icon right"
-            onClick={() => handleScroll("right")}
-          >
+          <div className="scroll-icon right" onClick={() => scrollCategories(1)}>
             <IoIosArrowForward />
           </div>
         )}
@@ -128,34 +75,9 @@ const Listings = () => {
         </div>
       ) : (
         <div className="listings">
-          {listings.map(
-            ({
-              _id,
-              creator,
-              listingPhotoPaths,
-              city,
-              province,
-              country,
-              category,
-              type,
-              price,
-              booking = false,
-            }) => (
-              <ListingCard
-                key={_id}
-                listingId={_id}
-                creator={creator}
-                listingPhotoPaths={listingPhotoPaths}
-                city={city}
-                province={province}
-                country={country}
-                category={category}
-                type={type}
-                price={price}
-                booking={booking}
-              />
-            ),
-          )}
+          {listings.map((listing) => (
+            <ListingCard key={listing._id} listing={listing} />
+          ))}
         </div>
       )}
     </>

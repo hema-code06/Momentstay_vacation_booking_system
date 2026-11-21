@@ -10,7 +10,6 @@ const app = express();
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(compression());
-// Only serves local-dev uploads; in production images come from S3
 app.use("/api/uploads", express.static(path.join(__dirname, "public/uploads"), { maxAge: "1d" }));
 
 app.use((req, res, next) => {
@@ -21,43 +20,44 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/", (req, res) => res.status(200).json({ status: "success", message: "Server is running 🚀" }));
-app.get("/api/health", (req, res) => res.status(200).json({ status: "ok" }));
-app.use("/api/auth", require("./routes/auth.js"));
-app.use("/api/properties", require("./routes/listing.js"));
-app.use("/api/bookings", require("./routes/booking.js"));
-app.use("/api/users", require("./routes/user.js"));
-app.use("/api/reviews", require("./routes/review.js"));
+app.get("/", (req, res) => res.json({ status: "success", message: "Server is running" }));
+app.get("/api/health", (req, res) => res.json({ status: "ok" }));
+
+app.use("/api/auth", require("./routes/auth"));
+app.use("/api/properties", require("./routes/listing"));
+app.use("/api/bookings", require("./routes/booking"));
+app.use("/api/users", require("./routes/user"));
+app.use("/api/reviews", require("./routes/review"));
 
 app.use((req, res) =>
   res.status(404).json({ message: `Route not found: ${req.method} ${req.originalUrl}` })
 );
 
 app.use((err, req, res, next) => {
-  console.error("Global Error:", err);
+  console.error("Unhandled error:", err);
   res.status(err.status || 500).json({ message: err.message || "Something went wrong" });
 });
 
-if (!process.env.MONGO_URL) {
-  console.error("❌ MONGO_URL is not set.");
+const { MONGO_URL, JWT_SECRET, PORT = 3001 } = process.env;
+
+if (!MONGO_URL || !JWT_SECRET) {
+  console.error("MONGO_URL and JWT_SECRET must be set.");
   process.exit(1);
 }
 
 mongoose.set("strictQuery", true);
 
-const PORT = process.env.PORT || 3001;
-// Listen first so Render sees the port immediately; Mongoose buffers queries until connected
-app.listen(PORT, "0.0.0.0", () => console.log(`🚀 Server running on port: ${PORT}`));
+app.listen(PORT, "0.0.0.0", () => console.log(`Server running on port ${PORT}`));
 
 mongoose
-  .connect(process.env.MONGO_URL, {
+  .connect(MONGO_URL, {
     dbName: "MomentStay",
     maxPoolSize: 10,
     serverSelectionTimeoutMS: 10000,
     socketTimeoutMS: 45000,
   })
-  .then(() => console.log("✅ Connected to MongoDB"))
+  .then(() => console.log("Connected to MongoDB"))
   .catch((err) => {
-    console.error(`❌ MongoDB connection failed: ${err.message}`);
+    console.error(`MongoDB connection failed: ${err.message}`);
     process.exit(1);
   });

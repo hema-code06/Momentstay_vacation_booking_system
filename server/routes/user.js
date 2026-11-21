@@ -1,112 +1,90 @@
 const router = require("express").Router();
+const mongoose = require("mongoose");
 const Booking = require("../models/Booking");
 const User = require("../models/User");
 const Listing = require("../models/Listing");
 const verifyToken = require("../middleware/auth");
 
-router.get("/:userId/trips", verifyToken, async (req, res) => {
+const ownerOnly = (req, res, next) =>
+  req.user.id === req.params.userId
+    ? next()
+    : res.status(403).json({ message: "You are not authorized to access this data." });
+
+const withBookingDetails = (query) =>
+  query
+    .populate("customerId", "-password")
+    .populate("hostId", "-password")
+    .populate("listingId");
+
+router.get("/:userId/trips", verifyToken, ownerOnly, async (req, res) => {
   try {
-    const { userId } = req.params;
-    if (req.user.id !== userId) {
-      return res.status(403).json({ message: "You are not authorized to view these trips." });
-    }
-    const trips = await Booking.find({ customerId: userId })
-      .populate("customerId", "-password")
-      .populate("hostId", "-password")
-      .populate("listingId");
-    res.status(200).json(trips);
+    const trips = await withBookingDetails(Booking.find({ customerId: req.params.userId }));
+    res.json(trips);
   } catch (err) {
-    console.log(err);
-    res
-      .status(500)
-      .json({ message: "Cannot find trip history!", error: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Cannot find trip history!" });
   }
 });
 
-router.patch("/:userId/:listingId", verifyToken, async (req, res) => {
+router.get("/:userId/properties", verifyToken, ownerOnly, async (req, res) => {
+  try {
+    const properties = await Listing.find({ creator: req.params.userId }).populate(
+      "creator",
+      "username profileImagePath"
+    );
+    res.json(properties);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Cannot find properties!" });
+  }
+});
+
+router.get("/:userId/reservations", verifyToken, ownerOnly, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const reservations = await withBookingDetails(
+      Booking.find({ $or: [{ hostId: userId }, { customerId: userId }] })
+    );
+    res.json(reservations);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Cannot find reservations details!" });
+  }
+});
+
+router.patch("/:userId/:listingId", verifyToken, ownerOnly, async (req, res) => {
   try {
     const { userId, listingId } = req.params;
-    if (req.user.id !== userId) {
-      return res.status(403).json({ message: "You are not authorized to edit this wish list." });
-    }
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found!" });
-    }
-
-    const listing = await Listing.findById(listingId).populate("creator", "-password");
-    if (!listing) {
+    if (!mongoose.isValidObjectId(listingId)) {
       return res.status(404).json({ message: "Property not found!" });
     }
 
-    const getItemId = (item) =>
-      item?._id ? item._id.toString() : item?.toString?.() || "";
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found!" });
 
-    const favoriteListing = user.wishList.find(
-      (item) => getItemId(item) === listingId,
-    );
-
-    if (favoriteListing) {
-      user.wishList = user.wishList.filter(
-        (item) => getItemId(item) !== listingId,
-      );
-      await user.save();
-      res.status(200).json({
-        message: "Property is removed from wish list",
-        wishList: user.wishList,
-      });
+    const saved = user.wishList.some((id) => id.equals(listingId));
+    if (saved) {
+      user.wishList.pull(listingId);
     } else {
-      user.wishList.push(listing);
-      await user.save();
-      res.status(200).json({
-        message: "Property is added to wish list",
-        wishList: user.wishList,
-      });
+      if (!(await Listing.exists({ _id: listingId }))) {
+        return res.status(404).json({ message: "Property not found!" });
+      }
+      user.wishList.push(listingId);
     }
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: err.message });
-  }
-});
+    await user.save();
 
-router.get("/:userId/properties", verifyToken, async (req, res) => {
-  try {
-    const { userId } = req.params;
-    if (req.user.id !== userId) {
-      return res.status(403).json({ message: "You are not authorized to view these properties." });
-    }
-    const properties = await Listing.find({ creator: userId }).populate(
-      "creator",
-      "-password",
-    );
-    res.status(200).json(properties);
-  } catch (err) {
-    console.log(err);
-    res
-      .status(500)
-      .json({ message: "Cannot find properties!", error: err.message });
-  }
-});
+    await user.populate({
+      path: "wishList",
+      populate: { path: "creator", select: "username profileImagePath" },
+    });
 
-router.get("/:userId/reservations", verifyToken, async (req, res) => {
-  try {
-    const { userId } = req.params;
-    if (req.user.id !== userId) {
-      return res.status(403).json({ message: "You are not authorized to view these reservations." });
-    }
-    const reservations = await Booking.find({
-      $or: [{ hostId: userId }, { customerId: userId }],
-    })
-      .populate("customerId", "-password")
-      .populate("hostId", "-password")
-      .populate("listingId");
-
-    res.status(200).json(reservations);
+    res.json({
+      message: saved ? "Property is removed from wish list" : "Property is added to wish list",
+      wishList: user.wishList,
+    });
   } catch (err) {
-    console.log(err);
-    res
-      .status(500)
-      .json({ message: "Cannot find reservations details!", error: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Could not update wish list!" });
   }
 });
 

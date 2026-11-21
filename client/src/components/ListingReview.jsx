@@ -1,94 +1,76 @@
-import { useEffect, useState, useCallback } from "react";
-import { useParams } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { setWishList } from "../redux/state.js";
-import { facilities } from "../data.js";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { FaStar } from "react-icons/fa";
-import Loader from "../components/Loader";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import { facilities } from "../data";
+import Loader from "./Loader";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
 import "../styles/ListingReview.scss";
 import { useToast } from "../context/ToastContext";
-import { authFetch } from "../utils/api";
-import { getImageUrl, handleImageError, getListingFallback, HOST_FALLBACK, AVATAR_FALLBACK } from "../utils/imageHelper";
+import useWishList from "../hooks/useWishList";
+import { apiFetch, authFetch } from "../utils/api";
+import { normalizeAmenities } from "../utils/helpers";
+import {
+  getImageUrl,
+  handleImageError,
+  getListingFallback,
+  HOST_FALLBACK,
+  AVATAR_FALLBACK,
+} from "../utils/imageHelper";
 
 const ListingReview = () => {
   const { listingId } = useParams();
   const [loading, setLoading] = useState(true);
-  const user = useSelector((state) => state.user);
   const [listing, setListing] = useState(null);
-  const toast = useToast();
-  const [feedback, setFeedback] = useState({
-    rating: 0,
-    comment: "",
-  });
+  const [feedback, setFeedback] = useState({ rating: 0, comment: "" });
   const [reviews, setReviews] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
   const [totalReviews, setTotalReviews] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [reviewError, setReviewError] = useState("");
 
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const toast = useToast();
+  const user = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
-  const wishList = useSelector((state) => state?.user?.wishList || []);
-
-  const getListingReview = useCallback(async () => {
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/properties/${listingId}`
-      );
-      const data = await response.json();
-      setListing(data);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [listingId]);
-
-  const getReviews = useCallback(async () => {
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/reviews/listing/${listingId}`
-      );
-      const data = await response.json();
-      setReviews(data.reviews || []);
-      setAverageRating(data.averageRating || 0);
-      setTotalReviews(data.totalReviews || 0);
-    } catch (err) {
-      console.log(err);
-    }
-  }, [listingId]);
+  const { isSaved, toggle } = useWishList();
 
   useEffect(() => {
-    getListingReview();
-    getReviews();
-  }, [getListingReview, getReviews]);
+    let ignore = false;
 
-  const isInWishlist = wishList.some((item) => item._id === listingId);
+    const load = async () => {
+      try {
+        const [listingResponse, reviewResponse] = await Promise.all([
+          apiFetch(`/properties/${listingId}`),
+          apiFetch(`/reviews/listing/${listingId}`),
+        ]);
+        if (ignore) return;
 
-  const handleAddToWishlist = async () => {
-    if (!user) {
-      toast.info("Please login to add to wishlist.");
-      return;
-    }
-    try {
-      const response = await authFetch(
-        `${process.env.REACT_APP_API_URL}/users/${user._id}/${listingId}`,
-        token,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+        if (listingResponse.ok) setListing(await listingResponse.json());
+        if (reviewResponse.ok) {
+          const data = await reviewResponse.json();
+          setReviews(data.reviews || []);
+          setAverageRating(data.averageRating || 0);
+          setTotalReviews(data.totalReviews || 0);
         }
-      );
-      const data = await response.json();
-      dispatch(setWishList(data.wishList));
-      toast.success(
-        isInWishlist ? "Removed from wishlist!" : "Added to wishlist!"
-      );
-    } catch (error) {
-      toast.error("Failed to update wishlist. Please try again.");
-    }
+      } catch (err) {
+        console.log("Fetching listing reviews failed", err.message);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    };
+
+    load();
+    return () => {
+      ignore = true;
+    };
+  }, [listingId]);
+
+  const handleWishList = async () => {
+    const added = await toggle(listingId);
+    if (added !== null) toast.success(added ? "Added to wishlist!" : "Removed from wishlist!");
   };
 
   const handleStarClick = (rating) => {
@@ -102,9 +84,9 @@ const ListingReview = () => {
   const handleSubmitFeedback = async () => {
     setReviewError("");
 
-    if (!user) {
-      setReviewError("Please login to leave a review.");
+    if (!user || !token) {
       toast.info("Please login to leave a review.");
+      navigate("/login", { state: { from: location.pathname } });
       return;
     }
 
@@ -116,41 +98,30 @@ const ListingReview = () => {
 
     setSubmitting(true);
     try {
-      const response = await authFetch(
-        `${process.env.REACT_APP_API_URL}/reviews/create`,
-        token,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            listingId,
-            rating: feedback.rating,
-            comment: feedback.comment,
-          }),
-        },
-      );
+      const response = await authFetch("/reviews/create", token, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ listingId, rating: feedback.rating, comment: feedback.comment }),
+      });
 
       const data = await response.json();
 
       if (response.ok) {
+        const updated = [data, ...reviews.filter((review) => review._id !== data._id)];
+        const total = updated.reduce((sum, review) => sum + review.rating, 0);
         setFeedback({ rating: 0, comment: "" });
-        setReviews((prev) => [data, ...prev]);
-        setTotalReviews((prev) => prev + 1);
-        setAverageRating((prevAvg) => {
-          const newTotal = totalReviews + 1;
-          return Math.round(((prevAvg * totalReviews + data.rating) / newTotal) * 10) / 10;
-        });
-        toast.success("Review submitted successfully! ⭐");
+        setReviews(updated);
+        setTotalReviews(updated.length);
+        setAverageRating(Math.round((total / updated.length) * 10) / 10);
+        toast.success("Review submitted successfully!");
       } else {
         setReviewError(data.message || "Failed to submit your review.");
         toast.error(data.message || "Failed to submit your review.");
       }
     } catch (err) {
+      console.log("Review submission failed", err.message);
       setReviewError("Something went wrong with your review submission.");
       toast.error("Something went wrong with your review submission.");
-      console.log(err.message);
     } finally {
       setSubmitting(false);
     }
@@ -185,17 +156,17 @@ const ListingReview = () => {
               </span>
             </div>
           )}
-          {!isInWishlist && (
-            <button className="wishlist-button" onClick={handleAddToWishlist}>
+          {!isSaved(listing._id) && (
+            <button className="wishlist-button" onClick={handleWishList}>
               Add to Wishlist
             </button>
           )}
         </div>
 
         <div className="photos">
-          {listing.listingPhotoPaths?.map((item, index) => (
+          {listing.listingPhotoPaths?.map((photo, index) => (
             <img
-              src={getImageUrl(item, getListingFallback(index))}
+              src={getImageUrl(photo, getListingFallback(index))}
               alt="listing"
               key={index}
               onError={(e) => handleImageError(e, getListingFallback(index))}
@@ -208,12 +179,11 @@ const ListingReview = () => {
           {listing.country}
         </h2>
         <p>
-          {listing.guestCount} Guests - {listing.bedroomCount} Bedrooms -{" "}
-          {listing.bedCount} Beds - {listing.bathroomCount}{" "}
-          {listing.bathroomCount === 1 ? "Bathroom" : "Bathrooms"}
+          {listing.guestCount} Guests - {listing.bedroomCount} Bedrooms - {listing.bedCount} Beds -{" "}
+          {listing.bathroomCount} {listing.bathroomCount === 1 ? "Bathroom" : "Bathrooms"}
         </p>
 
-        {listing?.creator && (
+        {listing.creator && (
           <div className="profile">
             <img
               src={getImageUrl(listing.creator.profileImagePath, HOST_FALLBACK)}
@@ -226,30 +196,25 @@ const ListingReview = () => {
 
         <div className="info">
           <h3>Description</h3>
-          <p>{listing?.description}</p>
+          <p>{listing.description}</p>
           <hr />
 
           <h3>Highlights</h3>
-          <p>{listing?.highlight}</p>
+          <p>{listing.highlight}</p>
           <hr />
         </div>
 
         <div>
           <h2>What this place offers?</h2>
           <div className="amenities">
-            {[...new Set((listing?.amenities || []).flatMap((a) => a.split(",")).filter(Boolean))].map(
-              (item, index) => (
-                <div className="facility" key={index}>
-                  <div className="facility_icon">
-                    {
-                      facilities.find((facility) => facility.name === item)
-                        ?.icon
-                    }
-                  </div>
-                  <p>{item}</p>
+            {normalizeAmenities(listing.amenities).map((item) => (
+              <div className="facility" key={item}>
+                <div className="facility_icon">
+                  {facilities.find((facility) => facility.name === item)?.icon}
                 </div>
-              ),
-            )}
+                <p>{item}</p>
+              </div>
+            ))}
           </div>
         </div>
 

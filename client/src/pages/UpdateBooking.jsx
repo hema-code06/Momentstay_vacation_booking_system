@@ -1,84 +1,51 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { setWishList } from "../redux/state.js";
-import { facilities } from "../data";
+import { useSelector } from "react-redux";
+import { DateRange } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
-import { DateRange } from "react-date-range";
+import { facilities } from "../data";
 import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/UpdateBooking.scss";
 import { useToast } from "../context/ToastContext";
-import { authFetch } from "../utils/api";
+import useWishList from "../hooks/useWishList";
+import { apiFetch, authFetch } from "../utils/api";
+import { nightsBetween, normalizeAmenities } from "../utils/helpers";
 import { getImageUrl, handleImageError, getListingFallback, HOST_FALLBACK } from "../utils/imageHelper";
 
 const UpdateBooking = () => {
   const { bookingId } = useParams();
   const [loading, setLoading] = useState(true);
-  const user = useSelector((state) => state?.user);
   const [booking, setBooking] = useState(null);
   const [listing, setListing] = useState(null);
-  const toast = useToast();
   const [dateRange, setDateRange] = useState([
     { startDate: new Date(), endDate: new Date(), key: "selection" },
   ]);
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const toast = useToast();
+  const user = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
-  const wishList = useSelector((state) => state?.user?.wishList || []);
-
-  const isInWishlist = listing
-    ? wishList.some((item) => String(item._id) === String(listing._id))
-    : true;
-
-  const calculateDayCount = (startDate, endDate) => {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    return Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)));
-  };
-
-  const calculateTotalPrice = (dayCount, pricePerNight) =>
-    dayCount * pricePerNight;
-
-  const handleAddToWishlist = async () => {
-    if (!user) {
-      toast.info("Please login to add to wishlist.");
-      return;
-    }
-    try {
-      const response = await authFetch(
-        `${process.env.REACT_APP_API_URL}/users/${user._id}/${listing._id}`,
-        token,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      const data = await response.json();
-      dispatch(setWishList(data.wishList));
-      toast.success(
-        isInWishlist ? "Removed from wishlist!" : "Added to wishlist!"
-      );
-    } catch (error) {
-      toast.error("Failed to update wishlist. Please try again.");
-    }
-  };
+  const { isSaved, toggle } = useWishList();
 
   useEffect(() => {
-    const fetchBookingAndListing = async () => {
-      try {
-        const bookingResponse = await authFetch(
-          `${process.env.REACT_APP_API_URL}/bookings/${bookingId}`,
-          token
-        );
-        if (!bookingResponse.ok)
-          throw new Error(`Booking fetch failed: ${bookingResponse.statusText}`);
+    let ignore = false;
 
+    const load = async () => {
+      try {
+        const bookingResponse = await authFetch(`/bookings/${bookingId}`, token);
+        if (!bookingResponse.ok) throw new Error(`Booking fetch failed: ${bookingResponse.status}`);
         const bookingData = await bookingResponse.json();
+
+        const listingResponse = await apiFetch(`/properties/${bookingData.listingId?._id}`);
+        if (!listingResponse.ok) throw new Error(`Listing fetch failed: ${listingResponse.status}`);
+        const listingData = await listingResponse.json();
+
+        if (ignore) return;
         setBooking(bookingData);
+        setListing(listingData);
         setDateRange([
           {
             startDate: new Date(bookingData.startDate),
@@ -86,67 +53,46 @@ const UpdateBooking = () => {
             key: "selection",
           },
         ]);
-
-        const fetchedListingId = bookingData.listingId?._id;
-        if (fetchedListingId) {
-          const listingResponse = await fetch(
-            `${process.env.REACT_APP_API_URL}/properties/${fetchedListingId}`
-          );
-          if (!listingResponse.ok)
-            throw new Error(`Listing fetch failed: ${listingResponse.statusText}`);
-          const listingData = await listingResponse.json();
-          setListing(listingData);
-        } else {
-          console.error("Invalid listingId:", bookingData.listingId);
-        }
       } catch (err) {
         console.error("Failed to fetch booking or listing", err.message);
       } finally {
-        setLoading(false);
+        if (!ignore) setLoading(false);
       }
     };
 
-    fetchBookingAndListing();
+    load();
+    return () => {
+      ignore = true;
+    };
   }, [bookingId, token]);
 
-  const handleSelect = (ranges) => {
-    const { startDate, endDate } = ranges.selection;
-    if (startDate && endDate && endDate >= startDate) {
-      setDateRange([ranges.selection]);
+  const handleWishList = async () => {
+    const added = await toggle(listing._id);
+    if (added !== null) toast.success(added ? "Added to wishlist!" : "Removed from wishlist!");
+  };
+
+  const handleSelect = ({ selection }) => {
+    if (selection.startDate && selection.endDate && selection.endDate >= selection.startDate) {
+      setDateRange([selection]);
     }
   };
 
   const handleUpdate = async () => {
     if (!booking || !listing) return;
 
-    const startDate = dateRange[0]?.startDate?.toDateString();
-    const endDate = dateRange[0]?.endDate?.toDateString();
-
-    const updatedBooking = {
-      startDate,
-      endDate,
-      totalPrice: calculateTotalPrice(
-        calculateDayCount(startDate, endDate),
-        listing.price
-      ),
-    };
-
     try {
-      const response = await authFetch(
-        `${process.env.REACT_APP_API_URL}/bookings/update/${bookingId}`,
-        token,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updatedBooking),
-        }
-      );
+      const response = await authFetch(`/bookings/update/${bookingId}`, token, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          startDate: dateRange[0].startDate.toDateString(),
+          endDate: dateRange[0].endDate.toDateString(),
+        }),
+      });
 
       if (response.ok) {
-        toast.success("Booking updated successfully! 📅");
-        setTimeout(() => {
-          navigate(`/${user._id}/reservations`);
-        }, 2000);
+        toast.success("Booking updated successfully!");
+        navigate(`/${user._id}/reservations`);
       } else {
         const data = await response.json().catch(() => ({}));
         toast.error(data.message || "Failed to update booking.");
@@ -157,14 +103,8 @@ const UpdateBooking = () => {
     }
   };
 
-  const oldDayCount = booking
-    ? calculateDayCount(booking.startDate, booking.endDate)
-    : 0;
-  const newDayCount = dateRange[0]
-    ? calculateDayCount(dateRange[0].startDate, dateRange[0].endDate)
-    : 0;
-  const oldTotalPrice = listing ? calculateTotalPrice(oldDayCount, listing.price) : 0;
-  const newTotalPrice = listing ? calculateTotalPrice(newDayCount, listing.price) : 0;
+  const oldTotalPrice = booking && listing ? nightsBetween(booking.startDate, booking.endDate) * listing.price : 0;
+  const newTotalPrice = listing ? nightsBetween(dateRange[0].startDate, dateRange[0].endDate) * listing.price : 0;
 
   if (loading) return <Loader />;
 
@@ -175,8 +115,8 @@ const UpdateBooking = () => {
       <div className="update-details">
         <div className="title">
           <h1>{listing?.title}</h1>
-          {!isInWishlist && (
-            <button className="wishlist-button" onClick={handleAddToWishlist}>
+          {listing && !isSaved(listing._id) && (
+            <button className="wishlist-button" onClick={handleWishList}>
               Add to Wishlist
             </button>
           )}
@@ -196,13 +136,11 @@ const UpdateBooking = () => {
             </div>
 
             <h2>
-              {listing.type} in {listing.city}, {listing.province},{" "}
-              {listing.country}
+              {listing.type} in {listing.city}, {listing.province}, {listing.country}
             </h2>
             <p>
-              {listing.guestCount} Guests - {listing.bedroomCount} Bedrooms -{" "}
-              {listing.bedCount} Beds - {listing.bathroomCount}{" "}
-              {listing.bathroomCount === 1 ? "Bathroom" : "Bathrooms"}
+              {listing.guestCount} Guests - {listing.bedroomCount} Bedrooms - {listing.bedCount} Beds -{" "}
+              {listing.bathroomCount} {listing.bathroomCount === 1 ? "Bathroom" : "Bathrooms"}
             </p>
 
             <div className="profile">
@@ -216,10 +154,10 @@ const UpdateBooking = () => {
 
             <div className="info">
               <h3>Description</h3>
-              <p>{listing?.description}</p>
+              <p>{listing.description}</p>
               <hr />
               <h3>Highlights</h3>
-              <p>{listing?.highlight}</p>
+              <p>{listing.highlight}</p>
               <hr />
             </div>
 
@@ -227,16 +165,14 @@ const UpdateBooking = () => {
               <div>
                 <h2>What this place offers?</h2>
                 <div className="amenities">
-                  {[...new Set((listing?.amenities || []).flatMap((a) => a.split(",")).filter(Boolean))].map(
-                    (item, index) => (
-                      <div className="facility" key={index}>
-                        <div className="facility_icon">
-                          {facilities.find((f) => f.name === item)?.icon}
-                        </div>
-                        <p>{item}</p>
+                  {normalizeAmenities(listing.amenities).map((item) => (
+                    <div className="facility" key={item}>
+                      <div className="facility_icon">
+                        {facilities.find((facility) => facility.name === item)?.icon}
                       </div>
-                    )
-                  )}
+                      <p>{item}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -264,4 +200,4 @@ const UpdateBooking = () => {
   );
 };
 
-export default UpdateBooking; 
+export default UpdateBooking;

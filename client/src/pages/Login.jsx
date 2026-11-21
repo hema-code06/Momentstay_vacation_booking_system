@@ -1,59 +1,51 @@
 import { useState } from "react";
-import { setLogin } from "../redux/state";
 import { useDispatch } from "react-redux";
-import { useNavigate, Link } from "react-router-dom";
-import "../styles/Login.scss";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import { setLogin } from "../redux/state";
 import { useToast } from "../context/ToastContext";
+import { apiFetch } from "../utils/api";
+import "../styles/Login.scss";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [error, setError] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const toast = useToast();
+
+  const fail = (message) => {
+    setError(message);
+    toast.error(message);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setEmailError("");
-    setPasswordError("");
+    setError("");
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
+      const response = await apiFetch("/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
-      let loggedIn;
-      try {
-        loggedIn = await response.json();
-      } catch (err) {
-        throw new Error("Invalid server response");
-      }
+      const data = await response.json().catch(() => ({}));
 
       if (response.ok) {
-        dispatch(setLogin({ user: loggedIn.user, token: loggedIn.token }));
-        toast.success("Welcome back! Login successful 🎉", 2500);
-        setTimeout(() => navigate("/"), 2200);
+        dispatch(setLogin({ user: data.user, token: data.token }));
+        toast.success("Welcome back! Login successful.", 2500);
+        navigate(location.state?.from || "/", { replace: true });
+      } else if (response.status === 404) {
+        fail("No account found with this email.");
+      } else if (response.status === 401) {
+        fail("Incorrect password. Please try again.");
       } else {
-        const message = (loggedIn.message || "").toLowerCase();
-        if (message.includes("exist")) {
-          setEmailError("No account found with this email.");
-          toast.error("No account found with this email.");
-        } else if (message.includes("credentials")) {
-          setPasswordError("Incorrect password. Please try again.");
-          toast.error("Incorrect password. Please try again.");
-        } else {
-          setEmailError("Login failed. Please check your credentials.");
-          toast.error("Login failed. Please check your credentials.");
-        }
+        fail(data.message || "Login failed. Please try again later.");
       }
     } catch (err) {
       console.log("Login failed", err.message);
-      setEmailError("Login failed. Please try again later.");
-      toast.error("Login failed. Please try again later.");
+      fail("Login failed. Please try again later.");
     }
   };
 
@@ -79,14 +71,11 @@ const Login = () => {
           />
           <button type="submit">Login</button>
 
-          {emailError && <p className="error_message">{emailError}</p>}
-          {passwordError && <p className="error_message">{passwordError}</p>}
+          {error && <p className="error_message">{error}</p>}
         </form>
 
         <span>
-          Don't have an account?{" "}
-          <Link to="/register">Register</Link>{" "}
-          here
+          Don't have an account? <Link to="/register">Register</Link> here
         </span>
       </div>
     </div>

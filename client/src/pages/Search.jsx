@@ -1,94 +1,33 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { setListings } from "../redux/state";
-import { useEffect, useState, useCallback } from "react";
+import { Button } from "@mui/material";
 import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
 import ListingCard from "../components/ListingCard";
 import Footer from "../components/Footer";
-import { Button } from "@mui/material";
+import useListings from "../hooks/useListings";
 import "../styles/Search.scss";
 
 const Search = () => {
-  const [loading, setLoading] = useState(true);
   const { search } = useParams();
-  const listings = useSelector((state) => state.listings);
   const navigate = useNavigate();
-
-  const dispatch = useDispatch();
-
-  const getSearchListings = useCallback(async () => {
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/properties/search/${search}`,
-      );
-
-      const data = await response.json();
-      dispatch(setListings({ listings: data }));
-    } catch (err) {
-      console.log("Fetching search results failed!", err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [search, dispatch]);
-
-  useEffect(() => {
-    getSearchListings();
-  }, [getSearchListings]);
-
-  const handleGoBack = () => {
-    navigate("/");
-  };
+  const { listings, loading } = useListings(`/properties/search/${encodeURIComponent(search)}`);
 
   if (loading) return <Loader />;
 
   return (
     <>
       <Navbar />
-      {listings && listings.length > 0 && (
-        <h1 className="title-list">{search}</h1>
-      )}
+      {listings.length > 0 && <h1 className="title-list">{search}</h1>}
       <div className="list">
-        {listings && listings.length > 0 ? (
-          listings.map(
-            ({
-              _id,
-              creator,
-              listingPhotoPaths,
-              city,
-              province,
-              country,
-              category,
-              type,
-              price,
-              booking = false,
-            }) => (
-              <ListingCard
-                key={_id}
-                listingId={_id}
-                creator={creator}
-                listingPhotoPaths={listingPhotoPaths}
-                city={city}
-                province={province}
-                country={country}
-                category={category}
-                type={type}
-                price={price}
-                booking={booking}
-              />
-            ),
-          )
+        {listings.length > 0 ? (
+          listings.map((listing) => <ListingCard key={listing._id} listing={listing} />)
         ) : (
           <div className="no-results">
             <h2>
               No search results found for{" "}
               <span style={{ color: "#004369" }}>"{search}"</span>
             </h2>
-            <Button
-              variant="contained"
-              className="btn-go-back"
-              onClick={handleGoBack}
-            >
+            <Button variant="contained" className="btn-go-back" onClick={() => navigate("/")}>
               Go Back to Home
             </Button>
           </div>

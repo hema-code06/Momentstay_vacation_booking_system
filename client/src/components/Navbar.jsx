@@ -23,17 +23,17 @@ const Navbar = () => {
 
   const isHomePage = location.pathname === "/";
 
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setDropdownMenu(false);
-    }
-    if (searchRef.current && !searchRef.current.contains(event.target)) {
-      setSearchOpen(false);
-      setErrorMessage("");
-    }
-  };
-
   useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownMenu(false);
+      }
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setSearchOpen(false);
+        setErrorMessage("");
+      }
+    };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -45,7 +45,7 @@ const Navbar = () => {
     }
     setErrorMessage("");
     setSearchOpen(false);
-    navigate(`/properties/search/${search}`);
+    navigate(`/properties/search/${encodeURIComponent(search.trim())}`);
   };
 
   const handleKeyDown = (e) => {
@@ -54,6 +54,12 @@ const Navbar = () => {
       setSearchOpen(false);
       setErrorMessage("");
     }
+  };
+
+  const handleLogout = () => {
+    setDropdownMenu(false);
+    dispatch(setLogout());
+    navigate("/");
   };
 
   const profileSrc = getImageUrl(user?.profileImagePath, AVATAR_FALLBACK);
@@ -110,11 +116,14 @@ const Navbar = () => {
 
       <div className="navbar__right">
         {isHomePage && (
-          <Link to="/create-listing" className="navbar__host-link"
+          <Link
+            to="/create-listing"
+            className="navbar__host-link"
             onClick={(e) => {
               if (!user) {
                 e.preventDefault();
-                toast.info("Please login or register to list your property!");
+                toast.info("Please login or register to list your property.");
+                navigate("/login", { state: { from: "/create-listing" } });
               }
             }}
           >
@@ -156,13 +165,9 @@ const Navbar = () => {
                   <Link to={`/${user._id}/reservations`} onClick={() => setDropdownMenu(false)}>Reservations</Link>
                   <Link to="/create-listing" onClick={() => setDropdownMenu(false)}>Post a Property</Link>
                   <div className="navbar__dropdown-divider" />
-                  <Link
-                    to="/login"
-                    onClick={() => { dispatch(setLogout()); setDropdownMenu(false); }}
-                    className="navbar__dropdown-logout"
-                  >
+                  <button type="button" className="navbar__dropdown-logout" onClick={handleLogout}>
                     Log Out
-                  </Link>
+                  </button>
                 </>
               )}
             </div>

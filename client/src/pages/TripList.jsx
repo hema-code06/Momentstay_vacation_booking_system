@@ -1,121 +1,75 @@
-import { useEffect, useState, useCallback } from "react";
-import Loader from "../components/Loader";
-import Navbar from "../components/Navbar";
-import { useDispatch, useSelector } from "react-redux";
-import { setTripList } from "../redux/state";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ArrowBackIosNew, ArrowForwardIos } from "@mui/icons-material";
 import Button from "@mui/material/Button";
-import "../styles/TripList.scss";
 import LuggageOutlinedIcon from "@mui/icons-material/LuggageOutlined";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import NightsStayOutlinedIcon from "@mui/icons-material/NightsStayOutlined";
+import Loader from "../components/Loader";
+import Navbar from "../components/Navbar";
+import "../styles/TripList.scss";
 import { authFetch } from "../utils/api";
+import { nightsBetween } from "../utils/helpers";
 import { getImageUrl, handleImageError, getListingFallback } from "../utils/imageHelper";
+
+const formatDate = (date) =>
+  new Date(date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 
 const TripList = () => {
   const [loading, setLoading] = useState(true);
-  const user = useSelector((state) => state?.user);
-  const userId = user?._id;
-  const token = useSelector((state) => state?.token);
-  const tripList = user?.tripList || [];
-  const dispatch = useDispatch();
+  const [trips, setTrips] = useState([]);
+  const [slideIndexes, setSlideIndexes] = useState({});
   const navigate = useNavigate();
+  const userId = useSelector((state) => state.user?._id);
+  const token = useSelector((state) => state.token);
 
   useEffect(() => {
-    if (!token || !user) {
-      navigate("/login");
-    }
-  }, [token, user, navigate]);
+    let ignore = false;
 
-  const [currentIndexes, setCurrentIndexes] = useState({});
+    authFetch(`/users/${userId}/trips`, token)
+      .then((response) => (response.ok ? response.json() : []))
+      .catch((err) => {
+        console.log("Fetching trip details failed", err.message);
+        return [];
+      })
+      .then((data) => {
+        if (ignore) return;
+        setTrips(data.filter((trip) => trip.listingId?._id));
+        setLoading(false);
+      });
 
-  const getTripList = useCallback(async () => {
-    if (!userId || !token) return;
-    try {
-      const response = await authFetch(
-        `${process.env.REACT_APP_API_URL}/users/${userId}/trips`,
-        token,
-        { method: "GET" }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        dispatch(setTripList(data));
-      }
-      setLoading(false);
-    } catch (err) {
-      console.log("Fetching trip details failed!", err.message);
-      setLoading(false);
-    }
-  }, [dispatch, userId, token]);
+    return () => {
+      ignore = true;
+    };
+  }, [userId, token]);
 
-  useEffect(() => {
-    getTripList();
-  }, [getTripList]);
+  const moveSlide = (bookingId, step, total) =>
+    setSlideIndexes((prev) => ({
+      ...prev,
+      [bookingId]: ((prev[bookingId] || 0) + step + total) % total,
+    }));
 
-  const filteredTripList = (tripList || []).filter(
-    (trip) => trip.listingId && trip.listingId._id
-  );
+  if (loading) return <Loader />;
 
-  const goToPrevSlide = (listingId) => {
-    if (!listingId || !listingId._id) return;
-    setCurrentIndexes((prev) => {
-      const current = prev[listingId._id] || 0;
-      const trip = filteredTripList.find(
-        (t) => t.listingId?._id === listingId._id
-      );
-      const total = trip?.listingId?.listingPhotoPaths?.length || 1;
-      return { ...prev, [listingId._id]: current === 0 ? total - 1 : current - 1 };
-    });
-  };
-
-  const goToNextSlide = (listingId) => {
-    if (!listingId || !listingId._id) return;
-    setCurrentIndexes((prev) => {
-      const current = prev[listingId._id] || 0;
-      const trip = filteredTripList.find(
-        (t) => t.listingId?._id === listingId._id
-      );
-      const total = trip?.listingId?.listingPhotoPaths?.length || 1;
-      return { ...prev, [listingId._id]: current === total - 1 ? 0 : current + 1 };
-    });
-  };
-
-  const formatDate = (dateStr) =>
-    new Date(dateStr).toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-
-  const calcNights = (start, end) =>
-    Math.max(1, Math.round((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24)));
-  const handleStartSearching = () => navigate("/");
-  const handleCardClick = (listingId) => navigate(`/feedback/${listingId}`);
-
-  return loading ? (
-    <Loader />
-  ) : (
+  return (
     <>
       <Navbar />
       <div className="trip-list-container">
-
-        {filteredTripList.length > 0 ? (
+        {trips.length > 0 ? (
           <div className="list">
-            {filteredTripList.map(({ _id: bookingId, listingId, startDate, endDate, totalPrice }) => {
-              if (!listingId || !listingId._id) return null;
-
-              const currentIndex = currentIndexes[listingId._id] || 0;
-              const nights = calcNights(startDate, endDate);
-              const photos = listingId?.listingPhotoPaths || [];
-              const location = [listingId?.city, listingId?.province, listingId?.country].filter(Boolean).join(", ");
+            {trips.map(({ _id: bookingId, listingId, startDate, endDate, totalPrice }) => {
+              const currentIndex = slideIndexes[bookingId] || 0;
+              const nights = nightsBetween(startDate, endDate);
+              const photos = listingId.listingPhotoPaths || [];
+              const location = [listingId.city, listingId.province, listingId.country].filter(Boolean).join(", ");
               return (
                 <div key={bookingId} className="trip-card-wrapper">
                   <div
                     className="listing-card"
-                    onClick={() => handleCardClick(listingId._id)}
+                    onClick={() => navigate(`/feedback/${listingId._id}`)}
                   >
                     {photos.length > 0 && (
                       <div className="slider-container">
@@ -140,7 +94,7 @@ const TripList = () => {
                               className="prev-button"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                goToPrevSlide(listingId);
+                                moveSlide(bookingId, -1, photos.length);
                               }}
                             >
                               <ArrowBackIosNew sx={{ fontSize: "15px" }} />
@@ -149,7 +103,7 @@ const TripList = () => {
                               className="next-button"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                goToNextSlide(listingId);
+                                moveSlide(bookingId, 1, photos.length);
                               }}
                             >
                               <ArrowForwardIos sx={{ fontSize: "15px" }} />
@@ -169,13 +123,12 @@ const TripList = () => {
                     )}
 
                     <div className="info">
-
                       <span className="status-badge">
                         <CheckCircleOutlineIcon fontSize="small" />
                         Confirmed
                       </span>
 
-                      <h3>{listingId?.title}</h3>
+                      <h3>{listingId.title}</h3>
 
                       {location && (
                         <p className="location">
@@ -205,7 +158,6 @@ const TripList = () => {
                         <span>₹{Number(totalPrice).toLocaleString("en-IN")}</span>
                         <span className="hint">incl. taxes &amp; fees</span>
                       </div>
-
                     </div>
                   </div>
                 </div>
@@ -224,7 +176,7 @@ const TripList = () => {
             <Button
               variant="contained"
               className="trip-btn"
-              onClick={handleStartSearching}
+              onClick={() => navigate("/")}
             >
               Find Your Destination
             </Button>

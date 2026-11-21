@@ -1,76 +1,28 @@
-import { useState, useEffect, useCallback } from "react";
-import Navbar from "../components/Navbar";
 import { useParams } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { setListings } from "../redux/state";
+import Navbar from "../components/Navbar";
 import Loader from "../components/Loader";
 import ListingCard from "../components/ListingCard";
 import Footer from "../components/Footer";
+import useListings from "../hooks/useListings";
 
 const Category = () => {
-  const [loading, setLoading] = useState(true);
   const { category } = useParams();
+  const { listings, loading } = useListings(`/properties?category=${encodeURIComponent(category)}`);
 
-  const dispatch = useDispatch();
-  const listings = useSelector((state) => state.listings || []);
+  if (loading) return <Loader />;
 
-  const getFeedListings = useCallback(async () => {
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/properties?category=${category}`,
-      );
-
-      const data = await response.json();
-      dispatch(setListings({ listings: data }));
-    } catch (err) {
-      console.log("Fetching Properties Failed", err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [category, dispatch]);
-
-  useEffect(() => {
-    getFeedListings();
-  }, [getFeedListings]);
-
-  return loading ? (
-    <Loader />
-  ) : (
+  return (
     <>
       <Navbar />
       <div className="list" style={{ minHeight: "100vh" }}>
         {listings.length === 0 ? (
           <h2 className="no-listings">No properties found in this category.</h2>
         ) : (
-          listings.map(
-            ({
-              _id,
-              creator,
-              listingPhotoPaths,
-              city,
-              province,
-              country,
-              category,
-              type,
-              price,
-              booking = false,
-            }) => (
-              <div key={_id} className="listing-card-wrapper">
-                <ListingCard
-                  listingId={_id}
-                  creator={creator}
-                  listingPhotoPaths={listingPhotoPaths}
-                  city={city}
-                  province={province}
-                  country={country}
-                  category={category}
-                  type={type}
-                  price={price}
-                  booking={booking}
-                />
-              </div>
-            ),
-          )
+          listings.map((listing) => (
+            <div key={listing._id} className="listing-card-wrapper">
+              <ListingCard listing={listing} />
+            </div>
+          ))
         )}
       </div>
       <Footer />

@@ -367,7 +367,7 @@ export const experiences = [
     image: [
       "/assets/i16.jpg",
       "/assets/i17.jpg",
-      "/assets/i18.jpeg",
+      "/assets/i18.jpg",
       "/assets/i19.jpg",
       "/assets/i20.jpg",
     ],

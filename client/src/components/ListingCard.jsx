@@ -1,165 +1,66 @@
 import { useState } from "react";
-import "../styles/ListingCard.scss";
-import {
-  ArrowForwardIos,
-  ArrowBackIosNew,
-  Favorite,
-} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { setWishList } from "../redux/state";
-import { authFetch } from "../utils/api";
+import { useSelector } from "react-redux";
+import { ArrowForwardIos, ArrowBackIosNew, Favorite } from "@mui/icons-material";
+import "../styles/ListingCard.scss";
+import useWishList from "../hooks/useWishList";
 import { getImageUrl, handleImageError, getListingFallback } from "../utils/imageHelper";
 
-const ListingCard = ({
-  listingId,
-  creator,
-  listingPhotoPaths,
-  city,
-  province,
-  country,
-  category,
-  type,
-  price,
-  startDate,
-  endDate,
-  totalPrice,
-  booking,
-}) => {
+const ListingCard = ({ listing }) => {
+  const { _id, creator, listingPhotoPaths = [], city, province, country, category, type, price } = listing;
   const [currentIndex, setCurrentIndex] = useState(0);
-  const totalPhotos = listingPhotoPaths?.length || 0;
-
-  const goToPrevSlide = (e) => {
-    if (e && e.stopPropagation) e.stopPropagation();
-    if (totalPhotos <= 1) return;
-    setCurrentIndex(
-      (prevIndex) =>
-        (prevIndex - 1 + totalPhotos) % totalPhotos,
-    );
-  };
-
-  const goToNextSlide = (e) => {
-    if (e && e.stopPropagation) e.stopPropagation();
-    if (totalPhotos <= 1) return;
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % totalPhotos);
-  };
-
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const userId = useSelector((state) => state.user?._id);
+  const { isSaved, toggle } = useWishList();
 
-  const user = useSelector((state) => state.user);
-  const token = useSelector((state) => state.token);
-  const wishList = user?.wishList || [];
+  const totalPhotos = listingPhotoPaths.length;
+  const isOwner = Boolean(userId) && creator?._id === userId;
 
-  const isLiked = wishList?.find((item) => item?._id === listingId);
+  const slide = (step) => (e) => {
+    e.stopPropagation();
+    if (totalPhotos > 1) setCurrentIndex((index) => (index + step + totalPhotos) % totalPhotos);
+  };
 
-  const patchWishList = async () => {
-    if (!user || !token) {
-      navigate("/login");
-      return;
-    }
-    if (creator?._id && user._id === creator._id) {
-      return;
-    }
-    try {
-      const response = await authFetch(
-        `${process.env.REACT_APP_API_URL}/users/${user._id}/${listingId}`,
-        token,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
-      if (response.ok) {
-        const data = await response.json();
-        dispatch(setWishList(data.wishList));
-      }
-    } catch (err) {
-      console.log("Failed to patch wishlist", err);
-    }
+  const handleFavorite = (e) => {
+    e.stopPropagation();
+    if (!isOwner) toggle(_id);
   };
 
   return (
-    <div
-      className="listing-card"
-      onClick={() => {
-        navigate(`/properties/${listingId}`);
-      }}
-    >
+    <div className="listing-card" onClick={() => navigate(`/properties/${_id}`)}>
       <div className="slider-container">
-        <div
-          className="slider"
-          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-        >
-          {listingPhotoPaths?.map((photo, index) => (
+        <div className="slider" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
+          {listingPhotoPaths.map((photo, index) => (
             <div key={index} className="slide">
               <img
                 src={getImageUrl(photo, getListingFallback(index))}
-                alt={` ${index + 1}`}
+                alt={`${city} ${index + 1}`}
                 onError={(e) => handleImageError(e, getListingFallback(index))}
               />
-              <div
-                className="prev-button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  goToPrevSlide(e);
-                }}
-              >
+              <div className="prev-button" onClick={slide(-1)}>
                 <ArrowBackIosNew sx={{ fontSize: "15px" }} />
               </div>
-              <div
-                className="next-button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  goToNextSlide(e);
-                }}
-              >
+              <div className="next-button" onClick={slide(1)}>
                 <ArrowForwardIos sx={{ fontSize: "15px" }} />
               </div>
             </div>
           ))}
         </div>
       </div>
+
       <div className="info">
         <h3>
           {city}, {province}, {country}
         </h3>
         <p>{category}</p>
-
-        {!booking ? (
-          <>
-            <p>{type}</p>
-            <p>
-              <span>₹{price}</span> per night
-            </p>
-          </>
-        ) : (
-          <>
-            <p>{type}</p>
-            <p>
-              {startDate} - {endDate}
-            </p>
-            <p>
-              <span>₹{totalPrice}</span> total price
-            </p>
-          </>
-        )}
+        <p>{type}</p>
+        <p>
+          <span>₹{price}</span> per night
+        </p>
       </div>
-      <button
-        className="favorite"
-        onClick={(e) => {
-          e.stopPropagation();
-          patchWishList();
-        }}
-        disabled={!user}
-      >
-        {isLiked ? (
-          <Favorite sx={{ color: "red" }} />
-        ) : (
-          <Favorite sx={{ color: "white" }} />
-        )}
+
+      <button className="favorite" onClick={handleFavorite} aria-label="Toggle wishlist">
+        <Favorite sx={{ color: isSaved(_id) ? "red" : "white" }} />
       </button>
     </div>
   );

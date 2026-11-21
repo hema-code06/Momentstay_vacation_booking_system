@@ -1,8 +1,5 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
-import Loader from "../components/Loader";
-import Navbar from "../components/Navbar";
-import { useDispatch, useSelector } from "react-redux";
-import { setReservationList } from "../redux/state";
+import { useCallback, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ArrowBackIosNew, ArrowForwardIos } from "@mui/icons-material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
@@ -11,98 +8,63 @@ import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlin
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import NightsStayOutlinedIcon from "@mui/icons-material/NightsStayOutlined";
+import Loader from "../components/Loader";
+import Navbar from "../components/Navbar";
 import "../styles/ReservationList.scss";
+import { useToast } from "../context/ToastContext";
 import { authFetch } from "../utils/api";
+import { nightsBetween } from "../utils/helpers";
 import { getImageUrl, handleImageError, getListingFallback } from "../utils/imageHelper";
+
+const formatDate = (date) =>
+  new Date(date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
 
 const ReservationList = () => {
   const [loading, setLoading] = useState(true);
+  const [reservations, setReservations] = useState([]);
   const [slideIndexMap, setSlideIndexMap] = useState({});
   const [cancellingId, setCancellingId] = useState(null);
 
-  const user = useSelector((state) => state?.user);
-  const userId = user?._id;
-  const token = useSelector((state) => state?.token);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const toast = useToast();
+  const userId = useSelector((state) => state.user?._id);
+  const token = useSelector((state) => state.token);
 
-  useEffect(() => {
-    if (!token || !user) {
-      navigate("/login");
-    }
-  }, [token, user, navigate]);
-
-  const getReservationList = useCallback(async () => {
-    if (!userId || !token) return;
+  const loadReservations = useCallback(async () => {
     try {
-      const response = await authFetch(
-        `${process.env.REACT_APP_API_URL}/users/${userId}/reservations`,
-        token,
-        { method: "GET" }
-      );
+      const response = await authFetch(`/users/${userId}/reservations`, token);
       if (!response.ok) throw new Error("Failed to fetch reservations");
       const data = await response.json();
-      dispatch(setReservationList(data));
+      setReservations(data.filter((booking) => booking.listingId?._id));
     } catch (err) {
-      console.log("Fetch Reservation List failed!", err.message);
+      console.log("Fetching reservations failed", err.message);
     } finally {
       setLoading(false);
     }
-  }, [dispatch, userId, token]);
+  }, [userId, token]);
 
   useEffect(() => {
-    getReservationList();
-  }, [getReservationList]);
+    loadReservations();
+  }, [loadReservations]);
 
-  const filteredReservationList = useMemo(
-    () => (user?.reservationList || []).filter((b) => b.listingId && b.listingId._id),
-    [user?.reservationList]
-  );
-
-  const goToPrevSlide = (bookingId, totalSlides) => {
+  const moveSlide = (bookingId, step, total) =>
     setSlideIndexMap((prev) => ({
       ...prev,
-      [bookingId]: (prev[bookingId] || 0) > 0 ? (prev[bookingId] || 0) - 1 : totalSlides - 1,
+      [bookingId]: ((prev[bookingId] || 0) + step + total) % total,
     }));
-  };
-
-  const goToNextSlide = (bookingId, totalSlides) => {
-    setSlideIndexMap((prev) => ({
-      ...prev,
-      [bookingId]: (prev[bookingId] || 0) < totalSlides - 1 ? (prev[bookingId] || 0) + 1 : 0,
-    }));
-  };
-
-  const handleUpdateBooking = (booking) => navigate(`/bookings/update/${booking._id}`);
 
   const handleCancelBooking = async (bookingId) => {
     setCancellingId(bookingId);
     try {
-      const response = await authFetch(
-        `${process.env.REACT_APP_API_URL}/bookings/delete/${bookingId}`,
-        token,
-        { method: "DELETE" }
-      );
-      if (response.ok) await getReservationList();
-    } catch (err) {
-      console.log("Cancel Booking Failed.", err.message);
+      const response = await authFetch(`/bookings/delete/${bookingId}`, token, { method: "DELETE" });
+      if (!response.ok) throw new Error();
+      await loadReservations();
+    } catch {
+      toast.error("Could not cancel the booking. Please try again.");
     } finally {
       setCancellingId(null);
     }
   };
-
-  const calculateDayCount = (startDate, endDate) => {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  return Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)));
-};
-
-  const formatDate = (dateStr) =>
-    new Date(dateStr).toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
 
   if (loading) return <Loader />;
 
@@ -111,21 +73,18 @@ const ReservationList = () => {
       <Navbar />
       <div className="reserve-container">
         <div className="reservation-header">
-          {filteredReservationList.length > 0 && (
+          {reservations.length > 0 && (
             <span className="reservation-count">
-              {filteredReservationList.length}{" "}
-              {filteredReservationList.length === 1 ? "Booking" : "Bookings"}
+              {reservations.length}{" "}
+              {reservations.length === 1 ? "Booking" : "Bookings"}
             </span>
           )}
         </div>
 
-        {filteredReservationList.length > 0 ? (
+        {reservations.length > 0 ? (
           <div className="reservation-list">
-            {filteredReservationList.map((booking) => {
-              if (!booking?.listingId) return null;
-
-              const { listingId, startDate, endDate, totalPrice, _id } = booking;
-              const dayCount = calculateDayCount(startDate, endDate);
+            {reservations.map(({ _id, listingId, startDate, endDate, totalPrice }) => {
+              const dayCount = nightsBetween(startDate, endDate);
               const price = totalPrice ?? (listingId.price || 0) * dayCount;
               const photos = listingId.listingPhotoPaths || [];
               const currentSlide = slideIndexMap[_id] || 0;
@@ -152,14 +111,14 @@ const ReservationList = () => {
                       <>
                         <button
                           className="slide-btn prev"
-                          onClick={() => goToPrevSlide(_id, photos.length)}
+                          onClick={() => moveSlide(_id, -1, photos.length)}
                           aria-label="Previous photo"
                         >
                           <ArrowBackIosNew sx={{ fontSize: "12px" }} />
                         </button>
                         <button
                           className="slide-btn next"
-                          onClick={() => goToNextSlide(_id, photos.length)}
+                          onClick={() => moveSlide(_id, 1, photos.length)}
                           aria-label="Next photo"
                         >
                           <ArrowForwardIos sx={{ fontSize: "12px" }} />
@@ -209,7 +168,7 @@ const ReservationList = () => {
                       <div className="action-icons">
                         <button
                           className="icon-btn edit-btn"
-                          onClick={() => handleUpdateBooking(booking)}
+                          onClick={() => navigate(`/bookings/update/${_id}`)}
                           aria-label="Edit booking"
                           title="Edit Booking"
                         >

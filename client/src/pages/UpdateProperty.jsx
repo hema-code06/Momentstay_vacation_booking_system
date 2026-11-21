@@ -7,7 +7,8 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/UpdateProperty.scss";
 import { useToast } from "../context/ToastContext";
-import { authFetch } from "../utils/api";
+import { apiFetch, authFetch } from "../utils/api";
+import { normalizeAmenities, toCount } from "../utils/helpers";
 import { getImageUrl, handleImageError, getListingFallback } from "../utils/imageHelper";
 
 const UpdateProperty = () => {
@@ -39,30 +40,20 @@ const UpdateProperty = () => {
     price: 0,
   });
 
-  const user = useSelector((state) => state?.user);
-  const creatorId = user?._id;
-  const token = useSelector((state) => state?.token);
+  const token = useSelector((state) => state.token);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!token || !user) {
-      navigate("/login");
-    }
-  }, [token, user, navigate]);
 
   useEffect(() => {
     const fetchPropertyDetails = async () => {
       try {
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/properties/${listingId}`,
-        );
+        const response = await apiFetch(`/properties/${listingId}`);
         const data = await response.json();
         if (response.ok) {
           setCategory(data.category);
           setType(data.type);
           setFormLocation({
             streetAddress: data.streetAddress,
-            aptSuite: data.aptSuite,
+            aptSuite: data.aptSuite || "",
             city: data.city,
             province: data.province,
             country: data.country,
@@ -71,11 +62,7 @@ const UpdateProperty = () => {
           setBedroomCount(data.bedroomCount);
           setBedCount(data.bedCount);
           setBathroomCount(data.bathroomCount);
-          const rawAmenities = data.amenities || [];
-          const normalizedAmenities = Array.isArray(rawAmenities)
-            ? rawAmenities.flatMap((item) => item.split(",").map((s) => s.trim())).filter(Boolean)
-            : String(rawAmenities).split(",").map((s) => s.trim()).filter(Boolean);
-          setAmenities(normalizedAmenities);
+          setAmenities(normalizeAmenities(data.amenities));
           setExistingPhotos(data.listingPhotoPaths || []);
           setFormDescription({
             title: data.title,
@@ -117,7 +104,6 @@ const UpdateProperty = () => {
 
     try {
       const listingForm = new FormData();
-      listingForm.append("creator", creatorId);
       listingForm.append("category", category);
       listingForm.append("type", type);
       listingForm.append("streetAddress", formLocation.streetAddress);
@@ -140,23 +126,16 @@ const UpdateProperty = () => {
         listingForm.append("listingPhotos", photo);
       });
 
-      const response = await authFetch(
-        `${process.env.REACT_APP_API_URL}/properties/${listingId}`,
-        token,
-        { method: "PUT", body: listingForm }
-      );
+      const response = await authFetch(`/properties/${listingId}`, token, {
+        method: "PUT",
+        body: listingForm,
+      });
 
       if (response.ok) {
-        const data = await response.json();
-        setExistingPhotos(data.listing.listingPhotoPaths || []);
-        setNewPhotos([]);
-        toast.success("Property updated successfully! 🏡");
-
-        setTimeout(() => {
-          navigate("/");
-        }, 2000);
+        toast.success("Property updated successfully!");
+        navigate("/");
       } else {
-        const err = await response.json();
+        const err = await response.json().catch(() => ({}));
         toast.error("Update failed: " + (err.message || "Unknown error"));
       }
     } catch (err) {
@@ -168,11 +147,7 @@ const UpdateProperty = () => {
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this property?")) return;
     try {
-      const response = await authFetch(
-        `${process.env.REACT_APP_API_URL}/properties/${listingId}`,
-        token,
-        { method: "DELETE" }
-      );
+      const response = await authFetch(`/properties/${listingId}`, token, { method: "DELETE" });
       if (response.ok) {
         toast.success("Property deleted.");
         navigate("/");
@@ -197,16 +172,18 @@ const UpdateProperty = () => {
             <h2><span>Step 1 :</span> Tell us about your place</h2>
             <h3>Which of these categories best describes your place?</h3>
             <div className="category-list">
-              {categories?.map((item, index) => (
-                <div
-                  className={`category ${category === item.label ? "selected" : ""}`}
-                  key={index}
-                  onClick={() => setCategory(item.label)}
-                >
-                  <div className="category_icon">{item.icon}</div>
-                  <p>{item.label}</p>
-                </div>
-              ))}
+              {categories
+                .filter((item) => item.label !== "All")
+                .map((item, index) => (
+                  <div
+                    className={`category ${category === item.label ? "selected" : ""}`}
+                    key={index}
+                    onClick={() => setCategory(item.label)}
+                  >
+                    <div className="category_icon">{item.icon}</div>
+                    <p>{item.label}</p>
+                  </div>
+                ))}
             </div>
 
             <h3>What type of place will guests have?</h3>
@@ -299,7 +276,7 @@ const UpdateProperty = () => {
                       <input
                         type="number"
                         value={value}
-                        onChange={(e) => setter(Math.max(parseInt(e.target.value, 10), 1))}
+                        onChange={(e) => setter(toCount(e.target.value))}
                         min="1"
                         required
                       />

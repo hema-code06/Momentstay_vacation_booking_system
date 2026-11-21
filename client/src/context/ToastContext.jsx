@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useRef } from "react";
+import { createContext, useContext, useState, useCallback, useMemo, useRef } from "react";
 
 const ToastContext = createContext(null);
 
@@ -11,7 +11,6 @@ export const ToastProvider = ({ children }) => {
     setToasts((prev) => [...prev, { id, message, type, exiting: false }]);
 
     setTimeout(() => {
-      // mark as exiting to trigger slide-out
       setToasts((prev) =>
         prev.map((t) => (t.id === id ? { ...t, exiting: true } : t))
       );
@@ -21,11 +20,14 @@ export const ToastProvider = ({ children }) => {
     }, duration);
   }, []);
 
-  const toast = {
-    success: (msg, dur) => addToast(msg, "success", dur),
-    error: (msg, dur) => addToast(msg, "error", dur),
-    info: (msg, dur) => addToast(msg, "info", dur),
-  };
+  const toast = useMemo(
+    () => ({
+      success: (msg, dur) => addToast(msg, "success", dur),
+      error: (msg, dur) => addToast(msg, "error", dur),
+      info: (msg, dur) => addToast(msg, "info", dur),
+    }),
+    [addToast]
+  );
 
   return (
     <ToastContext.Provider value={toast}>
@@ -41,7 +43,6 @@ export const useToast = () => {
   return ctx;
 };
 
-/* ── icons ── */
 const SuccessIcon = () => (
   <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
     <circle cx="11" cy="11" r="10" stroke="currentColor" strokeWidth="1.8" />
@@ -75,11 +76,10 @@ const ICON_MAP = { success: <SuccessIcon />, error: <ErrorIcon />, info: <InfoIc
 
 const COLORS = {
   success: { bg: "linear-gradient(135deg,#0a7a4b,#0eb869)", border: "#0a7a4b", glow: "rgba(10,122,75,0.25)" },
-  error:   { bg: "linear-gradient(135deg,#b91c1c,#ef4444)", border: "#b91c1c", glow: "rgba(185,28,28,0.25)" },
-  info:    { bg: "linear-gradient(135deg,#004369,#0b5c8f)", border: "#004369", glow: "rgba(0,67,105,0.25)" },
+  error: { bg: "linear-gradient(135deg,#b91c1c,#ef4444)", border: "#b91c1c", glow: "rgba(185,28,28,0.25)" },
+  info: { bg: "linear-gradient(135deg,#004369,#0b5c8f)", border: "#004369", glow: "rgba(0,67,105,0.25)" },
 };
 
-/* ── container ── */
 const ToastContainer = ({ toasts }) => {
   if (!toasts.length) return null;
   return (

@@ -1,66 +1,16 @@
- import { useSelector, useDispatch } from "react-redux";
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import ListingCard from "../components/ListingCard";
-import { setWishList } from "../redux/state";
-import { authFetch } from "../utils/api";
 import Button from "@mui/material/Button";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { FaHeart } from "react-icons/fa";
-
+import Navbar from "../components/Navbar";
+import ListingCard from "../components/ListingCard";
+import useWishList from "../hooks/useWishList";
 import "../styles/WishList.scss";
 
 const WishList = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const user = useSelector((state) => state?.user);
-  const wishList = user?.wishList || [];
-  const userId = user?._id;
-  const token = useSelector((state) => state?.token);
-
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
-
-  useEffect(() => {
-    if (!token || !user) {
-      navigate("/login");
-    }
-  }, [token, user, navigate]);
-
-  const handleRemove = async (listingId) => {
-    if (!userId || !token) return;
-    try {
-      const response = await authFetch(
-        `${process.env.REACT_APP_API_URL}/users/${userId}/${listingId}`,
-        token,
-        { method: "PATCH", headers: { "Content-Type": "application/json" } }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        dispatch(setWishList(data.wishList));
-      }
-    } catch (err) {
-      console.log("Failed to remove from wishlist", err.message);
-    }
-  };
-
-  const handleStartExploring = () => {
-    navigate("/");
-  };
-
-  useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => {
-        setMessage("");
-        setMessageType("");
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
+  const { wishList, toggle } = useWishList();
 
   return (
     <>
@@ -75,68 +25,31 @@ const WishList = () => {
           )}
         </div>
 
-        {message && (
-          <div className={`message ${messageType}`}>{message}</div>
-        )}
-
         {wishList.length === 0 ? (
           <div className="empty-wish-list">
             <div className="empty-icon">
               <FavoriteBorderIcon />
             </div>
-
             <h2>Your wishlist is empty</h2>
-
-            <p>
-              Start exploring premium properties and save your favorites here.
-            </p>
-
-            <Button
-              variant="contained"
-              className="wish-btn"
-              onClick={handleStartExploring}
-            >
+            <p>Start exploring premium properties and save your favorites here.</p>
+            <Button variant="contained" className="wish-btn" onClick={() => navigate("/")}>
               Explore Properties
             </Button>
           </div>
         ) : (
           <div className="list">
-            {wishList.map(
-              ({
-                _id,
-                creator,
-                listingPhotoPaths,
-                city,
-                province,
-                country,
-                category,
-                type,
-                price,
-                booking = false,
-              }, index) => (
-                <div key={_id} className="listing-card-wrapper" style={{ "--i": index }}>
-                  <ListingCard
-                    listingId={_id}
-                    creator={creator}
-                    listingPhotoPaths={listingPhotoPaths}
-                    city={city}
-                    province={province}
-                    country={country}
-                    category={category}
-                    type={type}
-                    price={price}
-                    booking={booking}
-                  />
-
-                  <button
-                    className="remove-btn"
-                    onClick={() => handleRemove(_id)}
-                  >
-                    <DeleteOutlineIcon />
-                  </button>
-                </div>
-              )
-            )}
+            {wishList.map((listing, index) => (
+              <div key={listing._id} className="listing-card-wrapper" style={{ "--i": index }}>
+                <ListingCard listing={listing} />
+                <button
+                  className="remove-btn"
+                  onClick={() => toggle(listing._id)}
+                  aria-label="Remove from wishlist"
+                >
+                  <DeleteOutlineIcon />
+                </button>
+              </div>
+            ))}
           </div>
         )}
       </div>

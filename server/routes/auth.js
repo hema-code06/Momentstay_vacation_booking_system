@@ -1,11 +1,11 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { uploadToS3, deleteS3Photos } = require('../config/s3');
-
+const { uploadToS3, deleteS3Photos } = require("../config/s3");
 const User = require("../models/User");
 
 const upload = uploadToS3("profiles");
+
 const uploadProfile = (req, res, next) =>
   upload.single("profileImage")(req, res, (err) => {
     if (!err) return next();
@@ -15,87 +15,75 @@ const uploadProfile = (req, res, next) =>
     });
   });
 
-router.post("/register", uploadProfile, async (req, res) => {
-  try {
-    const { username, email, password } = req.body;
+const publicUser = async (user) => {
+  await user.populate({
+    path: "wishList",
+    populate: { path: "creator", select: "username profileImagePath" },
+  });
+  const data = user.toObject();
+  delete data.password;
+  return data;
+};
 
+router.post("/register", uploadProfile, async (req, res) => {
+  const { username, email, password } = req.body;
+  const profileImage = req.file;
+  const profileImagePath = profileImage && (profileImage.location || `/uploads/${profileImage.filename}`);
+
+  try {
     if (!username || !email || !password) {
+      await deleteS3Photos([profileImagePath]);
       return res.status(400).json({ message: "Username, email, and password are required." });
     }
-
-    const profileImage = req.file;
-
+    if (password.length < 6) {
+      await deleteS3Photos([profileImagePath]);
+      return res.status(400).json({ message: "Password must be at least 6 characters." });
+    }
     if (!profileImage) {
-      return res.status(400).json({ message: "No file uploaded" });
+      return res.status(400).json({ message: "Profile image is required." });
     }
 
-    const profileImagePath = profileImage.location || `/uploads/${profileImage.filename}`;
     const normalizedEmail = email.toLowerCase().trim();
-
-    const existingUser = await User.findOne({ email: normalizedEmail });
-    if (existingUser) {
+    if (await User.exists({ email: normalizedEmail })) {
       await deleteS3Photos([profileImagePath]);
       return res.status(409).json({ message: "User already exists!" });
     }
 
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    const newUser = new User({
+    const user = await User.create({
       username: username.trim(),
       email: normalizedEmail,
-      password: hashedPassword,
+      password: await bcrypt.hash(password, 10),
       profileImagePath,
     });
 
-    await newUser.save();
-
-    const userData = newUser.toObject();
-    delete userData.password;
-
-    res
-      .status(200)
-      .json({ message: "User registered successfully!", user: userData });
+    res.status(201).json({ message: "User registered successfully!", user: await publicUser(user) });
   } catch (err) {
-    console.log(err);
-    res
-      .status(500)
-      .json({ message: "Registration failed!", error: err.message });
+    console.error("Register error:", err);
+    await deleteS3Photos([profileImagePath]);
+    res.status(500).json({ message: "Registration failed!" });
   }
 });
 
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password are required." });
     }
-    const normalizedEmail = email.toLowerCase().trim();
-    const user = await User.findOne({ email: normalizedEmail });
+
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
     if (!user) {
-      return res.status(409).json({ message: "User doesn't exist!" });
+      return res.status(404).json({ message: "User doesn't exist!" });
+    }
+    if (!(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ message: "Invalid Credentials!" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid Credentials!" });
-    }
-    if (password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters." });
-    }
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-
-    const userData = user.toObject();
-    delete userData.password;
-
-    res.status(200).json({
-      token,
-      user: userData,
-    });
+    res.json({ token, user: await publicUser(user) });
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: err.message });
+    console.error("Login error:", err);
+    res.status(500).json({ message: "Login failed!" });
   }
 });
 

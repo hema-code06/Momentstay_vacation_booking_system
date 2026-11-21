@@ -1,106 +1,74 @@
-import "../styles/PropertyList.scss";
-import { useEffect, useState, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import Button from "@mui/material/Button";
+import HomeWorkOutlinedIcon from "@mui/icons-material/HomeWorkOutlined";
 import Navbar from "../components/Navbar";
 import UpdateListing from "../components/UpdateListing";
-import { setPropertyList } from "../redux/state";
 import Loader from "../components/Loader";
-import Button from "@mui/material/Button";
-import { useNavigate } from "react-router-dom";
-import HomeWorkOutlinedIcon from "@mui/icons-material/HomeWorkOutlined";
+import "../styles/PropertyList.scss";
 import { authFetch } from "../utils/api";
 
 const PropertyList = () => {
   const [loading, setLoading] = useState(true);
-  const user = useSelector((state) => state?.user);
-  const userId = user?._id;
-  const token = useSelector((state) => state?.token);
-  const propertyList = user?.propertyList || [];
-  const dispatch = useDispatch();
+  const [properties, setProperties] = useState([]);
   const navigate = useNavigate();
+  const userId = useSelector((state) => state.user?._id);
+  const token = useSelector((state) => state.token);
 
   useEffect(() => {
-    if (!token || !user) {
-      navigate("/login");
-    }
-  }, [token, user, navigate]);
+    let ignore = false;
 
-  const getPropertyList = useCallback(async () => {
-    if (!userId || !token) return;
-    try {
-      const response = await authFetch(
-        `${process.env.REACT_APP_API_URL}/users/${userId}/properties`,
-        token,
-        { method: "GET" },
-      );
-      if (response.ok) {
-        const data = await response.json();
-        dispatch(setPropertyList(data));
-      }
-    } catch (err) {
-      console.log("Fetching Properties failed", err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [dispatch, userId, token]);
+    authFetch(`/users/${userId}/properties`, token)
+      .then((response) => (response.ok ? response.json() : []))
+      .catch((err) => {
+        console.log("Fetching properties failed", err.message);
+        return [];
+      })
+      .then((data) => {
+        if (ignore) return;
+        setProperties(data);
+        setLoading(false);
+      });
 
-  useEffect(() => {
-    getPropertyList();
-  }, [getPropertyList]);
+    return () => {
+      ignore = true;
+    };
+  }, [userId, token]);
 
-  const handleStartCreating = () => {
-    navigate("/create-listing");
-  };
+  if (loading) return <Loader />;
 
-  const handleEditProperty = (listingId) => {
-    navigate(`/update-listing/${listingId}`);
-  };
-
-  return loading ? (
-    <Loader />
-  ) : (
+  return (
     <>
       <Navbar />
       <div className="property-container">
         <div className="property-list-header">
-          {propertyList.length > 0 && (
+          {properties.length > 0 && (
             <div className="propertylist-count">
               <HomeWorkOutlinedIcon
                 style={{ color: "#004369", marginRight: "6px", fontSize: "20px" }}
               />
-              {propertyList.length} {propertyList.length === 1 ? "Property" : "Properties"}
+              {properties.length} {properties.length === 1 ? "Property" : "Properties"}
             </div>
           )}
         </div>
-        {propertyList && propertyList.length > 0 ? (
-          <>
-            <div className="list">
-              {propertyList.map(
-                ({
-                  _id,
-                  listingPhotoPaths,
-                  city,
-                  province,
-                  country,
-                  category,
-                  price,
-                }) => (
-                  <div key={_id} className="property-item">
-                    <UpdateListing
-                      listingId={_id}
-                      listingPhotoPaths={listingPhotoPaths}
-                      city={city}
-                      province={province}
-                      country={country}
-                      category={category}
-                      price={price}
-                      onEdit={handleEditProperty}
-                    />
-                  </div>
-                ),
-              )}
-            </div>
-          </>
+        {properties.length > 0 ? (
+          <div className="list">
+            {properties.map((property) => (
+              <div key={property._id} className="property-item">
+                <UpdateListing
+                  listingId={property._id}
+                  listingPhotoPaths={property.listingPhotoPaths}
+                  city={property.city}
+                  province={property.province}
+                  country={property.country}
+                  category={property.category}
+                  price={property.price}
+                  onEdit={(id) => navigate(`/update-listing/${id}`)}
+                />
+              </div>
+            ))}
+          </div>
         ) : (
           <div className="empty-property-list">
             <div className="empty-icon">
@@ -111,7 +79,7 @@ const PropertyList = () => {
             <Button
               variant="contained"
               className="property-btn"
-              onClick={handleStartCreating}
+              onClick={() => navigate("/create-listing")}
             >
               Add Property
             </Button>

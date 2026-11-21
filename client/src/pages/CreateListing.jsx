@@ -2,12 +2,13 @@ import "../styles/CreateListing.scss";
 import Navbar from "../components/Navbar";
 import { categories, types, facilities } from "../data";
 import { IoIosImages } from "react-icons/io";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { BiTrash } from "react-icons/bi";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
 import { authFetch } from "../utils/api";
+import { toCount } from "../utils/helpers";
 
 const CreateListing = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -32,23 +33,15 @@ const CreateListing = () => {
     highlight: "",
     price: 0,
   });
-  const user = useSelector((state) => state?.user);
-  const creatorId = user?._id;
-  const token = useSelector((state) => state?.token);
+  const token = useSelector((state) => state.token);
   const navigate = useNavigate();
   const toast = useToast();
 
-  useEffect(() => {
-    if (!token || !user) {
-      navigate("/login");
-    }
-  }, [token, user, navigate]);
   const handlePost = async (e) => {
     e.preventDefault();
 
     try {
       const listingForm = new FormData();
-      listingForm.append("creator", creatorId);
       listingForm.append("category", category);
       listingForm.append("type", type);
       listingForm.append("streetAddress", formLocation.streetAddress);
@@ -70,16 +63,14 @@ const CreateListing = () => {
         listingForm.append("listingPhotos", photo);
       });
 
-      const response = await authFetch(`${process.env.REACT_APP_API_URL}/properties/create`, token, {
+      const response = await authFetch("/properties/create", token, {
         method: "POST",
         body: listingForm,
       });
 
       if (response.ok) {
-        toast.success("Property Created Successfully!");
-        setTimeout(() => {
-          navigate("/");
-        }, 2000);
+        toast.success("Property created successfully!");
+        navigate("/");
       } else {
         const errorData = await response.json().catch(() => ({}));
         toast.error(errorData.message || "Failed to publish property. Please try again.");
@@ -103,7 +94,9 @@ const CreateListing = () => {
   };
 
   const isStep1Complete = category && type;
-  const isStep2Complete = Object.values(formLocation).every((value) => value);
+  const isStep2Complete = ["streetAddress", "city", "province", "country"].every((key) =>
+    formLocation[key].trim()
+  );
   const isStep3Complete = amenities.length > 0;
   const isStep4Complete = photos.length > 0;
   const isStep5Complete = Object.values(formDescription).every(
@@ -125,17 +118,19 @@ const CreateListing = () => {
                 Which of these categories best describes your place?
               </h3>
               <div className="category-list">
-                {categories?.map((item, index) => (
-                  <div
-                    className={`category ${category === item.label ? "selected" : ""
-                      }`}
-                    key={index}
-                    onClick={() => setCategory(item.label)}
-                  >
-                    <div className="category_icon">{item.icon}</div>
-                    <p>{item.label}</p>
-                  </div>
-                ))}
+                {categories
+                  .filter((item) => item.label !== "All")
+                  .map((item, index) => (
+                    <div
+                      className={`category ${category === item.label ? "selected" : ""
+                        }`}
+                      key={index}
+                      onClick={() => setCategory(item.label)}
+                    >
+                      <div className="category_icon">{item.icon}</div>
+                      <p>{item.label}</p>
+                    </div>
+                  ))}
               </div>
 
               <h3>What type of place will guests have?</h3>
@@ -193,7 +188,6 @@ const CreateListing = () => {
                         aptSuite: e.target.value,
                       })
                     }
-                    required
                   />
                 </div>
                 <div className="location">
@@ -266,7 +260,7 @@ const CreateListing = () => {
                         value={guestCount}
                         onChange={(e) =>
                           setGuestCount(
-                            Math.max(parseInt(e.target.value, 10), 1)
+                            toCount(e.target.value)
                           )
                         }
                         min="1"
@@ -298,7 +292,7 @@ const CreateListing = () => {
                         value={bedroomCount}
                         onChange={(e) =>
                           setBedroomCount(
-                            Math.max(parseInt(e.target.value, 10), 1)
+                            toCount(e.target.value)
                           )
                         }
                         min="1"
@@ -327,7 +321,7 @@ const CreateListing = () => {
                         name="bedCount"
                         value={bedCount}
                         onChange={(e) =>
-                          setBedCount(Math.max(parseInt(e.target.value, 10), 1))
+                          setBedCount(toCount(e.target.value))
                         }
                         min="1"
                         required
@@ -358,7 +352,7 @@ const CreateListing = () => {
                         value={bathroomCount}
                         onChange={(e) =>
                           setBathroomCount(
-                            Math.max(parseInt(e.target.value, 10), 1)
+                            toCount(e.target.value)
                           )
                         }
                         min="1"
