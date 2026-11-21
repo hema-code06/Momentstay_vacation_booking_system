@@ -122,7 +122,6 @@
     transform: scale(1.03);
   }
 
-
   svg {
     color: #004369;
     font-size: 18px;
@@ -348,8 +347,14 @@
     }
   }
 
-  a {
+  a,
+  button {
     display: block;
+    width: 100%;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
     padding: 11px 16px;
     font-weight: 600;
     font-size: 14px;
