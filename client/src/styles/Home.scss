@@ -35,6 +35,9 @@
 
 .home__main {
   flex: 0 1 auto;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
   padding: 48px 40px;
 
   @include xxl {
