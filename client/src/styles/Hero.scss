@@ -7,8 +7,8 @@
   min-height: 520px;
   max-height: 920px;
   display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
+  justify-content: flex-end;
+  align-items: flex-end;
   overflow: hidden;
 
   @include lg {
@@ -40,13 +40,16 @@
     .hero__img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      animation: heroZoom 24s ease-in-out infinite alternate;
+      object-fit: fill !important;
+      animation: heroZoom 18s ease-in-out infinite alternate;
 
       @include sm {
         object-position: center;
       }
 
+      @include xs {
+        object-fit: cover !important;
+      }
     }
 
     .hero__overlay {
@@ -91,8 +94,8 @@
       letter-spacing: -0.03em;
       color: #004369;
       opacity: 0;
-      transform: translateY(24px);
-      animation: heroFadeUp 0.9s var(--ease) 0.1s forwards;
+      transform: translateX(-120px);
+      animation: slideLeft 1.2s ease forwards;
 
       em {
         font-style: italic;
@@ -112,7 +115,8 @@
           transform: scaleX(0);
           transform-origin: left;
 
-          animation: underlineReveal 0.8s var(--ease) 0.9s forwards;
+          animation: underlineReveal 1s ease forwards;
+          animation-delay: 1s;
         }
       }
 
@@ -125,6 +129,10 @@
         font-size: 34px;
         line-height: 1.15;
         margin-bottom: 14px;
+
+        br {
+          display: none;
+        }
       }
 
       @include xs {
@@ -141,7 +149,8 @@
       max-width: 520px;
       opacity: 0;
       transform: translateY(30px);
-      animation: heroFadeUp 0.9s var(--ease) 0.3s forwards;
+      animation: fadeUp 1s ease forwards;
+      animation-delay: 0.5s;
 
       @include md {
         max-width: 100%;
@@ -165,7 +174,8 @@
       justify-content: flex-end;
       opacity: 0;
       transform: translateY(40px);
-      animation: heroFadeUp 0.9s var(--ease) 0.5s forwards;
+      animation: fadeUp 1s ease forwards;
+      animation-delay: 0.9s;
 
       @include md {
         gap: 22px;
@@ -187,10 +197,10 @@
       flex-direction: column;
       gap: 4px;
 
-      transition: transform 0.3s var(--ease);
+      transition: transform 0.3s ease;
 
       &:hover {
-        transform: translateY(-2px);
+        transform: translateY(-6px) scale(1.05);
       }
 
       @include sm {
@@ -244,13 +254,19 @@
     }
   }
 
-  @keyframes heroFadeUp {
+  @keyframes slideLeft {
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fadeUp {
     to {
       opacity: 1;
       transform: translateY(0);
     }
   }
-
 
   @keyframes underlineReveal {
     to {
@@ -264,7 +280,7 @@
     }
 
     to {
-      transform: scale(1.06);
+      transform: scale(1.08);
     }
   }
 }
