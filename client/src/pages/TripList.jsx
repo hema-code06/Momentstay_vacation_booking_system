@@ -68,7 +68,7 @@ const TripList = () => {
               return (
                 <div key={bookingId} className="trip-card-wrapper">
                   <div
-                    className="trip-card"
+                    className="listing-card"
                     onClick={() => navigate(`/feedback/${listingId._id}`)}
                   >
                     {photos.length > 0 && (
