@@ -49,9 +49,9 @@ const ListingCard = ({ listing }) => {
       </div>
 
       <div className="info">
-        <h3>
+        <h5>
           {city}, {province}, {country}
-        </h3>
+        </h5>
         <p>{category}</p>
         <p>{type}</p>
         <p>
