@@ -1,7 +1,7 @@
 @import "./Responsive.scss";
 
 .listing-details {
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
   padding: 40px 60px 80px;
   opacity: 0;
@@ -38,7 +38,6 @@
   }
 
   h1 {
-    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif !important;
     font-size: clamp(24px, 4vw, 30px);
     font-weight: 700;
     color: #004369;

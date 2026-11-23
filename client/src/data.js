@@ -136,7 +136,7 @@ export const facilities = [
     icon: <FaHotTub />,
   },
   {
-    name: "Personal care products",
+    name: "Personal Care",
     icon: <FaPumpSoap />,
   },
   {
@@ -519,5 +519,5 @@ export const selectedCategories = [
   { label: "Yurt", img: "/assets/yurt.jpeg" },
   { label: "Treehouse", img: "/assets/treehouse.jpg" },
   { label: "OW Bungalow", img: "/assets/ob.jpg" },
-  { label: "Boat House", img: "/assets/bh.jpg" },
+  { label: "Boat house", img: "/assets/bh.jpg" },
 ];

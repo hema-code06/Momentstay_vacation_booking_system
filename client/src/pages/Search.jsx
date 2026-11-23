@@ -17,7 +17,6 @@ const Search = () => {
   return (
     <>
       <Navbar />
-      {listings.length > 0 && <h1 className="title-list">{search}</h1>}
       <div className="list">
         {listings.length > 0 ? (
           listings.map((listing) => <ListingCard key={listing._id} listing={listing} />)

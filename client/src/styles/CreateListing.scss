@@ -4,6 +4,7 @@
   padding: 24px 40px 140px;
   min-height: 100vh;
   box-sizing: border-box;
+  overflow: visible;
 
   @include xl {
     padding: 20px 30px 140px;
@@ -98,6 +99,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100%;
+  overflow: visible;
 
   .create-listing_step1,
   .create-listing_step2,
@@ -106,6 +108,7 @@
   .create-listing_step5 {
     flex: 1;
     padding-bottom: 20px;
+    overflow: visible;
 
     h2 {
       text-align: center;
@@ -164,6 +167,9 @@
       flex-wrap: wrap;
       gap: 10px;
       margin-bottom: 3%;
+      padding: 12px 8px;
+      overflow: visible;
+      position: relative;
 
       @include sm {
         gap: 8px;
@@ -185,7 +191,27 @@
         border: 1px solid #ddd;
         border-radius: 20px;
         cursor: pointer;
-        transition: all 0.2s ease;
+        position: relative;
+        z-index: 1;
+        transform: translateY(0);
+        transition: all 0.25s ease;
+        background: #fff;
+
+        &:hover {
+          transform: translateY(-3px);
+          border-color: #004369;
+          background-color: #f0f7fb;
+          box-shadow: 0 5px 14px rgba(0, 67, 105, 0.15);
+          z-index: 5;
+        }
+
+        &.selected {
+          border-color: #004369 !important;
+          background-color: rgb(233, 232, 232);
+          color: #004369;
+          font-weight: 600;
+        }
+
 
         @include md {
           padding: 10px 14px;
@@ -587,7 +613,7 @@
         justify-content: center;
         align-items: center;
         text-align: center;
-        gap: 5px;
+        gap: 3px;
         width: 120px;
         height: 80px;
         border: 1px solid #ddd;

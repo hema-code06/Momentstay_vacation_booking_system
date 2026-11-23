@@ -14,6 +14,7 @@ import useWishList from "../hooks/useWishList";
 import { apiFetch, authFetch } from "../utils/api";
 import { nightsBetween, normalizeAmenities } from "../utils/helpers";
 import { getImageUrl, handleImageError, getListingFallback, HOST_FALLBACK } from "../utils/imageHelper";
+import { colors } from "@mui/material";
 
 const ListingDetails = () => {
   const { listingId } = useParams();
@@ -137,9 +138,9 @@ const ListingDetails = () => {
           ))}
         </div>
 
-        <h2>
-          {listing.type} in {listing.city}, {listing.province}, {listing.country}
-        </h2>
+        <h3 style={{ letterSpacing: "0.02em" }}>
+          <span style={{ color: "#004369" }}>{listing.type}</span> in {listing.city}, {listing.province}, {listing.country}
+        </h3>
 
         <p>
           {listing.guestCount} Guests - {listing.bedroomCount} Bedrooms - {listing.bedCount} Beds -{" "}

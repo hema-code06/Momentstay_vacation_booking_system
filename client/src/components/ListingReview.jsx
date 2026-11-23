@@ -174,10 +174,9 @@ const ListingReview = () => {
           ))}
         </div>
 
-        <h2>
-          {listing.type} in {listing.city}, {listing.province},{" "}
-          {listing.country}
-        </h2>
+        <h3 style={{ letterSpacing: "0.02em" }}>
+          <span style={{ color: "#004369" }}>{listing.type}</span> in {listing.city}, {listing.province}, {listing.country}
+        </h3>
         <p>
           {listing.guestCount} Guests - {listing.bedroomCount} Bedrooms - {listing.bedCount} Beds -{" "}
           {listing.bathroomCount} {listing.bathroomCount === 1 ? "Bathroom" : "Bathrooms"}

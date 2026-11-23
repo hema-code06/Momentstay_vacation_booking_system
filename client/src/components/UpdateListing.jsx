@@ -42,7 +42,8 @@ const UpdateListing = ({
   };
 
   return (
-    <div className="update-listing-card">
+    <div className="update-listing-card" onClick={() => onEdit(listingId)}
+      style={{ cursor: "pointer" }}>
       <div className="image-wrapper">
         <div
           className="slider"
@@ -121,7 +122,7 @@ const UpdateListing = ({
           }}
         >
           <EditOutlined sx={{ fontSize: "18px" }} />
-          Update Listing
+          Update Properties
         </button>
       </div>
     </div>

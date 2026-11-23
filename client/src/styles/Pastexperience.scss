@@ -37,7 +37,6 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-family: "DM Sans", sans-serif;
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.18em;
@@ -56,7 +55,6 @@
   }
 
   .past-exp__title {
-    font-family: "Playfair Display", Georgia, serif;
     font-size: clamp(30px, 4vw, 44px);
     font-weight: 700;
     color: #002a43;
@@ -93,7 +91,6 @@
   }
 
   .past-exp__subtitle {
-    font-family: "DM Sans", sans-serif;
     font-size: 15px;
     color: #8a9ab0;
     line-height: 1.65;
@@ -184,7 +181,6 @@
           display: flex;
           align-items: center;
           gap: 10px !important;
-          font-family: "DM Sans", sans-serif;
           font-size: 13px;
           color: #004369;
           font-weight: 500;

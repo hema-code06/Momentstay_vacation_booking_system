@@ -68,7 +68,7 @@ const TripList = () => {
               return (
                 <div key={bookingId} className="trip-card-wrapper">
                   <div
-                    className="listing-card"
+                    className="trip-card"
                     onClick={() => navigate(`/feedback/${listingId._id}`)}
                   >
                     {photos.length > 0 && (
@@ -137,6 +137,11 @@ const TripList = () => {
                         </p>
                       )}
 
+                      <p className="duration">
+                        <NightsStayOutlinedIcon fontSize="small" />
+                        {nights} {nights === 1 ? "night" : "nights"}
+                      </p>
+
                       <div className="dates">
                         <div>
                           <span className="label">Check-in</span>
@@ -148,11 +153,6 @@ const TripList = () => {
                           <strong>{formatDate(endDate)}</strong>
                         </div>
                       </div>
-
-                      <p className="duration">
-                        <NightsStayOutlinedIcon fontSize="small" />
-                        {nights} {nights === 1 ? "night" : "nights"}
-                      </p>
 
                       <div className="price">
                         <span>₹{Number(totalPrice).toLocaleString("en-IN")}</span>
