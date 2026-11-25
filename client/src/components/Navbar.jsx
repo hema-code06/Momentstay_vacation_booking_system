@@ -81,7 +81,7 @@ const Navbar = () => {
               aria-label="Open search"
             >
               <Search fontSize="small" />
-              <span>Anywhere</span>
+              <span>Where to?</span>
             </button>
           ) : (
             <div className="navbar__search-expanded">
@@ -175,15 +175,15 @@ const Navbar = () => {
               ) : (
                 <>
                   <Link to={`/${user._id}/trips`} onClick={() => setDropdownMenu(false)}>Trip Journal</Link>
-                  <Link to={`/${user._id}/wishList`} onClick={() => setDropdownMenu(false)}>Wishlists</Link>
-                  <Link to={`/${user._id}/reservations`} onClick={() => setDropdownMenu(false)}>Reservation List</Link>
+                  <Link to={`/${user._id}/wishList`} onClick={() => setDropdownMenu(false)}>My Collections</Link>
+                  <Link to={`/${user._id}/reservations`} onClick={() => setDropdownMenu(false)}>Reservations</Link>
                   <Link to="/notifications" onClick={() => setDropdownMenu(false)}>
                     Notifications{unreadCount > 0 ? ` (${unreadCount})` : ""}
                   </Link>
                   <Link to="/host" onClick={() => setDropdownMenu(false)}>Host dashboard</Link>
                   <div className="navbar__dropdown-divider" />
                   <button type="button" className="navbar__dropdown-logout" onClick={handleLogout}>
-                    Log Out
+                    Sign Out
                   </button>
                 </>
               )}

@@ -194,7 +194,7 @@ const TripList = () => {
             <div className="empty-icon">
               <LuggageOutlinedIcon />
             </div>
-            <h2>No trips booked ... yet!</h2>
+            <h2>Your next adventure starts here..</h2>
             <p>
               Time to dust off your bags and start planning your next adventure.
             </p>

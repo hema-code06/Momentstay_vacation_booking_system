@@ -8,7 +8,7 @@ const Categories = () => {
       <div className="categories_header">
         <span className="categories_eyebrow">Curated for You</span>
         <h2 className="categories_title">
-          Discover Our <em>Best Picks</em>
+          Stays our <em style={{ color: "#c28b00" }}> guests</em> &nbsp;love most
         </h2>
       </div>
       <div className="categories_list">

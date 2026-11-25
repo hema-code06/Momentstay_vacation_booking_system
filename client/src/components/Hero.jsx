@@ -14,8 +14,8 @@ const Hero = () => {
 
       <div className="hero__content">
         <h1 className="hero__headline">
-          Find your next<br />
-          <em>perfect escape</em>
+          Stay somewhere<br />
+          <em>Unforgettable</em>
         </h1>
         <p className="hero__sub">
           Discover handpicked stays, unique experiences, and places that feel like home — anywhere in the world.

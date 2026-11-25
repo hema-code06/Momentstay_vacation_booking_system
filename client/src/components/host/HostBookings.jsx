@@ -146,7 +146,7 @@ const HostBookings = ({ bookings, properties, onCollect, onCancel }) => {
                 <div className="host-booking__actions">
                   {booking.paymentStatus === "pending" && (
                     <button type="button" onClick={() => onCollect(booking._id)}>
-                      Mark received
+                      Confirm payment
                     </button>
                   )}
                   {booking.status !== "completed" && (

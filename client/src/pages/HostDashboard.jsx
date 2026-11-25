@@ -95,11 +95,11 @@ const HostDashboard = () => {
             <div className="host-dashboard">
                 <div className="host-header">
                     <div>
-                        <h1>Host dashboard</h1>
+                        <h1>Host Workspace</h1>
                         <p>Manage your properties, see who booked and how they paid, and read guest reviews.</p>
                     </div>
                     <Link to="/create-listing" className="host-button">
-                        Add property
+                        Add new property
                     </Link>
                 </div>
 

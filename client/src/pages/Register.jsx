@@ -95,7 +95,7 @@ const Register = () => {
   return (
     <div className="register">
       <div className="register_content">
-        <h1>Create account</h1>
+        <h1>Join MomentStay</h1>
 
         <div className="profile-image-wrapper">
           <input
@@ -130,7 +130,7 @@ const Register = () => {
         </form>
 
         <span>
-          Already have an account? <Link to="/login">Login</Link> here
+          Already Registered? <Link to="/login">Login</Link> here
         </span>
 
         {error.general && <p className="error_message">{error.general}</p>}

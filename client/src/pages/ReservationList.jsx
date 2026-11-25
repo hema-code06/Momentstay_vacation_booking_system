@@ -249,7 +249,7 @@ const ReservationList = () => {
             <div className="empty-icon-wrap">
               <EventAvailableOutlinedIcon />
             </div>
-            <h2>No Reservations Yet</h2>
+            <h2>No bookings Yet</h2>
             <p>You haven't made any bookings. Find your perfect stay and reserve it today.</p>
             <button className="start-btn" onClick={() => navigate("/")}>
               Explore Properties

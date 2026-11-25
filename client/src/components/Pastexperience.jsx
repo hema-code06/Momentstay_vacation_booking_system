@@ -8,7 +8,7 @@ const Pastexperience = () => {
       <div className="past-exp__header">
         <span className="past-exp__eyebrow">Memories Made</span>
         <h2 className="past-exp__title">
-          Past <em>Experiences</em>
+          Past <em style={{ color: "#c28b00" }}>Experiences</em>
         </h2>
         <p className="past-exp__subtitle">
           Every stay tells a story — here are some of our favourites

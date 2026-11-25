@@ -75,7 +75,7 @@ const Login = () => {
         </form>
 
         <span>
-          Don't have an account? <Link to="/register">Register</Link> here
+          New to Momentstay? <Link to="/register">Register</Link> here
         </span>
       </div>
     </div>

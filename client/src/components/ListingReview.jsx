@@ -218,7 +218,7 @@ const ListingReview = () => {
         </div>
 
         <div className="feedback-form">
-          <h2>Leave Feedback</h2>
+          <h2>Leave Your Impression</h2>
           <div className="rating">
             {[1, 2, 3, 4, 5].map((star) => (
               <FaStar
@@ -230,7 +230,7 @@ const ListingReview = () => {
           </div>
           <textarea
             name="comment"
-            placeholder="Leave a comment"
+            placeholder="Share your experience..."
             value={feedback.comment}
             onChange={handleChange}
           />
