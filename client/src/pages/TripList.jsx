@@ -12,11 +12,8 @@ import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
 import "../styles/TripList.scss";
 import { authFetch } from "../utils/api";
-import { nightsBetween } from "../utils/helpers";
+import { nightsBetween, paymentLabel, stayStatus, formatDate, STAY_LABELS } from "../utils/helpers";
 import { getImageUrl, handleImageError, getListingFallback } from "../utils/imageHelper";
-
-const formatDate = (date) =>
-  new Date(date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 
 const TripList = () => {
   const [loading, setLoading] = useState(true);
@@ -60,9 +57,11 @@ const TripList = () => {
       <div className="trip-list-container">
         {trips.length > 0 ? (
           <div className="list">
-            {trips.map(({ _id: bookingId, listingId, startDate, endDate, totalPrice }) => {
+            {trips.map((trip) => {
+              const { _id: bookingId, listingId, startDate, endDate, totalPrice } = trip;
               const currentIndex = slideIndexes[bookingId] || 0;
               const nights = nightsBetween(startDate, endDate);
+              const status = stayStatus(startDate, endDate);
               const photos = listingId.listingPhotoPaths || [];
               const location = [listingId.city, listingId.province, listingId.country].filter(Boolean).join(", ");
               return (
@@ -125,7 +124,7 @@ const TripList = () => {
                     <div className="info">
                       <span className="status-badge">
                         <CheckCircleOutlineIcon fontSize="small" />
-                        Confirmed
+                        {STAY_LABELS[status]}
                       </span>
 
                       <h3>{listingId.title}</h3>
@@ -136,11 +135,6 @@ const TripList = () => {
                           {location}
                         </p>
                       )}
-
-                      <p className="duration">
-                        <NightsStayOutlinedIcon fontSize="small" />
-                        {nights} {nights === 1 ? "night" : "nights"}
-                      </p>
 
                       <div className="dates">
                         <div>
@@ -154,9 +148,40 @@ const TripList = () => {
                         </div>
                       </div>
 
+                      <p className="duration">
+                        <NightsStayOutlinedIcon fontSize="small" />
+                        {nights} {nights === 1 ? "night" : "nights"}
+                      </p>
+
                       <div className="price">
                         <span>₹{Number(totalPrice).toLocaleString("en-IN")}</span>
                         <span className="hint">incl. taxes &amp; fees</span>
+                      </div>
+
+                      {paymentLabel(trip) && <p className="payment-note">{paymentLabel(trip)}</p>}
+
+                      <div className="trip-actions">
+                        {status === "completed" ? (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/feedback/${listingId._id}`);
+                            }}
+                          >
+                            Write a review
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/${userId}/reservations`);
+                            }}
+                          >
+                            Manage reservation
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>

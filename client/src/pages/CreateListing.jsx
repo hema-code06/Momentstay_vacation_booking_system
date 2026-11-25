@@ -2,7 +2,7 @@ import "../styles/CreateListing.scss";
 import Navbar from "../components/Navbar";
 import { categories, types, facilities } from "../data";
 import { IoIosImages } from "react-icons/io";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { BiTrash } from "react-icons/bi";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -37,6 +37,10 @@ const CreateListing = () => {
   const navigate = useNavigate();
   const toast = useToast();
 
+  const photoPreviews = useMemo(() => photos.map((photo) => URL.createObjectURL(photo)), [photos]);
+
+  useEffect(() => () => photoPreviews.forEach((url) => URL.revokeObjectURL(url)), [photoPreviews]);
+
   const handlePost = async (e) => {
     e.preventDefault();
 
@@ -70,7 +74,7 @@ const CreateListing = () => {
 
       if (response.ok) {
         toast.success("Property created successfully!");
-        navigate("/");
+        navigate("/host?tab=properties");
       } else {
         const errorData = await response.json().catch(() => ({}));
         toast.error(errorData.message || "Failed to publish property. Please try again.");
@@ -421,12 +425,9 @@ const CreateListing = () => {
                   }}
                 />
                 <div className="photos-preview">
-                  {photos.map((photo, index) => (
+                  {photos.map((_, index) => (
                     <div key={index} className="photo-preview">
-                      <img
-                        src={URL.createObjectURL(photo)}
-                        alt={`preview-${index}`}
-                      />
+                      <img src={photoPreviews[index]} alt={`preview-${index}`} />
                       <BiTrash
                         className="trash-icon"
                         onClick={(e) => {

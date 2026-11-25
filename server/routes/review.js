@@ -2,6 +2,8 @@ const router = require("express").Router();
 const mongoose = require("mongoose");
 const Review = require("../models/Review");
 const Listing = require("../models/Listing");
+const User = require("../models/User");
+const { notify } = require("../utils/notify");
 const verifyToken = require("../middleware/auth");
 
 const REVIEWER_FIELDS = "username profileImagePath";
@@ -20,17 +22,27 @@ router.post("/create", verifyToken, async (req, res) => {
       return res.status(400).json({ message: "Rating must be between 1 and 5." });
     }
 
-    if (!(await Listing.exists({ _id: listingId }))) {
-      return res.status(404).json({ message: "Listing not found." });
+    const listing = await Listing.findById(listingId).select("creator title");
+    if (!listing) return res.status(404).json({ message: "Listing not found." });
+    if (listing.creator?.toString() === req.user.id) {
+      return res.status(400).json({ message: "You cannot review your own property." });
     }
 
-    const review =
-      (await Review.findOne({ listingId, userId: req.user.id })) ||
-      new Review({ listingId, userId: req.user.id });
+    const existing = await Review.findOne({ listingId, userId: req.user.id });
+    const review = existing || new Review({ listingId, userId: req.user.id });
     review.rating = numRating;
     review.comment = text;
     await review.save();
     await review.populate("userId", REVIEWER_FIELDS);
+
+    await notify({
+      userId: listing.creator,
+      type: "review_received",
+      title: existing ? "A review was updated" : "New review",
+      message: `${review.userId?.username || "A guest"} rated "${listing.title}" ${numRating} out of 5.`,
+      link: "/host?tab=reviews",
+      actionLabel: "View reviews",
+    });
 
     res.status(201).json(review);
   } catch (err) {

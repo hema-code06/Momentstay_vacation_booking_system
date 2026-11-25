@@ -1,0 +1,199 @@
+.notifications-page {
+    max-width: 820px;
+    min-height: 70vh;
+    margin: 0 auto;
+    padding: 40px 24px 90px;
+    animation: fadeUp 0.5s var(--ease) backwards;
+
+    .notifications-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 26px;
+
+        h1 {
+            font-size: clamp(26px, 4vw, 34px);
+            color: var(--primary);
+        }
+
+        p {
+            margin-top: 6px;
+            color: var(--muted);
+        }
+    }
+
+    .notifications-clear {
+        padding: 10px 18px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-sm);
+
+        &:hover {
+            background: var(--surface-alt);
+        }
+    }
+
+    .notifications-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        list-style: none;
+    }
+
+    .notification {
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 18px 48px 18px 18px;
+        background: var(--surface);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-soft);
+        animation: fadeUp 0.4s var(--ease) backwards;
+
+        &.unread {
+            border-color: rgba(0, 67, 105, 0.35);
+            background: linear-gradient(90deg, var(--primary-soft), var(--surface) 40%);
+        }
+    }
+
+    .notification__icon {
+        display: flex;
+        flex: 0 0 42px;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+
+        &--info {
+            color: var(--primary);
+            background: var(--primary-soft);
+        }
+
+        &--success {
+            color: #166534;
+            background: #e4f6ea;
+        }
+
+        &--danger {
+            color: var(--danger);
+            background: #fdecec;
+        }
+    }
+
+    .notification__body {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 0;
+
+        p {
+            font-size: 14px;
+            color: var(--text);
+            line-height: 1.55;
+            overflow-wrap: anywhere;
+        }
+    }
+
+    .notification__top {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        h3 {
+            font-size: 15px;
+        }
+
+        em {
+            padding: 2px 9px;
+            font-size: 11px;
+            font-style: normal;
+            font-weight: 700;
+            color: var(--primary);
+            background: var(--primary-soft);
+            border-radius: var(--radius-pill);
+        }
+    }
+
+    .notification__bottom {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 14px;
+
+        span {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        button {
+            padding: 7px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            background: var(--gradient-primary);
+            background-size: 200% 200%;
+            border-radius: var(--radius-sm);
+
+            &:hover {
+                background-position: 100% 50%;
+                transform: translateY(-1px);
+                box-shadow: var(--shadow-glow);
+            }
+        }
+    }
+
+    .notification__close {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        display: flex;
+        padding: 4px;
+        color: var(--muted);
+        background: transparent;
+        border-radius: 50%;
+
+        &:hover {
+            color: var(--text);
+            background: var(--surface-alt);
+        }
+    }
+
+    .notifications-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 64px 20px;
+        text-align: center;
+        color: var(--muted);
+        background: var(--surface);
+        border: 1px dashed var(--border-strong);
+        border-radius: var(--radius-md);
+
+        svg {
+            font-size: 44px;
+            color: var(--primary);
+        }
+
+        h3 {
+            color: var(--text);
+        }
+    }
+
+    @media (max-width: 580px) {
+        padding: 28px 16px 70px;
+
+        .notifications-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
+}

@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, Person, Menu, Close } from "@mui/icons-material";
+import { Search, Person, Menu, Close, NotificationsNoneOutlined } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../styles/Navbar.scss";
 import { setLogout } from "../redux/state";
 import { useToast } from "../context/ToastContext";
+import useNotifications from "../hooks/useNotifications";
 import { getImageUrl, handleImageError, AVATAR_FALLBACK } from "../utils/imageHelper";
 
 const Navbar = () => {
@@ -15,6 +16,7 @@ const Navbar = () => {
   const toast = useToast();
 
   const user = useSelector((state) => state.user);
+  const { unreadCount } = useNotifications();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -117,17 +119,30 @@ const Navbar = () => {
       <div className="navbar__right">
         {isHomePage && (
           <Link
-            to="/create-listing"
+            to="/host"
             className="navbar__host-link"
             onClick={(e) => {
               if (!user) {
                 e.preventDefault();
-                toast.info("Please login or register to list your property.");
-                navigate("/login", { state: { from: "/create-listing" } });
+                toast.info("Please login or register to manage your properties.");
+                navigate("/login", { state: { from: "/host" } });
               }
             }}
           >
-            List your property
+            Become a host
+          </Link>
+        )}
+
+        {user && (
+          <Link
+            to="/notifications"
+            className="navbar__bell"
+            aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"}
+          >
+            <NotificationsNoneOutlined fontSize="small" />
+            {unreadCount > 0 && (
+              <span className="navbar__bell-badge">{unreadCount > 9 ? "9+" : unreadCount}</span>
+            )}
           </Link>
         )}
 
@@ -161,9 +176,11 @@ const Navbar = () => {
                 <>
                   <Link to={`/${user._id}/trips`} onClick={() => setDropdownMenu(false)}>Trip Journal</Link>
                   <Link to={`/${user._id}/wishList`} onClick={() => setDropdownMenu(false)}>Wishlists</Link>
-                  <Link to={`/${user._id}/properties`} onClick={() => setDropdownMenu(false)}>Property List</Link>
-                  <Link to={`/${user._id}/reservations`} onClick={() => setDropdownMenu(false)}>Reservations</Link>
-                  <Link to="/create-listing" onClick={() => setDropdownMenu(false)}>Post a Property</Link>
+                  <Link to={`/${user._id}/reservations`} onClick={() => setDropdownMenu(false)}>Reservation List</Link>
+                  <Link to="/notifications" onClick={() => setDropdownMenu(false)}>
+                    Notifications{unreadCount > 0 ? ` (${unreadCount})` : ""}
+                  </Link>
+                  <Link to="/host" onClick={() => setDropdownMenu(false)}>Host dashboard</Link>
                   <div className="navbar__dropdown-divider" />
                   <button type="button" className="navbar__dropdown-logout" onClick={handleLogout}>
                     Log Out

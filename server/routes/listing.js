@@ -3,6 +3,9 @@ const mongoose = require("mongoose");
 const { uploadImages, deleteImages } = require("../config/storage");
 const verifyToken = require("../middleware/auth");
 const Listing = require("../models/Listing");
+const Booking = require("../models/Booking");
+const Review = require("../models/Review");
+const User = require("../models/User");
 
 const upload = uploadImages("properties");
 const MAX_PHOTOS = 15;
@@ -149,6 +152,17 @@ router.delete("/:listingId", verifyToken, async (req, res) => {
     if (listing.creator?.toString() !== req.user.id) {
       return res.status(403).json({ message: "You are not authorized to delete this listing." });
     }
+    if (await Booking.exists({ listingId: listing._id, endDate: { $gte: new Date() } })) {
+      return res.status(400).json({
+        message: "This property has upcoming or ongoing bookings. Cancel them before deleting it.",
+      });
+    }
+
+    await Promise.all([
+      Booking.deleteMany({ listingId: listing._id }),
+      Review.deleteMany({ listingId: listing._id }),
+      User.updateMany({ wishList: listing._id }, { $pull: { wishList: listing._id } }),
+    ]);
     await listing.deleteOne();
     await deleteImages(listing.listingPhotoPaths);
     res.json({ message: "Listing deleted successfully" });

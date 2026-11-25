@@ -4,7 +4,7 @@ import "../styles/Categories.scss";
 
 const Categories = () => {
   return (
-    <div className="categories">
+    <div className="categories reveal">
       <div className="categories_header">
         <span className="categories_eyebrow">Curated for You</span>
         <h2 className="categories_title">

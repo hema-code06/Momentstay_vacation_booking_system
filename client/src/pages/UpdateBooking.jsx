@@ -8,6 +8,7 @@ import { facilities } from "../data";
 import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import PaymentModal from "../components/PaymentModal";
 import "../styles/UpdateBooking.scss";
 import { useToast } from "../context/ToastContext";
 import useWishList from "../hooks/useWishList";
@@ -20,6 +21,7 @@ const UpdateBooking = () => {
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState(null);
   const [listing, setListing] = useState(null);
+  const [showPayment, setShowPayment] = useState(false);
   const [dateRange, setDateRange] = useState([
     { startDate: new Date(), endDate: new Date(), key: "selection" },
   ]);
@@ -77,34 +79,55 @@ const UpdateBooking = () => {
     }
   };
 
-  const handleUpdate = async () => {
-    if (!booking || !listing) return;
+  const { startDate, endDate } = dateRange[0];
+  const oldTotalPrice = booking ? booking.totalPrice : 0;
+  const newTotalPrice = listing ? nightsBetween(startDate, endDate) * listing.price : 0;
+  const alreadyPaid = booking
+    ? booking.amountPaid ?? (booking.paymentStatus === "paid" ? booking.totalPrice : 0)
+    : 0;
+  const extraToPay = alreadyPaid > 0 ? Math.max(newTotalPrice - alreadyPaid, 0) : 0;
+  const refund = alreadyPaid > newTotalPrice ? alreadyPaid - newTotalPrice : 0;
 
+  const submitUpdate = async (paymentMethod) => {
     try {
       const response = await authFetch(`/bookings/update/${bookingId}`, token, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          startDate: dateRange[0].startDate.toDateString(),
-          endDate: dateRange[0].endDate.toDateString(),
+          startDate: startDate.toDateString(),
+          endDate: endDate.toDateString(),
+          paymentMethod,
         }),
       });
+      const data = await response.json().catch(() => ({}));
 
       if (response.ok) {
-        toast.success("Booking updated successfully!");
+        if (data.refundAmount > 0) {
+          toast.success(`Booking updated. ₹${data.refundAmount} will be refunded (demo).`);
+        } else if (paymentMethod && paymentMethod !== "Pay at Property") {
+          toast.success("Payment successful. Booking updated.");
+        } else {
+          toast.success("Booking updated successfully!");
+        }
         navigate(`/${user._id}/reservations`);
-      } else {
-        const data = await response.json().catch(() => ({}));
-        toast.error(data.message || "Failed to update booking.");
+        return true;
       }
+
+      toast.error(data.message || "Failed to update booking.");
     } catch (err) {
       console.error("Update booking failed", err.message);
       toast.error("An error occurred while updating the booking.");
     }
+    return false;
   };
 
-  const oldTotalPrice = booking && listing ? nightsBetween(booking.startDate, booking.endDate) * listing.price : 0;
-  const newTotalPrice = listing ? nightsBetween(dateRange[0].startDate, dateRange[0].endDate) * listing.price : 0;
+  const handleUpdate = () => {
+    if (!booking || !listing) return;
+    if (extraToPay > 0) setShowPayment(true);
+    else submitUpdate();
+  };
+
+  const updateLabel = extraToPay > 0 ? `Pay ₹${extraToPay} and Update` : "Update Booking";
 
   if (loading) return <Loader />;
 
@@ -135,9 +158,9 @@ const UpdateBooking = () => {
               ))}
             </div>
 
-            <h3 style={{ letterSpacing: "0.02em" }}>
-              <span style={{ color: "#004369" }}>{listing.type}</span> in {listing.city}, {listing.province}, {listing.country}
-            </h3>
+            <h2>
+              {listing.type} in {listing.city}, {listing.province}, {listing.country}
+            </h2>
             <p>
               {listing.guestCount} Guests - {listing.bedroomCount} Bedrooms - {listing.bedCount} Beds -{" "}
               {listing.bathroomCount} {listing.bathroomCount === 1 ? "Bathroom" : "Bathrooms"}
@@ -186,8 +209,11 @@ const UpdateBooking = () => {
                   />
                   <p style={{ fontSize: "17px" }}>Old Price: ₹{oldTotalPrice}</p>
                   <p style={{ fontSize: "17px" }}>New Price: ₹{newTotalPrice}</p>
+                  {alreadyPaid > 0 && <p className="payment-line">Already paid: ₹{alreadyPaid}</p>}
+                  {extraToPay > 0 && <p className="payment-line payment-due">Extra to pay: ₹{extraToPay}</p>}
+                  {refund > 0 && <p className="payment-line payment-refund">Refund: ₹{refund} (demo)</p>}
                   <button onClick={handleUpdate} className="update-button">
-                    Update Booking
+                    {updateLabel}
                   </button>
                 </div>
               </div>
@@ -195,6 +221,25 @@ const UpdateBooking = () => {
           </>
         )}
       </div>
+
+      {showPayment && (
+        <PaymentModal
+          heading="Pay the extra amount"
+          summary={{
+            title: listing.title,
+            dates: `${startDate.toDateString()} to ${endDate.toDateString()}`,
+            lines: [
+              { label: "New total", value: newTotalPrice },
+              { label: "Already paid", value: -alreadyPaid },
+            ],
+            totalLabel: "Extra to pay",
+            total: extraToPay,
+          }}
+          onClose={() => setShowPayment(false)}
+          onPay={submitUpdate}
+        />
+      )}
+
       <Footer />
     </>
   );

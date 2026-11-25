@@ -8,6 +8,11 @@ const BookingSchema = new mongoose.Schema(
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     totalPrice: { type: Number, required: true },
+    paymentMethod: { type: String, enum: ["UPI", "Card", "Net Banking", "Pay at Property"] },
+    paymentStatus: { type: String, enum: ["paid", "pending"] },
+    amountPaid: { type: Number },
+    paymentId: { type: String },
+    paidAt: { type: Date },
   },
   { timestamps: true }
 );

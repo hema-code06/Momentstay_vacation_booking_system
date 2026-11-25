@@ -8,18 +8,19 @@ import { facilities } from "../data";
 import Loader from "./Loader";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import PaymentModal from "./PaymentModal";
 import "../styles/ListingDetails.scss";
 import { useToast } from "../context/ToastContext";
 import useWishList from "../hooks/useWishList";
 import { apiFetch, authFetch } from "../utils/api";
 import { nightsBetween, normalizeAmenities } from "../utils/helpers";
 import { getImageUrl, handleImageError, getListingFallback, HOST_FALLBACK } from "../utils/imageHelper";
-import { colors } from "@mui/material";
 
 const ListingDetails = () => {
   const { listingId } = useParams();
   const [loading, setLoading] = useState(true);
   const [listing, setListing] = useState(null);
+  const [showPayment, setShowPayment] = useState(false);
   const [dateRange, setDateRange] = useState([
     { startDate: new Date(), endDate: new Date(), key: "selection" },
   ]);
@@ -59,13 +60,14 @@ const ListingDetails = () => {
 
   const { startDate, endDate } = dateRange[0];
   const nights = nightsBetween(startDate, endDate);
+  const isOwner = Boolean(user) && listing?.creator?._id === user._id;
 
   const handleWishList = async () => {
     const added = await toggle(listingId);
     if (added !== null) toast.success(added ? "Added to wishlist!" : "Removed from wishlist!");
   };
 
-  const handleReserve = async () => {
+  const handleReserve = () => {
     if (!user || !token) {
       toast.info("Please login to make a reservation.");
       navigate("/login", { state: { from: location.pathname } });
@@ -77,6 +79,10 @@ const ListingDetails = () => {
       return;
     }
 
+    setShowPayment(true);
+  };
+
+  const handlePay = async (paymentMethod) => {
     try {
       const response = await authFetch("/bookings/create", token, {
         method: "POST",
@@ -85,20 +91,27 @@ const ListingDetails = () => {
           listingId,
           startDate: startDate.toDateString(),
           endDate: endDate.toDateString(),
+          paymentMethod,
         }),
       });
 
       if (response.ok) {
-        toast.success("Your reservation is confirmed!");
+        toast.success(
+          paymentMethod === "Pay at Property"
+            ? "Reservation confirmed. Pay the host when you arrive."
+            : "Payment successful. Your reservation is confirmed."
+        );
         navigate(`/${user._id}/reservations`);
-      } else {
-        const data = await response.json().catch(() => ({}));
-        toast.error(data.message || "There was a problem with your reservation.");
+        return true;
       }
+
+      const data = await response.json().catch(() => ({}));
+      toast.error(data.message || "There was a problem with your reservation.");
     } catch (err) {
       console.log("Reservation failed", err.message);
       toast.error("An error occurred while submitting your reservation.");
     }
+    return false;
   };
 
   if (loading) return <Loader />;
@@ -138,9 +151,9 @@ const ListingDetails = () => {
           ))}
         </div>
 
-        <h3 style={{ letterSpacing: "0.02em" }}>
-          <span style={{ color: "#004369" }}>{listing.type}</span> in {listing.city}, {listing.province}, {listing.country}
-        </h3>
+        <h2>
+          {listing.type} in <span style={{ color: "#004369", letterSpacing: "0.02em" }}>{listing.city}, {listing.province}, {listing.country}</span>
+        </h2>
 
         <p>
           {listing.guestCount} Guests - {listing.bedroomCount} Bedrooms - {listing.bedCount} Beds -{" "}
@@ -198,13 +211,31 @@ const ListingDetails = () => {
               <p>Start Date: {startDate.toDateString()}</p>
               <p>End Date: {endDate.toDateString()}</p>
 
-              <button className="button" type="button" onClick={handleReserve}>
-                Reserve Your Stay
-              </button>
+              {isOwner ? (
+                <p>You host this property, so you cannot book it.</p>
+              ) : (
+                <button className="button" type="button" onClick={handleReserve}>
+                  Reserve Your Stay
+                </button>
+              )}
             </div>
           </div>
         </div>
       </div>
+
+      {showPayment && (
+        <PaymentModal
+          summary={{
+            title: listing.title,
+            dates: `${startDate.toDateString()} to ${endDate.toDateString()}`,
+            nights,
+            price: listing.price,
+            total: listing.price * nights,
+          }}
+          onClose={() => setShowPayment(false)}
+          onPay={handlePay}
+        />
+      )}
 
       <Footer />
     </>

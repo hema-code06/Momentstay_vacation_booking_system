@@ -12,8 +12,8 @@ const ownerOnly = (req, res, next) =>
 
 const withBookingDetails = (query) =>
   query
-    .populate("customerId", "-password")
-    .populate("hostId", "-password")
+    .populate("customerId", "username email profileImagePath")
+    .populate("hostId", "username email profileImagePath")
     .populate("listingId");
 
 router.get("/:userId/trips", verifyToken, ownerOnly, async (req, res) => {
@@ -23,19 +23,6 @@ router.get("/:userId/trips", verifyToken, ownerOnly, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Cannot find trip history!" });
-  }
-});
-
-router.get("/:userId/properties", verifyToken, ownerOnly, async (req, res) => {
-  try {
-    const properties = await Listing.find({ creator: req.params.userId }).populate(
-      "creator",
-      "username profileImagePath"
-    );
-    res.json(properties);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Cannot find properties!" });
   }
 });
 

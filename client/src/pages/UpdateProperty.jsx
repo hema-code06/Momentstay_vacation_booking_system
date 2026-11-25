@@ -41,6 +41,7 @@ const UpdateProperty = () => {
   });
 
   const token = useSelector((state) => state.token);
+  const userId = useSelector((state) => state.user?._id);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,6 +50,11 @@ const UpdateProperty = () => {
         const response = await apiFetch(`/properties/${listingId}`);
         const data = await response.json();
         if (response.ok) {
+          if (data.creator?._id !== userId) {
+            toast.error("You can only edit your own properties.");
+            navigate("/host?tab=properties", { replace: true });
+            return;
+          }
           setCategory(data.category);
           setType(data.type);
           setFormLocation({
@@ -77,11 +83,16 @@ const UpdateProperty = () => {
     };
 
     fetchPropertyDetails();
-  }, [listingId]);
+  }, [listingId, userId, navigate, toast]);
 
   const newPhotoPreviews = useMemo(
-    () => newPhotos.map((file) => ({ file, url: URL.createObjectURL(file) })),
+    () => newPhotos.map((file) => URL.createObjectURL(file)),
     [newPhotos]
+  );
+
+  useEffect(
+    () => () => newPhotoPreviews.forEach((url) => URL.revokeObjectURL(url)),
+    [newPhotoPreviews]
   );
 
   const removeExistingPhoto = (index) => {
@@ -89,7 +100,6 @@ const UpdateProperty = () => {
   };
 
   const removeNewPhoto = (index) => {
-    URL.revokeObjectURL(newPhotoPreviews[index].url);
     setNewPhotos((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -133,7 +143,7 @@ const UpdateProperty = () => {
 
       if (response.ok) {
         toast.success("Property updated successfully!");
-        navigate("/");
+        navigate("/host?tab=properties");
       } else {
         const err = await response.json().catch(() => ({}));
         toast.error("Update failed: " + (err.message || "Unknown error"));
@@ -150,7 +160,7 @@ const UpdateProperty = () => {
       const response = await authFetch(`/properties/${listingId}`, token, { method: "DELETE" });
       if (response.ok) {
         toast.success("Property deleted.");
-        navigate("/");
+        navigate("/host?tab=properties");
       } else {
         toast.error("Failed to delete the property.");
       }
@@ -225,7 +235,6 @@ const UpdateProperty = () => {
                   type="text"
                   value={formLocation.aptSuite}
                   onChange={(e) => setFormLocation({ ...formLocation, aptSuite: e.target.value })}
-                  required
                 />
               </div>
               <div className="location">
@@ -342,7 +351,7 @@ const UpdateProperty = () => {
                   </div>
                 ))}
 
-                {newPhotoPreviews.map(({ url }, index) => (
+                {newPhotoPreviews.map((url, index) => (
                   <div key={`new-${index}`} className="photo-preview">
                     <img src={url} alt={`new-${index}`} />
                     <span className="photo-label new">New</span>

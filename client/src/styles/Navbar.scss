@@ -27,7 +27,7 @@
     left: 0;
     right: 0;
     background: transparent;
-    border-bottom: none;
+    border-bottom: none !important;
 
     .navbar__search-pill {
       background: rgba(255, 255, 255, 0.15);
@@ -70,7 +70,6 @@
 
 .navbar__logo {
   flex-shrink: 0;
-  margin-left: 3% !important;
 
   img {
     width: 150px;
@@ -111,15 +110,15 @@
   background: #fff;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 800 !important;
+  font-weight: 600;
   color: #222222;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.35s ease;
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition);
   white-space: nowrap;
-  transform-origin: center;
 
   &:hover {
-    transform: scale(1.03);
+    box-shadow: var(--shadow-card);
+    transform: translateY(-1px);
   }
 
   svg {
@@ -227,7 +226,8 @@
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  background: #004369;
+  background: var(--gradient-primary);
+  background-size: 200% 200%;
   color: #fff;
   border: none;
   border-radius: 40px;
@@ -269,13 +269,17 @@
 
 .navbar__host-link {
   font-size: 14px;
-  font-weight: 700;
-  color: #222222 !important;
+  font-weight: 600;
+  color: var(--text) !important;
   text-decoration: none;
-  padding: 10px 14px;
-  border-radius: 24px;
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
   white-space: nowrap;
-  transition: background 0.15s ease, color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
 
   @include md {
     display: none;
@@ -304,8 +308,7 @@
   }
 
   &:hover {
-    box-shadow: 0 4px 14px rgba(0, 67, 105, 0.16);
-    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
   }
 }
 
@@ -329,11 +332,11 @@
   background: #fff;
   border: 1px solid #dddddd;
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 67, 105, 0.14);
+  box-shadow: var(--shadow-hover);
   z-index: 9999;
   overflow: hidden;
   transform-origin: top right;
-  animation: dropIn 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: dropIn 0.22s var(--ease);
 
   @keyframes dropIn {
     from {
@@ -360,10 +363,10 @@
     font-size: 14px;
     text-decoration: none;
     color: #222222;
-    transition: background 0.1s ease;
+    transition: background-color 0.15s ease;
 
     &:hover {
-      background: #f7f7f7;
+      background: var(--surface-alt);
     }
   }
 }
@@ -377,4 +380,70 @@
 .navbar__dropdown-logout {
   color: #717171 !important;
   font-size: 13px !important;
+}
+
+.navbar--inner {
+  position: sticky;
+  top: 0;
+  background: #f7f9fc;
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+}
+
+.navbar__search-btn:hover {
+  background-position: 100% 50%;
+  box-shadow: var(--shadow-glow);
+}
+
+.navbar__search-clear:hover {
+  background: #dcdcdc;
+}
+
+.navbar__bell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: #222222;
+  background: #fff;
+  border: 1px solid #dddddd;
+  border-radius: 50%;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: var(--shadow-card);
+  }
+}
+
+.navbar__bell-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--danger);
+  border: 2px solid #fff;
+  border-radius: 9px;
+}
+
+.navbar--home .navbar__bell {
+  color: #333;
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: none;
+  }
 }

@@ -255,14 +255,17 @@
         font-weight: 600;
         cursor: pointer;
         transition: 0.3s ease;
-        background-color: #004369;
+        background: var(--gradient-primary);
+        background-size: 200% 200%;
         color: white;
         border-radius: 10px;
         width: 100%;
         margin-top: 30px;
 
         &:hover {
-          box-shadow: 0 10px 10px 0 gray;
+          background-position: 100% 50%;
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-glow);
         }
 
         @include lg {
@@ -271,4 +274,22 @@
       }
     }
   }
+}
+
+.update-details .payment-line {
+  margin-top: 6px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.update-details .payment-due {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.update-details .payment-refund {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--success);
 }

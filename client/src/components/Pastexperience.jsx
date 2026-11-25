@@ -4,7 +4,7 @@ import { experiences } from "../data";
 
 const Pastexperience = () => {
   return (
-    <div className="past-experiences-section">
+    <div className="past-experiences-section reveal">
       <div className="past-exp__header">
         <span className="past-exp__eyebrow">Memories Made</span>
         <h2 className="past-exp__title">

@@ -28,6 +28,8 @@ app.use("/api/properties", require("./routes/listing"));
 app.use("/api/bookings", require("./routes/booking"));
 app.use("/api/users", require("./routes/user"));
 app.use("/api/reviews", require("./routes/review"));
+app.use("/api/host", require("./routes/host"));
+app.use("/api/notifications", require("./routes/notification"));
 
 app.use((req, res) =>
   res.status(404).json({ message: `Route not found: ${req.method} ${req.originalUrl}` })
