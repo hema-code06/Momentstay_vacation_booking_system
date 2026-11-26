@@ -1,312 +1,279 @@
 # 🏡 MomentStay
 
-🌐 **Live App:** [momentstay-vacation-booking-system.vercel.app](https://momentstay-vacation-booking-system.vercel.app/)
+**🌐 Live application:** [momentstay-vacation-booking-system.vercel.app](https://momentstay-vacation-booking-system.vercel.app)
 
-**An Airbnb-inspired vacation rental marketplace — book a stay, host your own property, all under one account.**
+**An Airbnb-inspired vacation rental marketplace — guests book unique accommodations and also list their properties as a host, all under one account.**
 
-MomentStay lets any user switch seamlessly between two roles without switching accounts: **traveler**, searching and booking unique stays, and **host**, listing and managing their own space. No separate sign-up flow, no role selection screen — just one identity that can do both.
+* **As a traveler (guest):** discover and book stays, manage your wishlist, reschedule or cancel reservations, view your trip history, and review stays.
+* **As a host (property owner):** create, update and delete properties, manage bookings and payments, review guest feedback, and track performance through a dashboard.
 
----
+## ✨ Features
 
-## 🚀 Features
+### 👥 Guests
 
-### For Travelers — Search & Book
-- Browse stays across 15 categories — Beachfront, Luxury, Treehouse, Lakefront, Arctic, Desert, Camping, Boat House, and more
-- Full-text search by **title, category, city, province, or country** — with regex-safe input handling
-- Curated "Best Picks" category shortcuts on the home page
-- Date-range calendar with instant price calculation; overlapping bookings are rejected server-side
-- Instant booking — total price is computed server-side (nights × listing rate); the client cannot override it
-- Update or cancel a booking anytime
-- Save stays to a personal wishlist (toggle add/remove)
-- Leave a star rating and written review — allowed only after a **completed stay** (checkout date in the past), one review per listing per user
-- View complete booking history (Trip Journal) in one place
-- Past Experiences gallery with guest testimonials and photo galleries
+- Discover stays by browsing 15 categories (for example Beachfront, Luxury, Treehouse, Lakefront and Desert) or by searching a title, category, city, state or country. The home page also highlights curated "Best Picks".
+- Pick dates on a calendar and see the total price instantly. The server calculates the final price and rejects overlapping bookings.
+- Pay at checkout with a demo payment: UPI, card, net banking or pay at property. No card or UPI details are collected and no real money moves.
+- Reschedule a booking: pay only the extra amount if the new stay costs more, or see the refund amount if it costs less.
+- Cancel a booking with a confirmation and a demo refund message. Completed stays cannot be rescheduled or cancelled.
+- Track every booking in the reservation list with a status (upcoming, staying now or completed), add it to your calendar (.ics file), and write a review after a completed stay.
+- Review your full booking history, with payment details, on the trip journal page.
+- Save favorite stays to a wishlist.
+- Leave star rating and written review per property; submitting again updates your review.
+- Read featured guest stories on the home page.
 
-### For Hosts — List & Manage
-- List a stay for free — no separate host account required
-- Set category, type, nightly price, amenities, and guest/bedroom/bed/bathroom counts
-- Upload multiple photos directly to AWS S3 (images only, 10 MB limit per file)
-- Edit listing details or swap/add/remove photos anytime; removed photos are deleted from S3 automatically
-- Delete a listing anytime — all S3 photos are cleaned up on deletion
-- View every reservation made on your listings
-- Hosts cannot book their own property
+### 👤 Hosts
 
-### Security
-- JWT-based authentication (7-day expiry) on every protected route
-- Server-side ownership checks — only a listing's creator or a booking's customer/host can edit or cancel it (reviews have no edit/delete route)
-- Booking price is calculated server-side from the listing's nightly rate and stay length — the client cannot set its own price
-- Booking guest/host and listing owner are taken from the JWT, never from the request body
-- Overlapping bookings on the same listing are rejected at the database level
-- Email is lowercased and trimmed at registration and login — case-insensitive login is handled automatically
-- Bcrypt password hashing; password is never returned in any API response
-- S3 uploads validated for image MIME type and size (max 10 MB per file)
-- AWS IAM user scoped to least-privilege S3 access
-- EC2 security group restricted to required ports only (SSH, HTTP, HTTPS)
-- HTTPS enforced end-to-end via an Nginx reverse proxy with a free Let's Encrypt SSL certificate
+Hosts manage everything from the host dashboard (`/host`):
 
-### General
-- Fully responsive — built for both mobile and desktop
-- SPA routing — all Vercel routes fall back to `index.html` so direct links and browser refresh always work
-- Toast notifications for bookings, wishlist actions, and authentication feedback
-- Unauthenticated visitors are redirected to `/login` when accessing any protected page
+- **Overview:** earnings received, balance still due at the property, total and upcoming bookings, average rating, upcoming check-ins, guests currently staying and the latest reviews.
+- **Properties:** every property with its bookings, earnings and rating; open, edit or jump to its reviews; list a new property.
+- **Bookings:** which guest booked which property, dates, nights, total, payment status (paid, balance due or not recorded), payment method and reference. Filter by stay status, payment status or property, search by guest, and export the filtered list as CSV.
+- **Payment actions:** confirm that the balance of a "pay at property" booking was received, or cancel a booking that has not finished.
+- **Reviews:** all guest ratings and comments on the host's properties, filtered by property and rating, with a "New" badge for reviews from the last 7 days.
+- Create and edit properties with up to 15 photos (images only, 5 MB each).
+- Delete a property: not allowed while it has upcoming or ongoing bookings. Otherwise its photos, past bookings, reviews and wishlist entries are removed.
+- A host cannot book or review their own property.
 
----
+### 🔔 Notifications
 
-## 🛠️ Tech Stack
+- Notifications page lists every message (kept for 90 days).
+- Guests are notified when a host cancels their booking (with the refund amount and a "Rebook" shortcut) and when a host confirms a payment.
+- Hosts are notified about new bookings, rescheduled and cancelled bookings, and new or updated reviews.
+- The bell checks for new notifications every minute and when the browser tab regains focus.
+
+### 🛂 Access rules
+
+- Visitors without an account can browse, search, and read property details and reviews.
+- Booking, wishlist, reviews, trips, reservations, notifications, the host dashboard, and creating or editing properties need a login.
+- A visitor who tries one of these actions is sent to the login page and returned to the same page afterwards.
+- An expired login signs the user out automatically.
+
+## 🛠️ Tech stack
 
 ### Frontend
+
 | Technology | Purpose |
-|---|---|
-| React.js | UI framework |
-| Redux Toolkit + Redux Persist | Global state management & persistence across refreshes |
-| React Router DOM v6 | Client-side routing |
-| Sass (SCSS) | Custom styling |
-| Material UI v6 | UI components |
-| React Date Range | Interactive booking calendar |
-| React Icons | Icon library |
+| --- | --- |
+| React 18 | User interface |
+| Redux Toolkit and Redux Persist | Global state; the login survives a page refresh |
+| React Router 6 | Routing and protected routes |
+| Material UI 6 | UI components and icons |
+| React Date Range | Booking calendar |
+| React Icons | Icons |
+| Sass (SCSS) | Styling |
 
 ### Backend
-| Technology | Purpose |
-|---|---|
-| Node.js | Runtime environment |
-| Express.js | REST API framework |
-| MongoDB + Mongoose | Database & ODM |
-| JWT (jsonwebtoken) | Authentication tokens |
-| Bcryptjs | Password hashing |
-| Multer + Multer-S3 | Multipart image upload to AWS S3 (10 MB limit, images only) |
-| AWS SDK v3 (`@aws-sdk/client-s3`) | S3 object management (upload, delete) |
-| compression | Gzip response compression |
-| dotenv | Environment variable loading |
 
-### DevOps & Cloud
 | Technology | Purpose |
-|---|---|
-| AWS EC2 | Backend server hosting |
-| AWS S3 | Stay & profile photo storage |
+| --- | --- |
+| Node.js and Express | REST API |
+| MongoDB Atlas and Mongoose | Database |
+| JSON Web Tokens | Authentication (7-day expiry) |
+| bcryptjs | Password hashing |
+| Multer | Multipart image upload (memory storage) |
+| AWS SDK v3 (`@aws-sdk/client-s3`) | Upload and delete photos on AWS S3 |
+| Cloudinary SDK | Upload and delete photos on Cloudinary |
+| compression | Gzip responses |
+| dotenv | Environment variables |
+
+### Hosting and tooling
+
+| Service | Purpose |
+| --- | --- |
+| Vercel | Frontend. `vercel.json` forwards `/api/*` to the backend and serves `index.html` for every other route |
+| Render | Backend API (current deployment) |
+| AWS EC2 with PM2 and Nginx | Alternative backend deployment, see [Deployment](#deployment) |
 | AWS IAM | Least-privilege access control |
-| PM2 | Node.js process management, crash recovery & auto-restart on reboot |
-| Nginx | Reverse proxy in front of the Node app, terminating HTTPS |
-| Let's Encrypt (Certbot) | Free SSL certificate for the backend domain |
-| Vercel | Frontend deployment, with `/api` rewrite proxying to EC2 and SPA fallback |
-| MongoDB Atlas | Cloud database (dbName: `MomentStay`) |
-| Insomnia | API testing & endpoint verification |
+| MongoDB Atlas | Database (`dbName: MomentStay`) |
+| AWS S3 or Cloudinary | Photo storage |
+| Jenkins | Testing |
 
----
+## 🧭 Architecture
 
-## 🗺️ REST API Reference
-
-All endpoints are prefixed with `/api`. Protected routes require `Authorization: Bearer <token>`.
-
-### Auth
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/api/auth/register` | — | Register a new user (multipart: `username`, `email`, `password`, `profileImage`) |
-| `POST` | `/api/auth/login` | — | Login and receive JWT + user object |
-
-### Properties
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `GET` | `/api/properties` | — | Get all listings (optional `?category=` filter) |
-| `GET` | `/api/properties/search/:search` | — | Search listings by title, category, city, province, or country (`all` returns every listing) |
-| `GET` | `/api/properties/:listingId` | — | Get a single listing by ID |
-| `POST` | `/api/properties/create` | ✅ | Create a new listing (multipart: fields + `listingPhotos[]`) |
-| `PUT` | `/api/properties/:listingId` | ✅ (owner only) | Update listing — fields, existing photo URLs, and/or new photos |
-| `DELETE` | `/api/properties/:listingId` | ✅ (owner only) | Delete listing and its S3 photos |
-
-### Bookings
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/api/bookings/create` | ✅ | Create a booking (`listingId`, `startDate`, `endDate`); price computed server-side |
-| `GET` | `/api/bookings/:id` | ✅ (customer or host) | Get a single booking |
-| `PUT` | `/api/bookings/update/:id` | ✅ (customer or host) | Reschedule a booking with new dates |
-| `DELETE` | `/api/bookings/delete/:id` | ✅ (customer or host) | Cancel and remove a booking |
-
-### Users
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `GET` | `/api/users/:userId/trips` | ✅ (self only) | Get all bookings made by the user (Trip Journal) |
-| `GET` | `/api/users/:userId/properties` | ✅ (self only) | Get all listings created by the user |
-| `GET` | `/api/users/:userId/reservations` | ✅ (self only) | Get all bookings where user is host or customer |
-| `PATCH` | `/api/users/:userId/:listingId` | ✅ (self only) | Toggle a listing in/out of the user's wishlist |
-
-### Reviews
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/api/reviews/create` | ✅ | Submit a review (`listingId`, `rating` 1–5, `comment`); requires a completed stay |
-| `GET` | `/api/reviews/listing/:listingId` | — | Get all reviews for a listing, plus average rating and total count |
-
-### Health
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `GET` | `/` | — | Health check — returns `{ status: "success", message: "Server is running 🚀" }` |
-
----
-
-## 🧭 System Architecture
-
-MomentStay follows a standard three-tier architecture, with image storage offloaded to S3 to keep the API stateless and the database lightweight.
-
-```
-┌─────────────────────┐        HTTPS / REST         ┌──────────────────────────────┐
-│                      │ ───────────────────────────▶│  Nginx (reverse proxy, SSL)   │
-│   React Client       │                              │            │                  │
-│   (Vercel)            │◀─────────────────────────── │            ▼                  │
-│                      │        JSON responses        │  Express API (PM2, port 3001) │
-└──────────┬───────────┘                              │      (AWS EC2)                │
-           │                                           └─────────────┬────────────────┘
-           │ Redux Persist                                           │
-           │ (client-side cache)                                     │ Mongoose
-           ▼                                                         ▼
-   ┌───────────────┐                                         ┌───────────────────┐
-   │  Browser       │                                         │  MongoDB Atlas      │
-   │  localStorage  │                                         │  (Users, Listings,  │
-   └───────────────┘                                         │   Bookings, Reviews) │
-                                                                └───────────────────┘
-                                                                         ▲
-                                                                         │
-                                                                ┌───────────────────┐
-                                                                │  AWS S3              │
-                                                                │  (listing & profile  │
-                                                                │   photos)             │
-                                                                └───────────────────┘
+```text
+React client (Vercel)
+      |  /api/*  rewrite (vercel.json)
+      v
+Express API (Render, or EC2 behind Nginx)
+      |                         |
+      v                         v
+MongoDB Atlas        Image storage: AWS S3 or Cloudinary
 ```
 
-**Request flow, end to end:**
-1. The client sends a request to `/api/...` on Vercel; Vercel's `vercel.json` rewrite forwards it over HTTPS to the EC2 backend. All other routes fall back to `index.html` so the React SPA handles them.
-2. Nginx on EC2 terminates SSL and reverse-proxies the request to the Express app running on `localhost:3001`, managed by PM2.
-3. Auth middleware verifies the JWT (from the `Authorization` header) before the route handler runs; requests without a valid token are rejected before touching the database.
-4. For write actions on a listing or booking, the API checks that the token's user actually owns the resource being modified — not just that they're logged in. Creating a review additionally requires proof of a completed stay, and a user may leave only one review per listing.
-5. Booking creation and updates recompute the total price server-side from the listing's stored nightly rate and the requested stay length, and reject date ranges that overlap an existing booking on the same listing.
-6. Photo uploads go straight from the client, through Multer-S3 on the server, into an S3 bucket; MongoDB stores only the resulting URLs, never the image data itself. Deleted or replaced photos are removed from S3 using `Promise.allSettled` so a stale S3 file never blocks a database write.
-7. The client caches the logged-in user and their token via Redux Persist, so a page refresh doesn't require logging in again.
-8. PM2 keeps the Node process alive and automatically restarts it on crash or server reboot, so the API stays available 24/7.
+1. The browser calls `/api/...` on the Vercel domain. Vercel forwards the request to the backend, so the client has no CORS problems and no hard-coded backend address.
+2. Protected routes pass through the authentication middleware, which verifies the JWT before any handler runs.
+3. The guest, host and owner of a booking, review or property are always taken from the token, never from the request body.
+4. Edit and delete routes check ownership. Only a property's creator can edit or delete it, only the guest who made a booking can reschedule it, and the guest or the host can cancel it.
+5. The host dashboard is built on the server from the logged-in user's own properties, so a host only sees bookings and reviews of their own listings.
+6. Photos are uploaded through the API to the selected storage provider. MongoDB stores only the photo URLs.
+7. The client keeps the user and token in Redux Persist, so a refresh does not log the user out.
 
-### How authentication works
-- On login, the server issues a JWT (7-day expiry) signed with a server-side secret — the client never sees or stores the secret itself.
-- Every state-changing request (creating a listing, booking a stay, editing a wishlist, submitting a review, etc.) requires that token in an `Authorization: Bearer <token>` header.
-- Ownership is enforced server-side on every edit/delete route — a user can only modify listings and bookings that belong to them, regardless of what the client sends.
-- The booking's guest and host, and a listing's owner, are always derived from the authenticated user's token, not from client-supplied fields.
-- Emails are normalised to lowercase on register and login — `User@example.com` and `user@example.com` resolve to the same account.
-- Passwords are hashed with bcrypt before storage; the hash is never included in any API response, including the user's own.
+### 🖼️ Image storage
 
----
+All uploads go through `server/config/storage.js`. Each provider is one file in `server/config/storage/` with the same three functions (`upload`, `remove`, `owns`), so another provider can be added without changing the routes. Choose the provider with `STORAGE_PROVIDER`:
 
-## 🔧 Local Setup
+| Value | Service |
+| --- | --- |
+| `s3` | AWS S3 |
+| `cloudinary` | Cloudinary |
+| `local` | Server disk, for development only |
 
-### Prerequisites
-- Node.js ≥ 18 & npm
-- MongoDB Atlas account (or local MongoDB)
-- AWS account with an S3 bucket and IAM credentials
+If `STORAGE_PROVIDER` is empty and AWS keys are present, S3 is used. If no storage is configured in production, uploads are refused with a clear message and the rest of the site keeps working. Photos stored with one provider can still be deleted after switching to another.
 
-### 1. Clone the repository
+### 💸 Payment flow (demo)
+
+- A booking is created with a `paymentMethod`. For UPI, card and net banking the booking is saved as paid, with a generated reference such as `MSP-XXXXXXXX-XXXX`.
+- With "pay at property" the booking is saved as pending. The host later confirms the payment, which marks it as paid and notifies the guest.
+- When a guest reschedules, the server compares the new total with the amount already paid. A higher total requires a payment method for the extra amount. A lower total produces a refund amount in the response.
+- No payment provider is connected. Refunds are only messages.
+
+## 🔧 Local setup
+
+Requirements: Node.js 18 or newer, a MongoDB database, and an AWS S3 bucket or a Cloudinary account for photos.
+
+### 1. Clone and install
+
 ```bash
 git clone https://github.com/hema-code06/Momentstay_vacation_booking_system.git
 cd Momentstay_vacation_booking_system
-```
 
-### 2. Install dependencies
-```bash
-# Backend
 cd server && npm install
-
-# Frontend
 cd ../client && npm install
 ```
 
-### 3. Environment setup
-
-Copy the example files and fill in your values:
+### 2. Environment files
 
 ```bash
 cp server/.env.example server/.env
 cp client/.env.example client/.env
 ```
 
-**`server/.env`**
+`server/.env`:
+
 ```env
 PORT=3001
-MONGO_URL=mongodb+srv://<user>:<password>@cluster.mongodb.net/?retryWrites=true&w=majority
-JWT_SECRET=your_jwt_secret_here
 NODE_ENV=development
+MONGO_URL=mongodb+srv://<user>:<password>@cluster.mongodb.net/?retryWrites=true&w=majority
+JWT_SECRET=your_jwt_secret
 
-AWS_REGION=us-east-1
-AWS_ACCESS_KEY_ID=your_aws_access_key_id
-AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
-S3_BUCKET_NAME=your_s3_bucket_name
+# s3 | cloudinary | local
+STORAGE_PROVIDER=cloudinary
+
+# AWS S3
+AWS_REGION=ap-south-1
+AWS_ACCESS_KEY_ID=your_access_key_id
+AWS_SECRET_ACCESS_KEY=your_secret_access_key
+S3_BUCKET_NAME=your_bucket_name
+
+# Cloudinary
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 ```
 
-**`client/.env`** — for local development, point directly at the running server:
+`client/.env`:
+
 ```env
-REACT_APP_API_URL=http://localhost:3001/api
+REACT_APP_API_URL=/api
 ```
 
-> **Note:** In production on Vercel, `REACT_APP_API_URL=/api` works because `vercel.json` proxies `/api/*` to the EC2 backend. For local development without a proxy, set it to the full server URL above.
+The `proxy` entry in `client/package.json` forwards `/api` requests from the development server to `http://localhost:3001`. If the variable is missing, the client falls back to `/api`.
 
-### 4. Run the application locally
+### 3. Run
+
 ```bash
-# Terminal 1 — Backend
+# Terminal 1: backend
 cd server
-npm run dev        # uses nodemon for auto-reload
+npm run dev
 
-# Terminal 2 — Frontend
+# Terminal 2: frontend
 cd client
 npm start
 ```
 
-Open **http://localhost:3000**
+Open http://localhost:3000. The server log should show `Image storage: ...` and `Connected to MongoDB`.
 
----
+## 🚀 Deployment
 
-## ☁️ Production Deployment
+### Frontend on Vercel
 
-### Backend (AWS EC2)
-1. SSH into the EC2 instance and pull the latest code (`git pull`).
-2. Install dependencies (`cd server && npm install`).
-3. Create `server/.env` with your production values.
-4. Start the app under **PM2** so it stays alive and restarts on crash or reboot:
-   ```bash
-   cd server
-   pm2 start index.js --name momentstay
-   pm2 save
-   pm2 startup
-   ```
-5. Install **Nginx** and configure it as a reverse proxy forwarding requests to `localhost:3001`.
-6. Use **Certbot** to issue a free Let's Encrypt SSL certificate for the backend's domain, so the API is served over HTTPS.
-7. Open ports 80 and 443 in the EC2 security group.
-
-### Frontend (Vercel)
-The React app is deployed on Vercel. `client/vercel.json` does two things:
-- Proxies all `/api/*` requests to the EC2 backend
-- Falls back every other route to `index.html` so direct links and browser refreshes work correctly
+`client/vercel.json` forwards the API and keeps the single-page routes working:
 
 ```json
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://<your-ec2-domain>/api/:path*" },
-    { "source": "/(.*)",       "destination": "/index.html" }
+    { "source": "/api/:path*", "destination": "https://<your-backend-domain>/api/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
 ```
 
-Set the following environment variable in your Vercel project settings:
+Set `REACT_APP_API_URL=/api` in the Vercel project settings. Vercel builds with `CI=true`, so ESLint warnings fail the build. Run `npm run build` locally before pushing.
 
-```
-REACT_APP_API_URL=/api
-```
+### Backend on Render
 
----
+- Root directory: `server`
+- Build command: `npm install`
+- Start command: `npm start`
+- Add the server environment variables listed above, including `NODE_ENV=production` and `STORAGE_PROVIDER`
+- After a deploy, the log should show `Image storage: cloudinary` (or `s3`) and `Connected to MongoDB`
+- When you add a dependency, commit `package.json` and `package-lock.json`
 
-## 🔮 Future Improvements
+### ☁️ Backend on AWS EC2 (alternative)
 
-- [ ] Map integration (Google Maps / Mapbox) for stay locations
-- [ ] Real-time chat between travelers and hosts
-- [ ] Email notifications for booking confirmations
-- [ ] Payment gateway integration (Stripe / Razorpay)
-- [ ] AI-based stay recommendations
+1. Launch an EC2 instance and open ports 22 (SSH), 80 and 443 in its security group.
+2. Install Node.js 18 or newer, clone the repository and run `cd server && npm install`.
+3. Create `server/.env` with the production values.
+4. Run the API under PM2 so it restarts after a crash or a reboot:
+
+   ```bash
+   pm2 start index.js --name momentstay
+   pm2 save
+   pm2 startup
+   ```
+
+5. Install Nginx and reverse-proxy requests to `localhost:3001`.
+6. Issue a free Let's Encrypt certificate with Certbot so the API is served over HTTPS.
+7. Point the `destination` in `client/vercel.json` at your HTTPS domain.
+
+For S3, use a dedicated IAM user that can only upload to and delete from the one bucket.
+
+The Render service can take up to a minute to wake up after a period of inactivity, so the first request after a pause may be slow.
+
+## 🛡️ Security
+
+- Passwords are hashed with bcrypt and are never returned by the API
+- Login tokens are JWTs that expire after 7 days
+- Every protected route verifies the token, and edit or delete routes also check ownership on the server
+- Booking prices are calculated on the server, so the client cannot set its own price
+- The public property and review endpoints return only the host's or reviewer's username and photo, never their email
+- Uploads accept images only, with a 5 MB limit per file
+- Search input is escaped before it is used as a regular expression
+- Email addresses are trimmed and lowercased on registration and login
+
+## ⏳ Known limitations
+
+- Overlapping bookings are checked by the API before saving, not by a database constraint, so two simultaneous requests for the same dates could both succeed.
+- Reviews are not limited to guests with a completed stay.
+- Payments are a demo: no payment provider is connected, and refunds are only messages.
+
+## 📈 Future improvements
+
+- [ ] Map integration (Google Maps or Mapbox) for property locations
+- [ ] Real-time chat between guests and hosts
+- [ ] Email confirmations for bookings
+- [ ] A real payment gateway (Stripe or Razorpay) in place of the demo payment
+- [ ] Reviews only after a completed stay
+- [ ] Database-level protection against double bookings
+- [ ] Block dates that are already booked in the date picker
+- [ ] Automatic photo resizing before upload
+- [ ] Real-time notifications with WebSockets
+- [ ] Automated unit and integration tests in the repository
 - [ ] Refresh-token rotation for longer, safer sessions
-- [ ] Edit/delete support for submitted reviews
 
 ---
 
-*Built with ❤️ using React · Node.js · Express · MongoDB · AWS (EC2, S3, IAM) · PM2 · Nginx · Vercel*
+*Built with ❤️ React · Redux · Node.js · Express · MongoDB · AWS (EC2, S3, IAM) · Cloudinary · PM2 · Nginx · Jenkins*
+
 
